@@ -1,0 +1,62 @@
+; -*- mode: emacs-lisp; lexical-binding: t -*-
+
+;; Eldev configuration for gastown.el
+
+(eldev-use-package-archive 'gnu)
+(eldev-use-package-archive 'nongnu)
+(eldev-use-package-archive 'melpa)
+
+;; Enable undercover.el for code coverage tracking
+(eldev-use-plugin 'undercover)
+
+;; Configure undercover to track coverage for all lisp/*.el files except tests
+(setf eldev-undercover-fileset '("lisp/*.el" ":not" "lisp/test/*.el"))
+
+;; Use codecov format and don't auto-send
+(setf eldev-undercover-config '(codecov dontsend))
+
+;; Fix transient edebug specs for undercover instrumentation
+(defun gastown--fix-transient-edebug-specs ()
+  "Override transient edebug specs to allow symbol references for groups."
+  (def-edebug-spec transient-define-prefix
+    (&define name lambda-list
+             [&optional lambda-doc]
+             [&rest keywordp sexp]
+             [&rest [&or symbolp vectorp]]
+             [&optional ("interactive" interactive) def-body]))
+  (def-edebug-spec transient-define-group
+    (&define name [&rest [&or symbolp vectorp]])))
+
+(eval-after-load 'transient
+  '(when (eq eldev-project-loading-mode 'source)
+     (gastown--fix-transient-edebug-specs)))
+
+(advice-add 'eldev-load-extra-dependencies :after
+            (lambda (&rest _)
+              (when (eq eldev-project-loading-mode 'source)
+                (require 'transient nil t)
+                (gastown--fix-transient-edebug-specs))))
+
+(setq eldev-project-main-file "lisp/gastown.el")
+
+;; Runtime dependencies
+(eldev-add-extra-dependencies 'runtime
+                              '(:package transient :version "0.10.1"))
+
+;; Development dependencies
+(eldev-add-extra-dependencies 'test
+                              '(:package ert))
+(eldev-add-extra-dependencies 'lint
+                              '(:package package-lint :archive melpa))
+
+;; Exclude build artifacts and worktrees
+(setf eldev-standard-excludes
+      `(:or ,eldev-standard-excludes "worktree/**" "share/**"))
+
+;; Test files location
+(setf eldev-test-fileset '("lisp/test/*.el"))
+
+;; Load path includes lisp directory
+(eldev-add-loading-roots 'build "lisp")
+(eldev-add-loading-roots 'test "lisp")
+(eldev-add-loading-roots 'test "lisp/test")

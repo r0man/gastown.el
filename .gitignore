@@ -1,0 +1,5 @@
+.runtime/
+.claude/commands/
+.logs/
+*.elc
+/worktree/
