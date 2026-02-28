@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'gastown-custom)
 (require 'gastown-command)
 
 ;;; gastown-defcommand tests

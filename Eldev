@@ -39,9 +39,15 @@
 
 (setq eldev-project-main-file "lisp/gastown.el")
 
+;; Local dependency: beads.el (not on ELPA)
+;; Add beads.el/lisp to load path directly
+(push (expand-file-name "~/workspace/beads.el/lisp") load-path)
+
 ;; Runtime dependencies
 (eldev-add-extra-dependencies 'runtime
                               '(:package transient :version "0.10.1"))
+(eldev-add-extra-dependencies 'runtime
+                              '(:package sesman :version "0.3.2"))
 
 ;; Development dependencies
 (eldev-add-extra-dependencies 'test

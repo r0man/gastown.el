@@ -1,0 +1,1 @@
+((version . 2) (cache . #s(hash-table test equal data (((eldev-project-source-dirs) #1="/home/roman/workspace/beads.el/" nil) (((27023 19066 977315 258000) nil) "/home/roman/workspace/beads.el/") (eldev-project-main-file #1# nil) (((27023 19066 977315 258000) nil) . "lisp/beads.el")))))
