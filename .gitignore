@@ -1,3 +1,7 @@
 .runtime/
 .claude/commands/
 .logs/
+*.elc
+/worktree/
+/.eldev/
+/coverage-final.json
