@@ -1,1 +1,0 @@
-((version . 2) (dependencies (:package undercover :version "0.8" :archive melpa) (:package sesman :version "0.3.2") (:package transient :version "0.10.1")))

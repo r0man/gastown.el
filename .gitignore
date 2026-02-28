@@ -3,3 +3,5 @@
 .logs/
 *.elc
 /worktree/
+/.eldev/
+/coverage-final.json
