@@ -5,3 +5,7 @@
 /worktree/
 /.eldev/
 /coverage-final.json
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
