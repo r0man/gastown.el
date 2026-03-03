@@ -66,3 +66,14 @@
 (eldev-add-loading-roots 'build "lisp")
 (eldev-add-loading-roots 'test "lisp")
 (eldev-add-loading-roots 'test "lisp/test")
+
+;; Test Dolt server isolation
+;; Integration tests use gastown-test-with-dolt-server macro for per-test
+;; isolation.  For suite-level server (faster), set GASTOWN_TEST_DOLT=1:
+;;   GASTOWN_TEST_DOLT=1 eldev test
+;; This starts an isolated Dolt server before any tests run and registers
+;; kill-emacs-hook for cleanup.  Production Dolt on port 3307 is never touched.
+(when (equal (getenv "GASTOWN_TEST_DOLT") "1")
+  (require 'gastown-test)
+  (gastown-test-suite-setup)
+  (add-hook 'kill-emacs-hook #'gastown-test-suite-teardown))
