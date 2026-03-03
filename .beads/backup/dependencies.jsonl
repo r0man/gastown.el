@@ -21,6 +21,7 @@
 {"created_at":"2026-03-02T21:49:52Z","created_by":"gastown_el/refinery","depends_on_id":"gastown_el-mol-i51z","issue_id":"gastown_el-mol-n856","type":"blocks"}
 {"created_at":"2026-03-02T21:49:52Z","created_by":"gastown_el/refinery","depends_on_id":"gastown_el-mol-2ayz","issue_id":"gastown_el-mol-z348","type":"parent-child"}
 {"created_at":"2026-03-02T21:49:52Z","created_by":"gastown_el/refinery","depends_on_id":"gastown_el-mol-dr95","issue_id":"gastown_el-mol-z348","type":"blocks"}
+{"created_at":"2026-03-03T19:44:09Z","created_by":"mayor","depends_on_id":"gastown_el-wisp-7qig","issue_id":"ge-8ze","type":"blocks"}
 {"created_at":"2026-03-01T19:35:28Z","created_by":"gastown_el/refinery","depends_on_id":"mol-refinery-patrol","issue_id":"mol-refinery-patrol.burn-or-loop","type":"parent-child"}
 {"created_at":"2026-03-01T19:35:28Z","created_by":"gastown_el/refinery","depends_on_id":"mol-refinery-patrol.patrol-cleanup","issue_id":"mol-refinery-patrol.burn-or-loop","type":"blocks"}
 {"created_at":"2026-03-01T19:35:28Z","created_by":"gastown_el/refinery","depends_on_id":"mol-refinery-patrol","issue_id":"mol-refinery-patrol.check-integration-branches","type":"parent-child"}
