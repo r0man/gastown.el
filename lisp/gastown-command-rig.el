@@ -21,7 +21,7 @@
 ;;; Rig List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-rig-list (gastown-command-json)
+  (gastown-defcommand gastown-command-rig-list (gastown-command)
     ()
     :documentation "Represents gt rig list command.
 Lists all rigs in the workspace with status, polecat count, and crew count."))

@@ -21,7 +21,7 @@
 ;;; Polecat List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-polecat-list (gastown-command-json)
+  (gastown-defcommand gastown-command-polecat-list (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)

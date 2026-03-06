@@ -93,7 +93,7 @@
 ;;; JSON command tests
 
 (eval-and-compile
-  (gastown-defcommand gastown-command--test-json (gastown-command-json)
+  (gastown-defcommand gastown-command--test-json (gastown-command)
     ()
     :documentation "Test JSON command."))
 

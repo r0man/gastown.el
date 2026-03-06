@@ -14,8 +14,8 @@
 ;; generation.
 ;;
 ;; Class hierarchy:
-;;   gastown-command (abstract base, with global flags)
-;;     └─ gastown-command-json (commands supporting --json)
+;;   gastown-command-global-options (global CLI flags: verbose, json)
+;;     └─ gastown-command (abstract base, with parse method)
 ;;         ├─ gastown-command-status
 ;;         ├─ gastown-command-rig-list
 ;;         ├─ gastown-command-polecat-list
@@ -72,7 +72,7 @@ This macro:
    and returns the result from the execution object
 
 Example:
-  (gastown-defcommand gastown-command-foo (gastown-command-json)
+  (gastown-defcommand gastown-command-foo (gastown-command)
     ((name :initarg :name)
      (force :initarg :force :type boolean))
     :documentation \"Foo command.\")
@@ -196,9 +196,9 @@ When nil, auto-detects best available backend."
       ('term (gastown-command--run-term cmd-string buffer-name default-dir))
       (_ (gastown-command--run-term cmd-string buffer-name default-dir)))))
 
-;;; Base Command Class
+;;; Global Options Mixin Class
 
-(defclass gastown-command ()
+(defclass gastown-command-global-options ()
   ((verbose
     :initarg :verbose
     :type boolean
@@ -206,9 +206,24 @@ When nil, auto-detects best available backend."
     :documentation "Enable verbose output (-v, --verbose)."
     :long-option "verbose"
     :short-option "v"
+    :option-type :boolean)
+   (json
+    :initarg :json
+    :type boolean
+    :initform t
+    :documentation "Output in JSON format (--json)."
+    :long-option "json"
     :option-type :boolean))
+  :documentation "Mixin class providing global gt CLI options.
+These flags apply to all gt commands.")
+
+;;; Base Command Class
+
+(defclass gastown-command (gastown-command-global-options)
+  ()
   :abstract t
   :documentation "Abstract base class for all gt commands.
+Inherits global options from `gastown-command-global-options'.
 Execution results are returned in `gastown-command-execution' objects.")
 
 ;;; Command Execution Result
@@ -327,10 +342,26 @@ Returns a list of strings starting with the executable.")
     (message "Command: %s" cmd-string)
     cmd-string))
 
-(cl-defmethod gastown-command-parse ((_command gastown-command) execution)
-  "Parse non-JSON COMMAND output from EXECUTION.
-Returns stdout string."
-  (oref execution stdout))
+(cl-defmethod gastown-command-parse ((command gastown-command) execution)
+  "Parse output from COMMAND using EXECUTION data.
+When :json is t (default), parses stdout as JSON and returns an alist.
+When :json is nil, returns stdout string."
+  (if (not (oref command json))
+      (oref execution stdout)
+    (let ((stdout (oref execution stdout)))
+      (condition-case err
+          (let* ((json-object-type 'alist)
+                 (json-array-type 'vector)
+                 (json-key-type 'symbol))
+            (json-read-from-string stdout))
+        (error
+         (signal 'gastown-json-parse-error
+                 (list (format "Failed to parse JSON: %s"
+                               (error-message-string err))
+                       :exit-code (oref execution exit-code)
+                       :stdout stdout
+                       :stderr (oref execution stderr)
+                       :parse-error err)))))))
 
 ;;; Base Command Execution
 
@@ -387,39 +418,6 @@ Returns stdout string."
       ;; Cleanup temp file
       (when (file-exists-p stderr-file)
         (delete-file stderr-file)))))
-
-;;; JSON Command
-
-(defclass gastown-command-json (gastown-command)
-  ((json
-    :initarg :json
-    :type boolean
-    :initform t
-    :documentation "Output in JSON format (--json)."
-    :long-option "json"
-    :option-type :boolean))
-  :abstract t
-  :documentation "Abstract base class for gt commands that support JSON output.")
-
-(cl-defmethod gastown-command-parse ((command gastown-command-json) execution)
-  "Parse JSON output from COMMAND using EXECUTION data."
-  (with-slots (json) command
-    (if (not json)
-        (cl-call-next-method)
-      (let ((stdout (oref execution stdout)))
-        (condition-case err
-            (let* ((json-object-type 'alist)
-                   (json-array-type 'vector)
-                   (json-key-type 'symbol))
-              (json-read-from-string stdout))
-          (error
-           (signal 'gastown-json-parse-error
-                   (list (format "Failed to parse JSON: %s"
-                                 (error-message-string err))
-                         :exit-code (oref execution exit-code)
-                         :stdout stdout
-                         :stderr (oref execution stderr)
-                         :parse-error err))))))))
 
 ;;; Global Options Helper
 

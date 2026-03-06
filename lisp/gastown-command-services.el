@@ -71,7 +71,7 @@ Shutdown Gas Town with cleanup."))
 ;;; Daemon Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-daemon-status (gastown-command-json)
+  (gastown-defcommand gastown-command-daemon-status (gastown-command)
     ()
     :documentation "Represents gt daemon status command.
 Shows the Gas Town daemon status."))

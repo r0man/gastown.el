@@ -21,7 +21,7 @@
 ;;; Agents List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-agents (gastown-command-json)
+  (gastown-defcommand gastown-command-agents (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -47,7 +47,7 @@ Lists all Gas Town agent sessions."))
 ;;; Witness Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-witness-status (gastown-command-json)
+  (gastown-defcommand gastown-command-witness-status (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -73,7 +73,7 @@ Shows witness health and monitoring status."))
 ;;; Refinery Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-refinery-status (gastown-command-json)
+  (gastown-defcommand gastown-command-refinery-status (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -99,7 +99,7 @@ Shows merge queue processor status."))
 ;;; Session List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-session-list (gastown-command-json)
+  (gastown-defcommand gastown-command-session-list (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)

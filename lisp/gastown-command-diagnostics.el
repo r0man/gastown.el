@@ -21,7 +21,7 @@
 ;;; Vitals Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-vitals (gastown-command-json)
+  (gastown-defcommand gastown-command-vitals (gastown-command)
     ()
     :documentation "Represents gt vitals command.
 Shows unified health dashboard."))
@@ -115,7 +115,7 @@ Show Gas Town logs."))
 ;;; Activity Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-activity (gastown-command-json)
+  (gastown-defcommand gastown-command-activity (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -141,7 +141,7 @@ Show recent agent activity."))
 ;;; Info Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-info (gastown-command-json)
+  (gastown-defcommand gastown-command-info (gastown-command)
     ()
     :documentation "Represents gt info command.
 Show Gas Town workspace information."))
@@ -165,7 +165,7 @@ Show current identity for mail commands."))
 ;;; Costs Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-costs (gastown-command-json)
+  (gastown-defcommand gastown-command-costs (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -191,7 +191,7 @@ Show cost metrics."))
 ;;; Trail Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-trail (gastown-command-json)
+  (gastown-defcommand gastown-command-trail (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)

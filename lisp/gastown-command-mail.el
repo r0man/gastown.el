@@ -21,7 +21,7 @@
 ;;; Mail Inbox Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mail-inbox (gastown-command-json)
+  (gastown-defcommand gastown-command-mail-inbox (gastown-command)
     ((all
       :initarg :all
       :type boolean

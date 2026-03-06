@@ -65,7 +65,7 @@ Signal work ready for merge queue."))
 ;;; Hook Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-hook (gastown-command-json)
+  (gastown-defcommand gastown-command-hook (gastown-command)
     ()
     :documentation "Represents gt hook command.
 Show or attach work on a hook."))
@@ -77,7 +77,7 @@ Show or attach work on a hook."))
 ;;; Ready Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-ready (gastown-command-json)
+  (gastown-defcommand gastown-command-ready (gastown-command)
     ()
     :documentation "Represents gt ready command.
 Show work ready across town."))
@@ -237,7 +237,7 @@ Remove work from an agent's hook."))
 ;;; MQ List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mq-list (gastown-command-json)
+  (gastown-defcommand gastown-command-mq-list (gastown-command)
     ((rig
       :initarg :rig
       :type (or null string)

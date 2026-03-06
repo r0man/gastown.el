@@ -22,7 +22,7 @@
 ;;; Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-status (gastown-command-json)
+  (gastown-defcommand gastown-command-status (gastown-command)
     ((fast
       :initarg :fast
       :type boolean
