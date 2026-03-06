@@ -294,5 +294,321 @@ List merge queue entries."))
 (beads-meta-define-transient gastown-command-mq-list "gastown-mq-list"
   "List merge queue entries.")
 
+;;; Simple Work Commands
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-bead (gastown-command)
+    ()
+    :documentation "Represents gt bead command.
+Show bead information."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-bead))
+  "Return \"bead\" as the CLI subcommand name."
+  "bead")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-cat (gastown-command)
+    ()
+    :documentation "Represents gt cat command.
+Show bead content."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-cat))
+  "Return \"cat\" as the CLI subcommand name."
+  "cat")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-cleanup (gastown-command)
+    ()
+    :documentation "Represents gt cleanup command.
+Clean up Gas Town resources."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-cleanup))
+  "Return \"cleanup\" as the CLI subcommand name."
+  "cleanup")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-close (gastown-command)
+    ()
+    :documentation "Represents gt close command.
+Close a bead."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-close))
+  "Return \"close\" as the CLI subcommand name."
+  "close")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-commit (gastown-command)
+    ()
+    :documentation "Represents gt commit command.
+Commit work to git."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-commit))
+  "Return \"commit\" as the CLI subcommand name."
+  "commit")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-compact (gastown-command)
+    ()
+    :documentation "Represents gt compact command.
+Compact context for a session."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-compact))
+  "Return \"compact\" as the CLI subcommand name."
+  "compact")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-forget (gastown-command)
+    ()
+    :documentation "Represents gt forget command.
+Remove a memory entry."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-forget))
+  "Return \"forget\" as the CLI subcommand name."
+  "forget")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-formula (gastown-command)
+    ()
+    :documentation "Represents gt formula command.
+Manage workflow formulas."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-formula))
+  "Return \"formula\" as the CLI subcommand name."
+  "formula")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-memories (gastown-command)
+    ()
+    :documentation "Represents gt memories command.
+Show agent memories."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-memories))
+  "Return \"memories\" as the CLI subcommand name."
+  "memories")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-mol (gastown-command)
+    ()
+    :documentation "Represents gt mol command.
+Manage molecules and workflow steps."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-mol))
+  "Return \"mol\" as the CLI subcommand name."
+  "mol")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-orphans (gastown-command)
+    ()
+    :documentation "Represents gt orphans command.
+Show orphaned agents."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-orphans))
+  "Return \"orphans\" as the CLI subcommand name."
+  "orphans")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-prune-branches (gastown-command)
+    ()
+    :documentation "Represents gt prune-branches command.
+Prune stale git branches."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-prune-branches))
+  "Return \"prune-branches\" as the CLI subcommand name."
+  "prune-branches")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-release (gastown-command)
+    ()
+    :documentation "Represents gt release command.
+Release a bead or resource."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-release))
+  "Return \"release\" as the CLI subcommand name."
+  "release")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-remember (gastown-command)
+    ()
+    :documentation "Represents gt remember command.
+Add a memory entry."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-remember))
+  "Return \"remember\" as the CLI subcommand name."
+  "remember")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-resume (gastown-command)
+    ()
+    :documentation "Represents gt resume command.
+Resume a session."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-resume))
+  "Return \"resume\" as the CLI subcommand name."
+  "resume")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-scheduler (gastown-command)
+    ()
+    :documentation "Represents gt scheduler command.
+Show scheduler status."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-scheduler))
+  "Return \"scheduler\" as the CLI subcommand name."
+  "scheduler")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-show (gastown-command)
+    ()
+    :documentation "Represents gt show command.
+Show a bead."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-show))
+  "Return \"show\" as the CLI subcommand name."
+  "show")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-synthesis (gastown-command)
+    ()
+    :documentation "Represents gt synthesis command.
+Synthesize work from multiple sources."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-synthesis))
+  "Return \"synthesis\" as the CLI subcommand name."
+  "synthesis")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-wl (gastown-command)
+    ()
+    :documentation "Represents gt wl command.
+Show work list."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-wl))
+  "Return \"wl\" as the CLI subcommand name."
+  "wl")
+
+;;; Transients for Simple Work Commands
+
+;;;###autoload (autoload 'gastown-bead "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-bead "gastown-bead"
+  "Show bead information.")
+
+;;;###autoload (autoload 'gastown-cat "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-cat "gastown-cat"
+  "Show bead content.")
+
+;;;###autoload (autoload 'gastown-cleanup "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-cleanup "gastown-cleanup"
+  "Clean up Gas Town resources.")
+
+;;;###autoload (autoload 'gastown-close "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-close "gastown-close"
+  "Close a bead.")
+
+;;;###autoload (autoload 'gastown-commit "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-commit "gastown-commit"
+  "Commit work to git.")
+
+;;;###autoload (autoload 'gastown-compact "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-compact "gastown-compact"
+  "Compact context for a session.")
+
+;;;###autoload (autoload 'gastown-forget "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-forget "gastown-forget"
+  "Remove a memory entry.")
+
+;;;###autoload (autoload 'gastown-formula "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-formula "gastown-formula"
+  "Manage workflow formulas.")
+
+;;;###autoload (autoload 'gastown-memories "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-memories "gastown-memories"
+  "Show agent memories.")
+
+;;;###autoload (autoload 'gastown-mol "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mol "gastown-mol"
+  "Manage molecules and workflow steps.")
+
+;;;###autoload (autoload 'gastown-orphans "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-orphans "gastown-orphans"
+  "Show orphaned agents.")
+
+;;;###autoload (autoload 'gastown-prune-branches "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-prune-branches "gastown-prune-branches"
+  "Prune stale git branches.")
+
+;;;###autoload (autoload 'gastown-release "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-release "gastown-release"
+  "Release a bead or resource.")
+
+;;;###autoload (autoload 'gastown-remember "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-remember "gastown-remember"
+  "Add a memory entry.")
+
+;;;###autoload (autoload 'gastown-resume "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-resume "gastown-resume"
+  "Resume a session.")
+
+;;;###autoload (autoload 'gastown-scheduler "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-scheduler "gastown-scheduler"
+  "Show scheduler status.")
+
+;;;###autoload (autoload 'gastown-show "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-show "gastown-show"
+  "Show a bead.")
+
+;;;###autoload (autoload 'gastown-synthesis "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-synthesis "gastown-synthesis"
+  "Synthesize work from multiple sources.")
+
+;;;###autoload (autoload 'gastown-wl "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-wl "gastown-wl"
+  "Show work list.")
+
+;;; MQ Dispatch Transient
+
+;;;###autoload (autoload 'gastown-mq "gastown-command-work" nil t)
+(transient-define-prefix gastown-mq ()
+  "Manage the Gas Town merge queue."
+  ["Merge Queue"
+   ("l" "List merge queue" gastown-mq-list)])
+
+;;; Work Management Dispatch Transient
+
+;;;###autoload (autoload 'gastown-work-menu "gastown-command-work" nil t)
+(transient-define-prefix gastown-work-menu ()
+  "Gas Town work management commands."
+  ["Dispatch"
+   ("S" "Sling (dispatch work)" gastown-sling)
+   ("d" "Done (signal complete)" gastown-done)
+   ("h" "Hook" gastown-hook)
+   ("r" "Ready (available work)" gastown-ready)
+   ("H" "Handoff" gastown-handoff)
+   ("u" "Unsling" gastown-unsling)]
+  ["Beads & Tracking"
+   ("b" "Bead" gastown-bead)
+   ("s" "Show bead" gastown-show)
+   ("c" "Cat (bead content)" gastown-cat)
+   ("C" "Close bead" gastown-close)]
+  ["Molecules & Formulas"
+   ("m" "Molecule" gastown-mol)
+   ("f" "Formula" gastown-formula)
+   ("y" "Synthesis" gastown-synthesis)
+   ("q" "Merge queue" gastown-mq)
+   ("v" "Convoy" gastown-convoy)]
+  ["Memory & Context"
+   ("M" "Memories" gastown-memories)
+   ("R" "Remember" gastown-remember)
+   ("F" "Forget" gastown-forget)
+   ("k" "Compact" gastown-compact)
+   ("e" "Resume" gastown-resume)]
+  ["Maintenance"
+   ("o" "Orphans" gastown-orphans)
+   ("p" "Prune branches" gastown-prune-branches)
+   ("l" "Cleanup" gastown-cleanup)
+   ("L" "Release" gastown-release)
+   ("g" "Commit" gastown-commit)
+   ("w" "Work list" gastown-wl)
+   ("T" "Scheduler" gastown-scheduler)])
+
 (provide 'gastown-command-work)
 ;;; gastown-command-work.el ends here

@@ -98,16 +98,96 @@ Shows the Gas Town daemon status."))
 (beads-meta-define-transient gastown-command-daemon-status "gastown-daemon-status"
   "Show Gas Town daemon status.")
 
+;;; Additional Service Commands
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-dolt (gastown-command)
+    ()
+    :documentation "Represents gt dolt command.
+Manage the Dolt database server."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-dolt))
+  "Return \"dolt\" as the CLI subcommand name."
+  "dolt")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-maintain (gastown-command)
+    ()
+    :documentation "Represents gt maintain command.
+Run maintenance tasks."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-maintain))
+  "Return \"maintain\" as the CLI subcommand name."
+  "maintain")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-quota (gastown-command)
+    ()
+    :documentation "Represents gt quota command.
+Show or manage resource quotas."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-quota))
+  "Return \"quota\" as the CLI subcommand name."
+  "quota")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-reaper (gastown-command)
+    ()
+    :documentation "Represents gt reaper command.
+Manage the reaper process."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-reaper))
+  "Return \"reaper\" as the CLI subcommand name."
+  "reaper")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-start (gastown-command)
+    ()
+    :documentation "Represents gt start command.
+Start a specific service."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-start))
+  "Return \"start\" as the CLI subcommand name."
+  "start")
+
+;;; Transients for Additional Service Commands
+
+;;;###autoload (autoload 'gastown-dolt "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-dolt "gastown-dolt"
+  "Manage the Dolt database server.")
+
+;;;###autoload (autoload 'gastown-maintain "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-maintain "gastown-maintain"
+  "Run maintenance tasks.")
+
+;;;###autoload (autoload 'gastown-quota "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-quota "gastown-quota"
+  "Show or manage resource quotas.")
+
+;;;###autoload (autoload 'gastown-reaper "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-reaper "gastown-reaper"
+  "Manage the reaper process.")
+
+;;;###autoload (autoload 'gastown-start "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-start "gastown-start"
+  "Start a specific service.")
+
 ;;; Services Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-services "gastown-command-services" nil t)
 (transient-define-prefix gastown-services ()
   "Manage Gas Town services."
-  ["Service Commands"
-   ("u" "Start services (up)" gastown-up)
-   ("d" "Stop services (down)" gastown-down)
-   ("S" "Shutdown (with cleanup)" gastown-shutdown)
-   ("D" "Daemon status" gastown-daemon-status)])
+  ["Lifecycle"
+   ("u" "Up (start all)" gastown-up)
+   ("d" "Down (stop all)" gastown-down)
+   ("s" "Start service" gastown-start)
+   ("S" "Shutdown (with cleanup)" gastown-shutdown)]
+  ["Management"
+   ("D" "Daemon status" gastown-daemon-status)
+   ("o" "Dolt server" gastown-dolt)
+   ("m" "Maintain" gastown-maintain)
+   ("r" "Reaper" gastown-reaper)
+   ("q" "Quota" gastown-quota)])
 
 (provide 'gastown-command-services)
 ;;; gastown-command-services.el ends here

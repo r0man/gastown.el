@@ -140,16 +140,128 @@ Lists polecat sessions."))
 (beads-meta-define-transient gastown-command-session-list "gastown-session-list"
   "List polecat sessions.")
 
+;;; Additional Agent Commands
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-boot (gastown-command)
+    ()
+    :documentation "Represents gt boot command.
+Boot an agent."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-boot))
+  "Return \"boot\" as the CLI subcommand name."
+  "boot")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-callbacks (gastown-command)
+    ()
+    :documentation "Represents gt callbacks command.
+Show or manage callbacks."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-callbacks))
+  "Return \"callbacks\" as the CLI subcommand name."
+  "callbacks")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-deacon (gastown-command)
+    ()
+    :documentation "Represents gt deacon command.
+Manage deacon agents."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-deacon))
+  "Return \"deacon\" as the CLI subcommand name."
+  "deacon")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-dog (gastown-command)
+    ()
+    :documentation "Represents gt dog command.
+Manage dog agents."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-dog))
+  "Return \"dog\" as the CLI subcommand name."
+  "dog")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-mayor (gastown-command)
+    ()
+    :documentation "Represents gt mayor command.
+Interact with the mayor agent."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-mayor))
+  "Return \"mayor\" as the CLI subcommand name."
+  "mayor")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-role (gastown-command)
+    ()
+    :documentation "Represents gt role command.
+Show or manage agent roles."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-role))
+  "Return \"role\" as the CLI subcommand name."
+  "role")
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-signal (gastown-command)
+    ()
+    :documentation "Represents gt signal command.
+Send a signal to an agent."))
+
+(cl-defmethod gastown-command-subcommand ((_command gastown-command-signal))
+  "Return \"signal\" as the CLI subcommand name."
+  "signal")
+
+;;; Transients for Additional Agent Commands
+
+;;;###autoload (autoload 'gastown-boot "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-boot "gastown-boot"
+  "Boot an agent.")
+
+;;;###autoload (autoload 'gastown-callbacks "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-callbacks "gastown-callbacks"
+  "Show or manage callbacks.")
+
+;;;###autoload (autoload 'gastown-deacon "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-deacon "gastown-deacon"
+  "Manage deacon agents.")
+
+;;;###autoload (autoload 'gastown-dog "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-dog "gastown-dog"
+  "Manage dog agents.")
+
+;;;###autoload (autoload 'gastown-mayor "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-mayor "gastown-mayor"
+  "Interact with the mayor agent.")
+
+;;;###autoload (autoload 'gastown-role "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-role "gastown-role"
+  "Show or manage agent roles.")
+
+;;;###autoload (autoload 'gastown-signal "gastown-command-agents" nil t)
+(beads-meta-define-transient gastown-command-signal "gastown-signal"
+  "Send a signal to an agent.")
+
 ;;; Agent Management Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-agent-management "gastown-command-agents" nil t)
 (transient-define-prefix gastown-agent-management ()
   "Manage Gas Town agents."
-  ["Agent Management"
+  ["Agents & Sessions"
    ("a" "List agents" gastown-agents)
+   ("s" "Session list" gastown-session-list)
+   ("r" "Role" gastown-role)]
+  ["Subsystems"
    ("w" "Witness status" gastown-witness-status)
-   ("r" "Refinery status" gastown-refinery-status)
-   ("s" "Session list" gastown-session-list)])
+   ("R" "Refinery status" gastown-refinery-status)
+   ("m" "Mayor" gastown-mayor)
+   ("p" "Polecat" gastown-polecat)]
+  ["Lifecycle"
+   ("b" "Boot agent" gastown-boot)
+   ("d" "Deacon" gastown-deacon)
+   ("D" "Dog" gastown-dog)
+   ("c" "Callbacks" gastown-callbacks)
+   ("S" "Signal" gastown-signal)])
 
 (provide 'gastown-command-agents)
 ;;; gastown-command-agents.el ends here

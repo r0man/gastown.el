@@ -34,7 +34,6 @@
 
 ;;; Code:
 
-(require 'gastown-command)
 (require 'gastown-custom)
 (require 'transient)
 
@@ -143,29 +142,26 @@ Enables debug logging if not already enabled."
 
 This is the main entry point for gastown.el, providing keyboard-driven
 access to all gt CLI commands organized by category."
-  ["Status & Overview"
+  ["Status"
    ("s" "Status" gastown-status)
-   ("v" "Vitals (health)" gastown-vitals)
-   ("i" "Info" gastown-info)]
+   ("v" "Vitals" gastown-vitals)
+   ("i" "Info" gastown-info)
+   ("w" "Whoami" gastown-whoami)]
   ["Work Management"
-   ("S" "Sling (dispatch)" gastown-sling)
-   ("r" "Ready work" gastown-ready)
+   ("d" "Done" gastown-done)
    ("h" "Hook" gastown-hook)
-   ("c" "Convoy" gastown-convoy)]
-  ["Workspace"
-   ("R" "Rig management" gastown-rig)
-   ("p" "Polecat management" gastown-polecat)
-   ("a" "Agent management" gastown-agent-management)]
-  ["Communication"
-   ("m" "Mail" gastown-mail)
-   ("n" "Nudge" gastown-nudge)
-   ("b" "Broadcast" gastown-broadcast)
-   ("e" "Escalate" gastown-escalate)]
-  ["Services & Diagnostics"
-   ("U" "Services" gastown-services)
-   ("d" "Diagnostics" gastown-diagnostics)
-   ("D" "Doctor" gastown-doctor)
-   ("l" "Log" gastown-log)])
+   ("r" "Ready" gastown-ready)
+   ("S" "Sling (dispatch)" gastown-sling)
+   ("W" "Work commands..." gastown-work-menu)]
+  ["Agents & Communication"
+   ("a" "Agent management..." gastown-agent-management)
+   ("C" "Communication..." gastown-comm-menu)]
+  ["Infrastructure"
+   ("U" "Services..." gastown-services)
+   ("K" "Workspace..." gastown-workspace-menu)
+   ("G" "Config..." gastown-config-menu)]
+  ["Diagnostics"
+   ("D" "Diagnostics..." gastown-diagnostics)])
 
 (provide 'gastown)
 ;;; gastown.el ends here
