@@ -231,7 +231,7 @@ Key bindings:
             (format "%d unread" unread)
             'action (lambda (_btn)
                       (when (fboundp 'gastown-mail-inbox)
-                        (gastown-mail-inbox)))
+                        (call-interactively #'gastown-mail-inbox)))
             'follow-link t
             'help-echo "Open mail inbox"))
          (insert "\n")))
