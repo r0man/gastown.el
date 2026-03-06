@@ -36,6 +36,21 @@
 
 (require 'gastown-custom)
 (require 'transient)
+(require 'gastown-command-agents)
+(require 'gastown-command-comm)
+(require 'gastown-command-config)
+(require 'gastown-command-convoy)
+(require 'gastown-command-diagnostics)
+(require 'gastown-command-mail)
+(require 'gastown-command-nudge)
+(require 'gastown-command-peek)
+(require 'gastown-command-polecat)
+(require 'gastown-command-rig)
+(require 'gastown-command-services)
+(require 'gastown-command-sling)
+(require 'gastown-command-status)
+(require 'gastown-command-work)
+(require 'gastown-command-workspace)
 
 ;;; Variables
 
