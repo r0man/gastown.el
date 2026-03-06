@@ -87,6 +87,202 @@ For more details, see README.md and docs/QUICKSTART.md.
 
 <!-- END BEADS INTEGRATION -->
 
+## Build and Test Commands
+
+**MANDATORY**: Run these commands after EVERY code change.
+
+Check if guix is available and wrap accordingly:
+
+```bash
+if command -v guix >/dev/null 2>&1; then
+  WRAP="guix shell -D -f guix.scm --"
+else
+  WRAP=""
+fi
+```
+
+### Build (byte-compile)
+
+```bash
+$WRAP eldev -p -dtT compile
+```
+
+### Test
+
+```bash
+$WRAP eldev -p -dtT test
+```
+
+### Lint
+
+```bash
+$WRAP eldev -p -dtT lint
+```
+
+**ALL MUST PASS** before committing.
+
+## Development Dolt Server
+
+gastown.el development uses a **dedicated Dolt server on port 3309**,
+isolated from the Gas Town production server (port 3307) and the
+beads.el dev server (port 3308).
+
+Port assignments:
+- 3307 — Gas Town production (NEVER touch)
+- 3308 — beads.el development
+- 3309 — gastown.el development
+
+If you need to run bd commands (for issue tracking) during development,
+they will auto-discover the project Dolt server. Do not manually connect
+to port 3307.
+
+## Interactive Development Environment
+
+**MANDATORY FOR ALL AGENT WORK** — all development MUST happen
+interactively in a live non-graphical Emacs server controlled via emacsclient.
+
+### Start the Emacs dev server
+
+```bash
+emacs --daemon=gastown-dev
+```
+
+Load gastown.el from the working tree:
+
+```bash
+emacsclient -s gastown-dev -e "(add-to-list (quote load-path) \"$(pwd)/lisp\")"
+emacsclient -s gastown-dev -e "(require (quote gastown))"
+```
+
+### Interactive testing via emacsclient
+
+```bash
+# Evaluate expressions
+emacsclient -s gastown-dev -e "(gastown)"
+
+# Open terminal UI (in tmux)
+emacsclient -s gastown-dev -nw
+```
+
+### Reload after changes
+
+```bash
+emacsclient -s gastown-dev -e "(load-file \"lisp/gastown.el\")"
+emacsclient -s gastown-dev -e "(load-file \"lisp/gastown-command-work.el\")"
+```
+
+### Kill the server
+
+```bash
+emacsclient -s gastown-dev -e "(kill-emacs)"
+```
+
+Agents MUST try features interactively — invoke transient menus, verify
+buffer output, check error handling.
+
+## TDD Workflow (MANDATORY)
+
+Follow this loop for every change:
+
+1. **Write the test first** — add ERT test in lisp/test/
+2. **Run tests — expect FAIL** (red):
+   ```bash
+   eldev -p -dtT test
+   ```
+3. **Implement minimum code** to make the test pass
+4. **Run tests — expect PASS** (green):
+   ```bash
+   eldev -p -dtT test
+   ```
+5. **Byte-compile** to catch errors:
+   ```bash
+   eldev -p -dtT compile
+   ```
+6. **Refactor** if needed, keeping green
+7. **Repeat**
+
+Never write implementation before the test. Hard-to-test code signals
+a design problem.
+
+## Acceptance Testing in tmux
+
+**MANDATORY** — every feature MUST be acceptance-tested in tmux with a
+non-graphical Emacs, driven the way a human would use gastown.el.
+
+### Workflow
+
+1. Create tmux session:
+   ```bash
+   tmux new-session -d -s gastown-accept
+   ```
+
+2. Start non-graphical Emacs with gastown loaded:
+   ```bash
+   tmux send-keys -t gastown-accept "emacs -nw -Q --eval '(progn (add-to-list (quote load-path) \"$(pwd)/lisp\") (require (quote gastown)))'" Enter
+   sleep 2
+   ```
+
+3. Open the main gastown menu:
+   ```bash
+   tmux send-keys -t gastown-accept "M-x gastown" Enter
+   ```
+
+4. Capture and verify:
+   ```bash
+   tmux capture-pane -t gastown-accept -p
+   ```
+
+5. Navigate menu entries, verify output, test keybindings.
+
+### Using the tmux skill
+
+In Claude Code, invoke `/tmux` skill to drive the Emacs session
+programmatically: send keystrokes, capture pane output, verify behavior.
+
+**Do NOT skip acceptance testing.** Unit tests catch logic errors;
+tmux acceptance testing catches rendering, keybindings, and interactive
+flow issues.
+
+## Code Architecture
+
+### Module Structure
+
+```
+lisp/
+  gastown.el                    — Main entry point, gastown transient prefix, utilities
+  gastown-command.el            — Base EIEIO command class (gastown-command)
+  gastown-custom.el             — User-facing defcustom variables
+  gastown-error.el              — Error handling utilities
+  gastown-command-agents.el     — Agent management (polecat, witness, refinery)
+  gastown-command-comm.el       — Communication commands
+  gastown-command-config.el     — Configuration commands
+  gastown-command-convoy.el     — Convoy tracking
+  gastown-command-diagnostics.el — Health, logs, costs, trail
+  gastown-command-mail.el       — Mail system
+  gastown-command-nudge.el      — Nudge messaging
+  gastown-command-peek.el       — Peek at polecat output
+  gastown-command-polecat.el    — Polecat lifecycle
+  gastown-command-rig.el        — Rig management
+  gastown-command-services.el   — Services (up, down, daemon)
+  gastown-command-sling.el      — Work dispatch
+  gastown-command-status.el     — Status overview
+  gastown-command-work.el       — Work commands (hook, done, ready, mq)
+  gastown-command-workspace.el  — Workspace management
+
+lisp/test/
+  gastown-command-test.el       — ERT tests for command infrastructure
+  gastown-test.el               — ERT tests for core gastown functionality
+  gastown-test-test.el          — ERT tests for test helpers
+```
+
+### Key Design Patterns
+
+- Reuses beads.el EIEIO command class infrastructure
+- `gastown-defcommand` macro generates command class + transient infix
+- All commands call `gt` CLI via `gastown-command-execute`
+- All public entry points have `;;;###autoload` cookies
+- Commands are organized into logical sub-menus by `gt --help` category
+
 ## Landing the Plane (Session Completion)
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
@@ -99,7 +295,7 @@ For more details, see README.md and docs/QUICKSTART.md.
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
    git pull --rebase
-   bd sync
+   bd dolt push
    git push
    git status  # MUST show "up to date with origin"
    ```
