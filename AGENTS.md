@@ -287,24 +287,50 @@ lisp/test/
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
 
-**MANDATORY WORKFLOW:**
+### Quality Gates (ZERO TOLERANCE)
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
+**ALL of the following MUST be true before committing:**
+
+```bash
+# Zero lint warnings — not "mostly clean", ZERO
+$WRAP eldev -p -dtT lint
+# Expected output: no warnings, no errors
+
+# Zero test failures — not "mostly passing", ZERO
+$WRAP eldev -p -dtT test
+# Expected output: all tests pass
+
+# Clean byte-compile — no warnings
+$WRAP eldev -p -dtT compile
+```
+
+**If ANY gate fails:**
+1. Fix the issue — do NOT commit broken code
+2. Re-run ALL gates from the top
+3. Only proceed when all three are clean
+
+There are no exceptions. "I'll fix it in the next commit" is not acceptable.
+A single lint warning or test failure means you are NOT done.
+
+### Mandatory Push Workflow
+
+1. **File issues for remaining work** — Create beads for anything that needs follow-up
+2. **Run quality gates** (see above) — ALL must pass: zero warnings, zero failures
+3. **Update issue status** — Close finished work, update in-progress items
+4. **PUSH TO REMOTE** — This is MANDATORY:
    ```bash
    git pull --rebase
    bd dolt push
    git push
    git status  # MUST show "up to date with origin"
    ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
+5. **Clean up** — Clear stashes, prune remote branches
+6. **Verify** — All changes committed AND pushed
+7. **Hand off** — Provide context for next session
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
+- NEVER stop before pushing — that leaves work stranded locally
+- NEVER say "ready to push when you are" — YOU must push
 - If push fails, resolve and retry until it succeeds
+- Zero lint warnings and zero test failures are MANDATORY, not goals
