@@ -20,7 +20,7 @@
 
 (require 'gastown-command)
 (require 'gastown-command-work)
-(require 'beads-show)
+(require 'beads-command-show)
 
 ;;; Faces (mirroring beads-list visual style)
 
