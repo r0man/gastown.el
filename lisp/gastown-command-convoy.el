@@ -20,41 +20,40 @@
 
 ;;; Convoy List Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-convoy-list (gastown-command-global-options)
-    ((rig
-      :initarg :rig
-      :type (or null string)
-      :initform nil
-      :documentation "Filter by rig name (--rig)."
-      :long-option "rig"
-      :option-type :string
-      :key "r"
-      :transient "--rig"
-      :class transient-option
-      :argument "--rig="
-      :prompt "Rig: "
-      :transient-group "Filters"
-      :level 1
-      :order 1)
-     (status
-      :initarg :status
-      :type (or null string)
-      :initform nil
-      :documentation "Filter by status (--status)."
-      :long-option "status"
-      :option-type :string
-      :key "s"
-      :transient "--status"
-      :class transient-option
-      :argument "--status="
-      :prompt "Status: "
-      :transient-choices ("active" "completed" "cancelled")
-      :transient-group "Filters"
-      :level 1
-      :order 2))
-    :documentation "Represents gt convoy list command.
-Lists convoys with progress bars and status."))
+(gastown-defcommand gastown-command-convoy-list (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by rig name (--rig)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "--rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Filters"
+    :level 1
+    :order 1)
+   (status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by status (--status)."
+    :long-option "status"
+    :option-type :string
+    :key "s"
+    :transient "--status"
+    :class transient-option
+    :argument "--status="
+    :prompt "Status: "
+    :transient-choices ("active" "completed" "cancelled")
+    :transient-group "Filters"
+    :level 1
+    :order 2))
+  :documentation "Represents gt convoy list command.
+Lists convoys with progress bars and status.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-convoy-list))
   "Return \"convoy list\" as the CLI subcommand name."
@@ -62,24 +61,23 @@ Lists convoys with progress bars and status."))
 
 ;;; Convoy Status Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-convoy-status (gastown-command-global-options)
-    ((convoy-id
-      :initarg :convoy-id
-      :type (or null string)
-      :initform nil
-      :documentation "Convoy ID to show status for."
-      :positional 1
-      :option-type :string
-      :key "c"
-      :transient "Convoy ID"
-      :class transient-option
-      :prompt "Convoy ID: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt convoy status command.
-Shows detailed status for a specific convoy."))
+(gastown-defcommand gastown-command-convoy-status (gastown-command-global-options)
+  ((convoy-id
+    :initarg :convoy-id
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy ID to show status for."
+    :positional 1
+    :option-type :string
+    :key "c"
+    :transient "Convoy ID"
+    :class transient-option
+    :prompt "Convoy ID: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt convoy status command.
+Shows detailed status for a specific convoy.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-convoy-status))
   "Return \"convoy status\" as the CLI subcommand name."

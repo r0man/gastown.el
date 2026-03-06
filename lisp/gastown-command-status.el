@@ -21,55 +21,54 @@
 
 ;;; Status Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-status (gastown-command-global-options)
-    ((fast
-      :initarg :fast
-      :type boolean
-      :initform nil
-      :documentation "Skip mail lookups for faster execution (--fast)."
-      :long-option "fast"
-      :option-type :boolean
-      :key "f"
-      :transient "--fast"
-      :class transient-switch
-      :argument "--fast"
-      :transient-group "Options"
-      :level 1
-      :order 1)
-     (watch
-      :initarg :watch
-      :type boolean
-      :initform nil
-      :documentation "Watch mode: refresh status continuously (-w, --watch)."
-      :long-option "watch"
-      :short-option "w"
-      :option-type :boolean
-      :key "w"
-      :transient "--watch"
-      :class transient-switch
-      :argument "--watch"
-      :transient-group "Options"
-      :level 1
-      :order 2)
-     (interval
-      :initarg :interval
-      :type (or null integer)
-      :initform nil
-      :documentation "Refresh interval in seconds (-n, --interval)."
-      :long-option "interval"
-      :short-option "n"
-      :option-type :integer
-      :key "n"
-      :transient "--interval"
-      :class transient-option
-      :argument "--interval="
-      :prompt "Interval (seconds): "
-      :transient-group "Options"
-      :level 2
-      :order 3))
-    :documentation "Represents gt status command.
-Shows town name, registered rigs, polecats, and witness status."))
+(gastown-defcommand gastown-command-status (gastown-command-global-options)
+  ((fast
+    :initarg :fast
+    :type boolean
+    :initform nil
+    :documentation "Skip mail lookups for faster execution (--fast)."
+    :long-option "fast"
+    :option-type :boolean
+    :key "f"
+    :transient "--fast"
+    :class transient-switch
+    :argument "--fast"
+    :transient-group "Options"
+    :level 1
+    :order 1)
+   (watch
+    :initarg :watch
+    :type boolean
+    :initform nil
+    :documentation "Watch mode: refresh status continuously (-w, --watch)."
+    :long-option "watch"
+    :short-option "w"
+    :option-type :boolean
+    :key "w"
+    :transient "--watch"
+    :class transient-switch
+    :argument "--watch"
+    :transient-group "Options"
+    :level 1
+    :order 2)
+   (interval
+    :initarg :interval
+    :type (or null integer)
+    :initform nil
+    :documentation "Refresh interval in seconds (-n, --interval)."
+    :long-option "interval"
+    :short-option "n"
+    :option-type :integer
+    :key "n"
+    :transient "--interval"
+    :class transient-option
+    :argument "--interval="
+    :prompt "Interval (seconds): "
+    :transient-group "Options"
+    :level 2
+    :order 3))
+  :documentation "Represents gt status command.
+Shows town name, registered rigs, polecats, and witness status.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-status))
   "Return \"status\" as the CLI subcommand name."

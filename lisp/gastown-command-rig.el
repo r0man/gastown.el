@@ -20,11 +20,10 @@
 
 ;;; Rig List Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-rig-list (gastown-command-global-options)
-    ()
-    :documentation "Represents gt rig list command.
-Lists all rigs in the workspace with status, polecat count, and crew count."))
+(gastown-defcommand gastown-command-rig-list (gastown-command-global-options)
+  ()
+  :documentation "Represents gt rig list command.
+Lists all rigs in the workspace with status, polecat count, and crew count.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-list))
   "Return \"rig list\" as the CLI subcommand name."
@@ -32,24 +31,23 @@ Lists all rigs in the workspace with status, polecat count, and crew count."))
 
 ;;; Rig Dock Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-rig-dock (gastown-command-global-options)
-    ((rig-name
-      :initarg :rig-name
-      :type (or null string)
-      :initform nil
-      :documentation "Rig name to dock."
-      :positional 1
-      :option-type :string
-      :key "r"
-      :transient "Rig name (required)"
-      :class transient-option
-      :prompt "Rig name: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt rig dock command.
-Docks a rig (makes it active)."))
+(gastown-defcommand gastown-command-rig-dock (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to dock."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig dock command.
+Docks a rig (makes it active).")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-dock))
   "Return \"rig dock\" as the CLI subcommand name."
@@ -57,24 +55,23 @@ Docks a rig (makes it active)."))
 
 ;;; Rig Undock Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-rig-undock (gastown-command-global-options)
-    ((rig-name
-      :initarg :rig-name
-      :type (or null string)
-      :initform nil
-      :documentation "Rig name to undock."
-      :positional 1
-      :option-type :string
-      :key "r"
-      :transient "Rig name (required)"
-      :class transient-option
-      :prompt "Rig name: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt rig undock command.
-Undocks a rig (makes it inactive)."))
+(gastown-defcommand gastown-command-rig-undock (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to undock."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig undock command.
+Undocks a rig (makes it inactive).")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-undock))
   "Return \"rig undock\" as the CLI subcommand name."
@@ -82,24 +79,23 @@ Undocks a rig (makes it inactive)."))
 
 ;;; Rig Park Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-rig-park (gastown-command-global-options)
-    ((rig-name
-      :initarg :rig-name
-      :type (or null string)
-      :initform nil
-      :documentation "Rig name to park."
-      :positional 1
-      :option-type :string
-      :key "r"
-      :transient "Rig name (required)"
-      :class transient-option
-      :prompt "Rig name: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt rig park command.
-Parks a rig (pauses all workers)."))
+(gastown-defcommand gastown-command-rig-park (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to park."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig park command.
+Parks a rig (pauses all workers).")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-park))
   "Return \"rig park\" as the CLI subcommand name."
@@ -107,24 +103,23 @@ Parks a rig (pauses all workers)."))
 
 ;;; Rig Unpark Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-rig-unpark (gastown-command-global-options)
-    ((rig-name
-      :initarg :rig-name
-      :type (or null string)
-      :initform nil
-      :documentation "Rig name to unpark."
-      :positional 1
-      :option-type :string
-      :key "r"
-      :transient "Rig name (required)"
-      :class transient-option
-      :prompt "Rig name: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt rig unpark command.
-Unparks a rig (resumes workers)."))
+(gastown-defcommand gastown-command-rig-unpark (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to unpark."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig unpark command.
+Unparks a rig (resumes workers).")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-unpark))
   "Return \"rig unpark\" as the CLI subcommand name."

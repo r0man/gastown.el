@@ -20,38 +20,37 @@
 
 ;;; Nudge Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-nudge (gastown-command-global-options)
-    ((target
-      :initarg :target
-      :type (or null string)
-      :initform nil
-      :documentation "Target agent to nudge."
-      :positional 1
-      :option-type :string
-      :key "t"
-      :transient "Target (required)"
-      :class transient-option
-      :prompt "Target (rig/agent): "
-      :transient-group "Required"
-      :level 1
-      :order 1)
-     (message-text
-      :initarg :message-text
-      :type (or null string)
-      :initform nil
-      :documentation "Nudge message text."
-      :positional 2
-      :option-type :string
-      :key "m"
-      :transient "Message (required)"
-      :class transient-option
-      :prompt "Message: "
-      :transient-group "Required"
-      :level 1
-      :order 2))
-    :documentation "Represents gt nudge command.
-Send a synchronous message to any Gas Town worker."))
+(gastown-defcommand gastown-command-nudge (gastown-command-global-options)
+  ((target
+    :initarg :target
+    :type (or null string)
+    :initform nil
+    :documentation "Target agent to nudge."
+    :positional 1
+    :option-type :string
+    :key "t"
+    :transient "Target (required)"
+    :class transient-option
+    :prompt "Target (rig/agent): "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (message-text
+    :initarg :message-text
+    :type (or null string)
+    :initform nil
+    :documentation "Nudge message text."
+    :positional 2
+    :option-type :string
+    :key "m"
+    :transient "Message (required)"
+    :class transient-option
+    :prompt "Message: "
+    :transient-group "Required"
+    :level 1
+    :order 2))
+  :documentation "Represents gt nudge command.
+Send a synchronous message to any Gas Town worker.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-nudge))
   "Return \"nudge\" as the CLI subcommand name."

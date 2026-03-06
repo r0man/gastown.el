@@ -20,24 +20,23 @@
 
 ;;; Mail Inbox Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-mail-inbox (gastown-command-global-options)
-    ((all
-      :initarg :all
-      :type boolean
-      :initform nil
-      :documentation "Show all messages including read (--all)."
-      :long-option "all"
-      :option-type :boolean
-      :key "a"
-      :transient "--all"
-      :class transient-switch
-      :argument "--all"
-      :transient-group "Options"
-      :level 1
-      :order 1))
-    :documentation "Represents gt mail inbox command.
-Lists messages with read/unread indicators."))
+(gastown-defcommand gastown-command-mail-inbox (gastown-command-global-options)
+  ((all
+    :initarg :all
+    :type boolean
+    :initform nil
+    :documentation "Show all messages including read (--all)."
+    :long-option "all"
+    :option-type :boolean
+    :key "a"
+    :transient "--all"
+    :class transient-switch
+    :argument "--all"
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt mail inbox command.
+Lists messages with read/unread indicators.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-mail-inbox))
   "Return \"mail inbox\" as the CLI subcommand name."
@@ -45,24 +44,23 @@ Lists messages with read/unread indicators."))
 
 ;;; Mail Read Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-mail-read (gastown-command-global-options)
-    ((mail-id
-      :initarg :mail-id
-      :type (or null string)
-      :initform nil
-      :documentation "Mail message ID to read."
-      :positional 1
-      :option-type :string
-      :key "i"
-      :transient "Mail ID (required)"
-      :class transient-option
-      :prompt "Mail ID: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt mail read command.
-Reads a specific mail message."))
+(gastown-defcommand gastown-command-mail-read (gastown-command-global-options)
+  ((mail-id
+    :initarg :mail-id
+    :type (or null string)
+    :initform nil
+    :documentation "Mail message ID to read."
+    :positional 1
+    :option-type :string
+    :key "i"
+    :transient "Mail ID (required)"
+    :class transient-option
+    :prompt "Mail ID: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt mail read command.
+Reads a specific mail message.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-mail-read))
   "Return \"mail read\" as the CLI subcommand name."
@@ -70,55 +68,54 @@ Reads a specific mail message."))
 
 ;;; Mail Send Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-mail-send (gastown-command-global-options)
-    ((recipient
-      :initarg :recipient
-      :type (or null string)
-      :initform nil
-      :documentation "Recipient address (rig/role format)."
-      :positional 1
-      :option-type :string
-      :key "r"
-      :transient "Recipient (required)"
-      :class transient-option
-      :prompt "Recipient (rig/role): "
-      :transient-group "Required"
-      :level 1
-      :order 1)
-     (subject
-      :initarg :subject
-      :type (or null string)
-      :initform nil
-      :documentation "Mail subject (-s, --subject)."
-      :long-option "subject"
-      :short-option "s"
-      :option-type :string
-      :key "s"
-      :transient "--subject"
-      :class transient-option
-      :argument "--subject="
-      :prompt "Subject: "
-      :transient-group "Required"
-      :level 1
-      :order 2)
-     (message-body
-      :initarg :message-body
-      :type (or null string)
-      :initform nil
-      :documentation "Message body (-m)."
-      :long-option "m"
-      :option-type :string
-      :key "m"
-      :transient "Message body"
-      :class transient-option
-      :argument "-m="
-      :prompt "Message: "
-      :transient-group "Content"
-      :level 1
-      :order 3))
-    :documentation "Represents gt mail send command.
-Sends a message to an agent."))
+(gastown-defcommand gastown-command-mail-send (gastown-command-global-options)
+  ((recipient
+    :initarg :recipient
+    :type (or null string)
+    :initform nil
+    :documentation "Recipient address (rig/role format)."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Recipient (required)"
+    :class transient-option
+    :prompt "Recipient (rig/role): "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (subject
+    :initarg :subject
+    :type (or null string)
+    :initform nil
+    :documentation "Mail subject (-s, --subject)."
+    :long-option "subject"
+    :short-option "s"
+    :option-type :string
+    :key "s"
+    :transient "--subject"
+    :class transient-option
+    :argument "--subject="
+    :prompt "Subject: "
+    :transient-group "Required"
+    :level 1
+    :order 2)
+   (message-body
+    :initarg :message-body
+    :type (or null string)
+    :initform nil
+    :documentation "Message body (-m)."
+    :long-option "m"
+    :option-type :string
+    :key "m"
+    :transient "Message body"
+    :class transient-option
+    :argument "-m="
+    :prompt "Message: "
+    :transient-group "Content"
+    :level 1
+    :order 3))
+  :documentation "Represents gt mail send command.
+Sends a message to an agent.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-mail-send))
   "Return \"mail send\" as the CLI subcommand name."

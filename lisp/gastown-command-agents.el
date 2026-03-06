@@ -20,25 +20,24 @@
 
 ;;; Agents List Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-agents (gastown-command-global-options)
-    ((rig
-      :initarg :rig
-      :type (or null string)
-      :initform nil
-      :documentation "Filter by rig name (--rig)."
-      :long-option "rig"
-      :option-type :string
-      :key "r"
-      :transient "--rig"
-      :class transient-option
-      :argument "--rig="
-      :prompt "Rig: "
-      :transient-group "Filters"
-      :level 1
-      :order 1))
-    :documentation "Represents gt agents command.
-Lists all Gas Town agent sessions."))
+(gastown-defcommand gastown-command-agents (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by rig name (--rig)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "--rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Filters"
+    :level 1
+    :order 1))
+  :documentation "Represents gt agents command.
+Lists all Gas Town agent sessions.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-agents))
   "Return \"agents\" as the CLI subcommand name."
@@ -46,25 +45,24 @@ Lists all Gas Town agent sessions."))
 
 ;;; Witness Status Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-witness-status (gastown-command-global-options)
-    ((rig
-      :initarg :rig
-      :type (or null string)
-      :initform nil
-      :documentation "Rig to check witness status for (--rig)."
-      :long-option "rig"
-      :option-type :string
-      :key "r"
-      :transient "--rig"
-      :class transient-option
-      :argument "--rig="
-      :prompt "Rig: "
-      :transient-group "Options"
-      :level 1
-      :order 1))
-    :documentation "Represents gt witness status command.
-Shows witness health and monitoring status."))
+(gastown-defcommand gastown-command-witness-status (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig to check witness status for (--rig)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "--rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt witness status command.
+Shows witness health and monitoring status.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-witness-status))
   "Return \"witness status\" as the CLI subcommand name."
@@ -72,25 +70,24 @@ Shows witness health and monitoring status."))
 
 ;;; Refinery Status Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-refinery-status (gastown-command-global-options)
-    ((rig
-      :initarg :rig
-      :type (or null string)
-      :initform nil
-      :documentation "Rig to check refinery status for (--rig)."
-      :long-option "rig"
-      :option-type :string
-      :key "r"
-      :transient "--rig"
-      :class transient-option
-      :argument "--rig="
-      :prompt "Rig: "
-      :transient-group "Options"
-      :level 1
-      :order 1))
-    :documentation "Represents gt refinery status command.
-Shows merge queue processor status."))
+(gastown-defcommand gastown-command-refinery-status (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig to check refinery status for (--rig)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "--rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt refinery status command.
+Shows merge queue processor status.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-refinery-status))
   "Return \"refinery status\" as the CLI subcommand name."
@@ -98,25 +95,24 @@ Shows merge queue processor status."))
 
 ;;; Session List Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-session-list (gastown-command-global-options)
-    ((rig
-      :initarg :rig
-      :type (or null string)
-      :initform nil
-      :documentation "Filter by rig name (--rig)."
-      :long-option "rig"
-      :option-type :string
-      :key "r"
-      :transient "--rig"
-      :class transient-option
-      :argument "--rig="
-      :prompt "Rig: "
-      :transient-group "Filters"
-      :level 1
-      :order 1))
-    :documentation "Represents gt session list command.
-Lists polecat sessions."))
+(gastown-defcommand gastown-command-session-list (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by rig name (--rig)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "--rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Filters"
+    :level 1
+    :order 1))
+  :documentation "Represents gt session list command.
+Lists polecat sessions.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-session-list))
   "Return \"session list\" as the CLI subcommand name."
@@ -142,71 +138,64 @@ Lists polecat sessions."))
 
 ;;; Additional Agent Commands
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-boot (gastown-command-global-options)
-    ()
-    :documentation "Represents gt boot command.
-Boot an agent."))
+(gastown-defcommand gastown-command-boot (gastown-command-global-options)
+  ()
+  :documentation "Represents gt boot command.
+Boot an agent.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-boot))
   "Return \"boot\" as the CLI subcommand name."
   "boot")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-callbacks (gastown-command-global-options)
-    ()
-    :documentation "Represents gt callbacks command.
-Show or manage callbacks."))
+(gastown-defcommand gastown-command-callbacks (gastown-command-global-options)
+  ()
+  :documentation "Represents gt callbacks command.
+Show or manage callbacks.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-callbacks))
   "Return \"callbacks\" as the CLI subcommand name."
   "callbacks")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-deacon (gastown-command-global-options)
-    ()
-    :documentation "Represents gt deacon command.
-Manage deacon agents."))
+(gastown-defcommand gastown-command-deacon (gastown-command-global-options)
+  ()
+  :documentation "Represents gt deacon command.
+Manage deacon agents.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-deacon))
   "Return \"deacon\" as the CLI subcommand name."
   "deacon")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-dog (gastown-command-global-options)
-    ()
-    :documentation "Represents gt dog command.
-Manage dog agents."))
+(gastown-defcommand gastown-command-dog (gastown-command-global-options)
+  ()
+  :documentation "Represents gt dog command.
+Manage dog agents.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-dog))
   "Return \"dog\" as the CLI subcommand name."
   "dog")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-mayor (gastown-command-global-options)
-    ()
-    :documentation "Represents gt mayor command.
-Interact with the mayor agent."))
+(gastown-defcommand gastown-command-mayor (gastown-command-global-options)
+  ()
+  :documentation "Represents gt mayor command.
+Interact with the mayor agent.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-mayor))
   "Return \"mayor\" as the CLI subcommand name."
   "mayor")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-role (gastown-command-global-options)
-    ()
-    :documentation "Represents gt role command.
-Show or manage agent roles."))
+(gastown-defcommand gastown-command-role (gastown-command-global-options)
+  ()
+  :documentation "Represents gt role command.
+Show or manage agent roles.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-role))
   "Return \"role\" as the CLI subcommand name."
   "role")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-signal (gastown-command-global-options)
-    ()
-    :documentation "Represents gt signal command.
-Send a signal to an agent."))
+(gastown-defcommand gastown-command-signal (gastown-command-global-options)
+  ()
+  :documentation "Represents gt signal command.
+Send a signal to an agent.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-signal))
   "Return \"signal\" as the CLI subcommand name."

@@ -20,11 +20,10 @@
 
 ;;; Crew Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-crew (gastown-command-global-options)
-    ()
-    :documentation "Represents gt crew command.
-Manage the Gas Town crew."))
+(gastown-defcommand gastown-command-crew (gastown-command-global-options)
+  ()
+  :documentation "Represents gt crew command.
+Manage the Gas Town crew.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-crew))
   "Return \"crew\" as the CLI subcommand name."
@@ -32,11 +31,10 @@ Manage the Gas Town crew."))
 
 ;;; Git-Init Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-git-init (gastown-command-global-options)
-    ()
-    :documentation "Represents gt git-init command.
-Initialize a git repository for Gas Town."))
+(gastown-defcommand gastown-command-git-init (gastown-command-global-options)
+  ()
+  :documentation "Represents gt git-init command.
+Initialize a git repository for Gas Town.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-git-init))
   "Return \"git-init\" as the CLI subcommand name."
@@ -44,11 +42,10 @@ Initialize a git repository for Gas Town."))
 
 ;;; Init Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-init (gastown-command-global-options)
-    ()
-    :documentation "Represents gt init command.
-Initialize a Gas Town workspace."))
+(gastown-defcommand gastown-command-init (gastown-command-global-options)
+  ()
+  :documentation "Represents gt init command.
+Initialize a Gas Town workspace.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-init))
   "Return \"init\" as the CLI subcommand name."
@@ -56,11 +53,10 @@ Initialize a Gas Town workspace."))
 
 ;;; Install Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-install (gastown-command-global-options)
-    ()
-    :documentation "Represents gt install command.
-Install Gas Town components."))
+(gastown-defcommand gastown-command-install (gastown-command-global-options)
+  ()
+  :documentation "Represents gt install command.
+Install Gas Town components.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-install))
   "Return \"install\" as the CLI subcommand name."
@@ -68,11 +64,10 @@ Install Gas Town components."))
 
 ;;; Namepool Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-namepool (gastown-command-global-options)
-    ()
-    :documentation "Represents gt namepool command.
-Manage agent name pools."))
+(gastown-defcommand gastown-command-namepool (gastown-command-global-options)
+  ()
+  :documentation "Represents gt namepool command.
+Manage agent name pools.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-namepool))
   "Return \"namepool\" as the CLI subcommand name."
@@ -80,11 +75,10 @@ Manage agent name pools."))
 
 ;;; Worktree Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-worktree (gastown-command-global-options)
-    ()
-    :documentation "Represents gt worktree command.
-Manage git worktrees."))
+(gastown-defcommand gastown-command-worktree (gastown-command-global-options)
+  ()
+  :documentation "Represents gt worktree command.
+Manage git worktrees.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-worktree))
   "Return \"worktree\" as the CLI subcommand name."

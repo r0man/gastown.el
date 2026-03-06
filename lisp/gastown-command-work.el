@@ -21,42 +21,41 @@
 
 ;;; Done Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-done (gastown-command-global-options)
-    ((cleanup-status
-      :initarg :cleanup-status
-      :type (or null string)
-      :initform nil
-      :documentation "Override cleanup status (--cleanup-status)."
-      :long-option "cleanup-status"
-      :option-type :string
-      :key "c"
-      :transient "--cleanup-status"
-      :class transient-option
-      :argument "--cleanup-status="
-      :prompt "Cleanup status: "
-      :transient-choices ("clean" "dirty")
-      :transient-group "Options"
-      :level 2
-      :order 1)
-     (status
-      :initarg :status
-      :type (or null string)
-      :initform nil
-      :documentation "Override completion status (--status)."
-      :long-option "status"
-      :option-type :string
-      :key "s"
-      :transient "--status"
-      :class transient-option
-      :argument "--status="
-      :prompt "Status: "
-      :transient-choices ("COMPLETED" "DEFERRED" "ESCALATED")
-      :transient-group "Options"
-      :level 2
-      :order 2))
-    :documentation "Represents gt done command.
-Signal work ready for merge queue."))
+(gastown-defcommand gastown-command-done (gastown-command-global-options)
+  ((cleanup-status
+    :initarg :cleanup-status
+    :type (or null string)
+    :initform nil
+    :documentation "Override cleanup status (--cleanup-status)."
+    :long-option "cleanup-status"
+    :option-type :string
+    :key "c"
+    :transient "--cleanup-status"
+    :class transient-option
+    :argument "--cleanup-status="
+    :prompt "Cleanup status: "
+    :transient-choices ("clean" "dirty")
+    :transient-group "Options"
+    :level 2
+    :order 1)
+   (status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Override completion status (--status)."
+    :long-option "status"
+    :option-type :string
+    :key "s"
+    :transient "--status"
+    :class transient-option
+    :argument "--status="
+    :prompt "Status: "
+    :transient-choices ("COMPLETED" "DEFERRED" "ESCALATED")
+    :transient-group "Options"
+    :level 2
+    :order 2))
+  :documentation "Represents gt done command.
+Signal work ready for merge queue.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-done))
   "Return \"done\" as the CLI subcommand name."
@@ -64,11 +63,10 @@ Signal work ready for merge queue."))
 
 ;;; Hook Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-hook (gastown-command-global-options)
-    ()
-    :documentation "Represents gt hook command.
-Show or attach work on a hook."))
+(gastown-defcommand gastown-command-hook (gastown-command-global-options)
+  ()
+  :documentation "Represents gt hook command.
+Show or attach work on a hook.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-hook))
   "Return \"hook\" as the CLI subcommand name."
@@ -76,11 +74,10 @@ Show or attach work on a hook."))
 
 ;;; Ready Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-ready (gastown-command-global-options)
-    ()
-    :documentation "Represents gt ready command.
-Show work ready across town."))
+(gastown-defcommand gastown-command-ready (gastown-command-global-options)
+  ()
+  :documentation "Represents gt ready command.
+Show work ready across town.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-ready))
   "Return \"ready\" as the CLI subcommand name."
@@ -88,56 +85,55 @@ Show work ready across town."))
 
 ;;; Escalate Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-escalate (gastown-command-global-options)
-    ((description
-      :initarg :description
-      :type (or null string)
-      :initform nil
-      :documentation "Brief description of the issue."
-      :positional 1
-      :option-type :string
-      :key "d"
-      :transient "Description (required)"
-      :class transient-option
-      :prompt "Description: "
-      :transient-group "Required"
-      :level 1
-      :order 1)
-     (severity
-      :initarg :severity
-      :type (or null string)
-      :initform nil
-      :documentation "Severity level (-s, --severity)."
-      :long-option "severity"
-      :short-option "s"
-      :option-type :string
-      :key "s"
-      :transient "--severity"
-      :class transient-option
-      :argument "--severity="
-      :prompt "Severity: "
-      :transient-choices ("LOW" "MEDIUM" "HIGH" "CRITICAL")
-      :transient-group "Options"
-      :level 1
-      :order 2)
-     (message-body
-      :initarg :message-body
-      :type (or null string)
-      :initform nil
-      :documentation "Detailed message (-m)."
-      :long-option "m"
-      :option-type :string
-      :key "m"
-      :transient "Message"
-      :class transient-option
-      :argument "-m="
-      :prompt "Details: "
-      :transient-group "Options"
-      :level 1
-      :order 3))
-    :documentation "Represents gt escalate command.
-Escalation system for critical issues."))
+(gastown-defcommand gastown-command-escalate (gastown-command-global-options)
+  ((description
+    :initarg :description
+    :type (or null string)
+    :initform nil
+    :documentation "Brief description of the issue."
+    :positional 1
+    :option-type :string
+    :key "d"
+    :transient "Description (required)"
+    :class transient-option
+    :prompt "Description: "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (severity
+    :initarg :severity
+    :type (or null string)
+    :initform nil
+    :documentation "Severity level (-s, --severity)."
+    :long-option "severity"
+    :short-option "s"
+    :option-type :string
+    :key "s"
+    :transient "--severity"
+    :class transient-option
+    :argument "--severity="
+    :prompt "Severity: "
+    :transient-choices ("LOW" "MEDIUM" "HIGH" "CRITICAL")
+    :transient-group "Options"
+    :level 1
+    :order 2)
+   (message-body
+    :initarg :message-body
+    :type (or null string)
+    :initform nil
+    :documentation "Detailed message (-m)."
+    :long-option "m"
+    :option-type :string
+    :key "m"
+    :transient "Message"
+    :class transient-option
+    :argument "-m="
+    :prompt "Details: "
+    :transient-group "Options"
+    :level 1
+    :order 3))
+  :documentation "Represents gt escalate command.
+Escalation system for critical issues.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-escalate))
   "Return \"escalate\" as the CLI subcommand name."
@@ -145,24 +141,23 @@ Escalation system for critical issues."))
 
 ;;; Broadcast Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-broadcast (gastown-command-global-options)
-    ((message-text
-      :initarg :message-text
-      :type (or null string)
-      :initform nil
-      :documentation "Broadcast message text."
-      :positional 1
-      :option-type :string
-      :key "m"
-      :transient "Message (required)"
-      :class transient-option
-      :prompt "Message: "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt broadcast command.
-Send a nudge message to all workers."))
+(gastown-defcommand gastown-command-broadcast (gastown-command-global-options)
+  ((message-text
+    :initarg :message-text
+    :type (or null string)
+    :initform nil
+    :documentation "Broadcast message text."
+    :positional 1
+    :option-type :string
+    :key "m"
+    :transient "Message (required)"
+    :class transient-option
+    :prompt "Message: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt broadcast command.
+Send a nudge message to all workers.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-broadcast))
   "Return \"broadcast\" as the CLI subcommand name."
@@ -170,40 +165,39 @@ Send a nudge message to all workers."))
 
 ;;; Handoff Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-handoff (gastown-command-global-options)
-    ((subject
-      :initarg :subject
-      :type (or null string)
-      :initform nil
-      :documentation "Handoff subject (-s)."
-      :long-option "s"
-      :option-type :string
-      :key "s"
-      :transient "Subject"
-      :class transient-option
-      :argument "-s="
-      :prompt "Subject: "
-      :transient-group "Required"
-      :level 1
-      :order 1)
-     (message-body
-      :initarg :message-body
-      :type (or null string)
-      :initform nil
-      :documentation "Handoff message (-m)."
-      :long-option "m"
-      :option-type :string
-      :key "m"
-      :transient "Message"
-      :class transient-option
-      :argument "-m="
-      :prompt "Message: "
-      :transient-group "Required"
-      :level 1
-      :order 2))
-    :documentation "Represents gt handoff command.
-Hand off to a fresh session, work continues from hook."))
+(gastown-defcommand gastown-command-handoff (gastown-command-global-options)
+  ((subject
+    :initarg :subject
+    :type (or null string)
+    :initform nil
+    :documentation "Handoff subject (-s)."
+    :long-option "s"
+    :option-type :string
+    :key "s"
+    :transient "Subject"
+    :class transient-option
+    :argument "-s="
+    :prompt "Subject: "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (message-body
+    :initarg :message-body
+    :type (or null string)
+    :initform nil
+    :documentation "Handoff message (-m)."
+    :long-option "m"
+    :option-type :string
+    :key "m"
+    :transient "Message"
+    :class transient-option
+    :argument "-m="
+    :prompt "Message: "
+    :transient-group "Required"
+    :level 1
+    :order 2))
+  :documentation "Represents gt handoff command.
+Hand off to a fresh session, work continues from hook.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-handoff))
   "Return \"handoff\" as the CLI subcommand name."
@@ -211,24 +205,23 @@ Hand off to a fresh session, work continues from hook."))
 
 ;;; Unsling Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-unsling (gastown-command-global-options)
-    ((target
-      :initarg :target
-      :type (or null string)
-      :initform nil
-      :documentation "Target agent to unsling work from."
-      :positional 1
-      :option-type :string
-      :key "t"
-      :transient "Target"
-      :class transient-option
-      :prompt "Target (rig/agent): "
-      :transient-group "Required"
-      :level 1
-      :order 1))
-    :documentation "Represents gt unsling command.
-Remove work from an agent's hook."))
+(gastown-defcommand gastown-command-unsling (gastown-command-global-options)
+  ((target
+    :initarg :target
+    :type (or null string)
+    :initform nil
+    :documentation "Target agent to unsling work from."
+    :positional 1
+    :option-type :string
+    :key "t"
+    :transient "Target"
+    :class transient-option
+    :prompt "Target (rig/agent): "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt unsling command.
+Remove work from an agent's hook.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-unsling))
   "Return \"unsling\" as the CLI subcommand name."
@@ -236,25 +229,24 @@ Remove work from an agent's hook."))
 
 ;;; MQ List Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-mq-list (gastown-command-global-options)
-    ((rig
-      :initarg :rig
-      :type (or null string)
-      :initform nil
-      :documentation "Filter by rig name (--rig)."
-      :long-option "rig"
-      :option-type :string
-      :key "r"
-      :transient "--rig"
-      :class transient-option
-      :argument "--rig="
-      :prompt "Rig: "
-      :transient-group "Filters"
-      :level 1
-      :order 1))
-    :documentation "Represents gt mq list command.
-List merge queue entries."))
+(gastown-defcommand gastown-command-mq-list (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by rig name (--rig)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "--rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Filters"
+    :level 1
+    :order 1))
+  :documentation "Represents gt mq list command.
+List merge queue entries.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-mq-list))
   "Return \"mq list\" as the CLI subcommand name."
@@ -296,191 +288,172 @@ List merge queue entries."))
 
 ;;; Simple Work Commands
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-bead (gastown-command-global-options)
-    ()
-    :documentation "Represents gt bead command.
-Show bead information."))
+(gastown-defcommand gastown-command-bead (gastown-command-global-options)
+  ()
+  :documentation "Represents gt bead command.
+Show bead information.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-bead))
   "Return \"bead\" as the CLI subcommand name."
   "bead")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-cat (gastown-command-global-options)
-    ()
-    :documentation "Represents gt cat command.
-Show bead content."))
+(gastown-defcommand gastown-command-cat (gastown-command-global-options)
+  ()
+  :documentation "Represents gt cat command.
+Show bead content.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-cat))
   "Return \"cat\" as the CLI subcommand name."
   "cat")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-cleanup (gastown-command-global-options)
-    ()
-    :documentation "Represents gt cleanup command.
-Clean up Gas Town resources."))
+(gastown-defcommand gastown-command-cleanup (gastown-command-global-options)
+  ()
+  :documentation "Represents gt cleanup command.
+Clean up Gas Town resources.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-cleanup))
   "Return \"cleanup\" as the CLI subcommand name."
   "cleanup")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-close (gastown-command-global-options)
-    ()
-    :documentation "Represents gt close command.
-Close a bead."))
+(gastown-defcommand gastown-command-close (gastown-command-global-options)
+  ()
+  :documentation "Represents gt close command.
+Close a bead.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-close))
   "Return \"close\" as the CLI subcommand name."
   "close")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-commit (gastown-command-global-options)
-    ()
-    :documentation "Represents gt commit command.
-Commit work to git."))
+(gastown-defcommand gastown-command-commit (gastown-command-global-options)
+  ()
+  :documentation "Represents gt commit command.
+Commit work to git.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-commit))
   "Return \"commit\" as the CLI subcommand name."
   "commit")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-compact (gastown-command-global-options)
-    ()
-    :documentation "Represents gt compact command.
-Compact context for a session."))
+(gastown-defcommand gastown-command-compact (gastown-command-global-options)
+  ()
+  :documentation "Represents gt compact command.
+Compact context for a session.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-compact))
   "Return \"compact\" as the CLI subcommand name."
   "compact")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-forget (gastown-command-global-options)
-    ()
-    :documentation "Represents gt forget command.
-Remove a memory entry."))
+(gastown-defcommand gastown-command-forget (gastown-command-global-options)
+  ()
+  :documentation "Represents gt forget command.
+Remove a memory entry.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-forget))
   "Return \"forget\" as the CLI subcommand name."
   "forget")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-formula (gastown-command-global-options)
-    ()
-    :documentation "Represents gt formula command.
-Manage workflow formulas."))
+(gastown-defcommand gastown-command-formula (gastown-command-global-options)
+  ()
+  :documentation "Represents gt formula command.
+Manage workflow formulas.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-formula))
   "Return \"formula\" as the CLI subcommand name."
   "formula")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-memories (gastown-command-global-options)
-    ()
-    :documentation "Represents gt memories command.
-Show agent memories."))
+(gastown-defcommand gastown-command-memories (gastown-command-global-options)
+  ()
+  :documentation "Represents gt memories command.
+Show agent memories.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-memories))
   "Return \"memories\" as the CLI subcommand name."
   "memories")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-mol (gastown-command-global-options)
-    ()
-    :documentation "Represents gt mol command.
-Manage molecules and workflow steps."))
+(gastown-defcommand gastown-command-mol (gastown-command-global-options)
+  ()
+  :documentation "Represents gt mol command.
+Manage molecules and workflow steps.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-mol))
   "Return \"mol\" as the CLI subcommand name."
   "mol")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-orphans (gastown-command-global-options)
-    ()
-    :documentation "Represents gt orphans command.
-Show orphaned agents."))
+(gastown-defcommand gastown-command-orphans (gastown-command-global-options)
+  ()
+  :documentation "Represents gt orphans command.
+Show orphaned agents.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-orphans))
   "Return \"orphans\" as the CLI subcommand name."
   "orphans")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-prune-branches (gastown-command-global-options)
-    ()
-    :documentation "Represents gt prune-branches command.
-Prune stale git branches."))
+(gastown-defcommand gastown-command-prune-branches (gastown-command-global-options)
+  ()
+  :documentation "Represents gt prune-branches command.
+Prune stale git branches.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-prune-branches))
   "Return \"prune-branches\" as the CLI subcommand name."
   "prune-branches")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-release (gastown-command-global-options)
-    ()
-    :documentation "Represents gt release command.
-Release a bead or resource."))
+(gastown-defcommand gastown-command-release (gastown-command-global-options)
+  ()
+  :documentation "Represents gt release command.
+Release a bead or resource.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-release))
   "Return \"release\" as the CLI subcommand name."
   "release")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-remember (gastown-command-global-options)
-    ()
-    :documentation "Represents gt remember command.
-Add a memory entry."))
+(gastown-defcommand gastown-command-remember (gastown-command-global-options)
+  ()
+  :documentation "Represents gt remember command.
+Add a memory entry.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-remember))
   "Return \"remember\" as the CLI subcommand name."
   "remember")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-resume (gastown-command-global-options)
-    ()
-    :documentation "Represents gt resume command.
-Resume a session."))
+(gastown-defcommand gastown-command-resume (gastown-command-global-options)
+  ()
+  :documentation "Represents gt resume command.
+Resume a session.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-resume))
   "Return \"resume\" as the CLI subcommand name."
   "resume")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-scheduler (gastown-command-global-options)
-    ()
-    :documentation "Represents gt scheduler command.
-Show scheduler status."))
+(gastown-defcommand gastown-command-scheduler (gastown-command-global-options)
+  ()
+  :documentation "Represents gt scheduler command.
+Show scheduler status.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-scheduler))
   "Return \"scheduler\" as the CLI subcommand name."
   "scheduler")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-show (gastown-command-global-options)
-    ()
-    :documentation "Represents gt show command.
-Show a bead."))
+(gastown-defcommand gastown-command-show (gastown-command-global-options)
+  ()
+  :documentation "Represents gt show command.
+Show a bead.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-show))
   "Return \"show\" as the CLI subcommand name."
   "show")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-synthesis (gastown-command-global-options)
-    ()
-    :documentation "Represents gt synthesis command.
-Synthesize work from multiple sources."))
+(gastown-defcommand gastown-command-synthesis (gastown-command-global-options)
+  ()
+  :documentation "Represents gt synthesis command.
+Synthesize work from multiple sources.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-synthesis))
   "Return \"synthesis\" as the CLI subcommand name."
   "synthesis")
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-wl (gastown-command-global-options)
-    ()
-    :documentation "Represents gt wl command.
-Show work list."))
+(gastown-defcommand gastown-command-wl (gastown-command-global-options)
+  ()
+  :documentation "Represents gt wl command.
+Show work list.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-wl))
   "Return \"wl\" as the CLI subcommand name."

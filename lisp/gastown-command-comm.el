@@ -21,11 +21,10 @@
 
 ;;; DND Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-dnd (gastown-command-global-options)
-    ()
-    :documentation "Represents gt dnd command.
-Toggle do-not-disturb mode."))
+(gastown-defcommand gastown-command-dnd (gastown-command-global-options)
+  ()
+  :documentation "Represents gt dnd command.
+Toggle do-not-disturb mode.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-dnd))
   "Return \"dnd\" as the CLI subcommand name."
@@ -33,11 +32,10 @@ Toggle do-not-disturb mode."))
 
 ;;; Notify Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-notify (gastown-command-global-options)
-    ()
-    :documentation "Represents gt notify command.
-Send a notification."))
+(gastown-defcommand gastown-command-notify (gastown-command-global-options)
+  ()
+  :documentation "Represents gt notify command.
+Send a notification.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-notify))
   "Return \"notify\" as the CLI subcommand name."

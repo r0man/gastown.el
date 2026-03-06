@@ -21,11 +21,10 @@
 
 ;;; Account Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-account (gastown-command-global-options)
-    ()
-    :documentation "Represents gt account command.
-Manage Gas Town account settings."))
+(gastown-defcommand gastown-command-account (gastown-command-global-options)
+  ()
+  :documentation "Represents gt account command.
+Manage Gas Town account settings.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-account))
   "Return \"account\" as the CLI subcommand name."
@@ -33,11 +32,10 @@ Manage Gas Town account settings."))
 
 ;;; Completion Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-completion (gastown-command-global-options)
-    ()
-    :documentation "Represents gt completion command.
-Generate shell completion scripts."))
+(gastown-defcommand gastown-command-completion (gastown-command-global-options)
+  ()
+  :documentation "Represents gt completion command.
+Generate shell completion scripts.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-completion))
   "Return \"completion\" as the CLI subcommand name."
@@ -45,11 +43,10 @@ Generate shell completion scripts."))
 
 ;;; Config Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-config (gastown-command-global-options)
-    ()
-    :documentation "Represents gt config command.
-Show or edit Gas Town configuration."))
+(gastown-defcommand gastown-command-config (gastown-command-global-options)
+  ()
+  :documentation "Represents gt config command.
+Show or edit Gas Town configuration.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-config))
   "Return \"config\" as the CLI subcommand name."
@@ -57,11 +54,10 @@ Show or edit Gas Town configuration."))
 
 ;;; Disable Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-disable (gastown-command-global-options)
-    ()
-    :documentation "Represents gt disable command.
-Disable a feature or plugin."))
+(gastown-defcommand gastown-command-disable (gastown-command-global-options)
+  ()
+  :documentation "Represents gt disable command.
+Disable a feature or plugin.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-disable))
   "Return \"disable\" as the CLI subcommand name."
@@ -69,11 +65,10 @@ Disable a feature or plugin."))
 
 ;;; Enable Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-enable (gastown-command-global-options)
-    ()
-    :documentation "Represents gt enable command.
-Enable a feature or plugin."))
+(gastown-defcommand gastown-command-enable (gastown-command-global-options)
+  ()
+  :documentation "Represents gt enable command.
+Enable a feature or plugin.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-enable))
   "Return \"enable\" as the CLI subcommand name."
@@ -81,11 +76,10 @@ Enable a feature or plugin."))
 
 ;;; Hooks Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-hooks (gastown-command-global-options)
-    ()
-    :documentation "Represents gt hooks command.
-Manage Gas Town hooks."))
+(gastown-defcommand gastown-command-hooks (gastown-command-global-options)
+  ()
+  :documentation "Represents gt hooks command.
+Manage Gas Town hooks.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-hooks))
   "Return \"hooks\" as the CLI subcommand name."
@@ -93,11 +87,10 @@ Manage Gas Town hooks."))
 
 ;;; Issue Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-issue (gastown-command-global-options)
-    ()
-    :documentation "Represents gt issue command.
-Manage issues and configuration."))
+(gastown-defcommand gastown-command-issue (gastown-command-global-options)
+  ()
+  :documentation "Represents gt issue command.
+Manage issues and configuration.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-issue))
   "Return \"issue\" as the CLI subcommand name."
@@ -105,11 +98,10 @@ Manage issues and configuration."))
 
 ;;; Plugin Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-plugin (gastown-command-global-options)
-    ()
-    :documentation "Represents gt plugin command.
-Manage Gas Town plugins."))
+(gastown-defcommand gastown-command-plugin (gastown-command-global-options)
+  ()
+  :documentation "Represents gt plugin command.
+Manage Gas Town plugins.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-plugin))
   "Return \"plugin\" as the CLI subcommand name."
@@ -117,11 +109,10 @@ Manage Gas Town plugins."))
 
 ;;; Shell Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-shell (gastown-command-global-options)
-    ()
-    :documentation "Represents gt shell command.
-Configure shell integration."))
+(gastown-defcommand gastown-command-shell (gastown-command-global-options)
+  ()
+  :documentation "Represents gt shell command.
+Configure shell integration.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-shell))
   "Return \"shell\" as the CLI subcommand name."
@@ -129,11 +120,10 @@ Configure shell integration."))
 
 ;;; Theme Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-theme (gastown-command-global-options)
-    ()
-    :documentation "Represents gt theme command.
-Manage Gas Town UI themes."))
+(gastown-defcommand gastown-command-theme (gastown-command-global-options)
+  ()
+  :documentation "Represents gt theme command.
+Manage Gas Town UI themes.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-theme))
   "Return \"theme\" as the CLI subcommand name."
@@ -141,11 +131,10 @@ Manage Gas Town UI themes."))
 
 ;;; Uninstall Command
 
-(eval-and-compile
-  (gastown-defcommand gastown-command-uninstall (gastown-command-global-options)
-    ()
-    :documentation "Represents gt uninstall command.
-Uninstall Gas Town components."))
+(gastown-defcommand gastown-command-uninstall (gastown-command-global-options)
+  ()
+  :documentation "Represents gt uninstall command.
+Uninstall Gas Town components.")
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command-uninstall))
   "Return \"uninstall\" as the CLI subcommand name."
