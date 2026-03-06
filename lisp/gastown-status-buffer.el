@@ -8,25 +8,18 @@
 
 ;; This module provides a rich, interactive Emacs-native status buffer for
 ;; the `gt status' command.  It replaces the default terminal passthrough
-;; with a custom `gastown-status-mode' buffer that:
-;;
-;;   - Fetches `gt status --json' and renders output matching the CLI
-;;   - Global agents (mayor, deacon) appear at the top
-;;   - Each rig gets a separator section with witness/refinery first,
-;;     then crew block, then polecats block
-;;   - Provides clickable elements: polecat/crew names -> Dired,
-;;     agent sessions -> tmux window, unread mail -> inbox,
-;;     Dolt data_dir -> Dired
-;;   - Supports auto-refresh (w to toggle watch mode)
+;; with a custom `gastown-status-mode' buffer rendered with vui.el.
 ;;
 ;; Entry point: `gastown-status-show-buffer' or via M-x gastown-status.
 
 ;;; Code:
 
+(require 'vui)
 (require 'gastown-command-status)
 
 ;; Forward declarations for optional interactive features
 (declare-function gastown-mail-inbox "gastown-command-mail")
+(declare-function vui-update "vui")
 
 ;;; ============================================================
 ;;; Faces
@@ -90,7 +83,7 @@
     map)
   "Keymap for `gastown-status-mode'.")
 
-(define-derived-mode gastown-status-mode special-mode "GT-Status"
+(define-derived-mode gastown-status-mode vui-mode "GT-Status"
   "Major mode for the Gas Town status buffer.
 
 Displays a rich, interactive overview of the Gas Town workspace,
@@ -109,6 +102,9 @@ Key bindings:
 (defvar-local gastown-status--data nil
   "Current status data as a parsed JSON alist.")
 
+(defvar-local gastown-status--root-instance nil
+  "Root vui instance for the mounted component, or nil.")
+
 (defvar-local gastown-status--watch-timer nil
   "Auto-refresh timer, or nil when watch mode is off.")
 
@@ -116,7 +112,7 @@ Key bindings:
   "Seconds between auto-refreshes in watch mode.")
 
 ;;; ============================================================
-;;; Rendering Helpers
+;;; Helpers
 ;;; ============================================================
 
 (defun gastown-status--role-icon (role)
@@ -138,235 +134,254 @@ Key bindings:
           path))
     (or path "")))
 
-(defun gastown-status--insert-dired-link (text path)
-  "Insert TEXT as a clickable link that opens PATH in Dired."
-  (insert-text-button
-   text
-   'action (let ((p path))
-             (lambda (_btn) (dired p)))
-   'follow-link t
-   'face 'gastown-status-link
-   'help-echo (format "Open Dired: %s" path)))
-
-(defun gastown-status--insert-tmux-link (text session)
-  "Insert TEXT as a clickable link to switch to tmux SESSION."
-  (insert-text-button
-   text
-   'action (let ((s session))
-             (lambda (_btn)
-               (shell-command (format "tmux select-window -t gt:%s" s))))
-   'follow-link t
-   'face 'gastown-status-link
-   'help-echo (format "Switch to tmux session: gt:%s" session)))
-
 ;;; ============================================================
-;;; Section Renderers
+;;; vui Rendering Helpers
 ;;; ============================================================
 
-(defun gastown-status--insert-town (data)
-  "Insert town name and location from DATA."
-  (let* ((name     (or (alist-get 'name data) "unknown"))
-         (location (or (alist-get 'location data) "")))
-    (insert "Town: " name "\n")
-    (insert location "\n")))
+(defun gastown-status--vui-mail-button (unread)
+  "Return a vui button vnode for UNREAD mail count."
+  (vui-button (format "📬%d" unread)
+    :no-decoration t
+    :face 'gastown-status-mail-indicator
+    :on-click (lambda ()
+                (when (fboundp 'gastown-mail-inbox)
+                  (call-interactively #'gastown-mail-inbox)))
+    :help-echo "Open mail inbox"))
 
-(defun gastown-status--insert-overseer (data)
-  "Insert the overseer line from DATA."
-  (let* ((overseer  (alist-get 'overseer data))
-         (o-name    (or (alist-get 'name overseer) ""))
-         (o-email   (or (alist-get 'email overseer) ""))
-         (o-unread  (alist-get 'unread_mail overseer)))
-    (when overseer
-      (insert "\n👤 Overseer: " o-name
-              (if (string-empty-p o-email) "" (format " <%s>" o-email)))
-      (when (and o-unread (> o-unread 0))
-        (insert " ")
-        (insert-text-button
-         (propertize (format "📬%d" o-unread) 'face 'gastown-status-mail-indicator)
-         'action (lambda (_btn)
-                   (when (fboundp 'gastown-mail-inbox)
-                     (call-interactively #'gastown-mail-inbox)))
-         'follow-link t
-         'help-echo "Open mail inbox"))
-      (insert "\n"))))
+(defun gastown-status--vui-agent-line (agent)
+  "Return a vui hstack vnode for a single AGENT line."
+  (let* ((name    (or (alist-get 'name agent) ""))
+         (role    (or (alist-get 'role agent) ""))
+         (running (alist-get 'running agent))
+         (session (alist-get 'session agent))
+         (info    (or (alist-get 'agent_info agent) ""))
+         (unread  (alist-get 'unread_mail agent))
+         (subject (alist-get 'first_subject agent))
+         (icon    (gastown-status--role-icon role)))
+    (vui-hstack :spacing 0
+      (vui-text (format "%s " icon))
+      (if (and session running)
+          (vui-button (format "%-12s" name)
+            :no-decoration t
+            :face 'gastown-status-link
+            :on-click (let ((s session))
+                        (lambda ()
+                          (shell-command
+                           (format "tmux select-window -t gt:%s" s))))
+            :help-echo (format "Switch to tmux session: gt:%s" session))
+        (vui-text (format "%-12s" name)))
+      (vui-text " ")
+      (vui-text (if running "●" "○")
+                :face (if running 'gastown-status-running 'gastown-status-stopped))
+      (unless (string-empty-p info)
+        (vui-text (format " [%s]" info)))
+      (when (and subject (not (string-empty-p subject)))
+        (let* ((clean (replace-regexp-in-string "^🤝 HANDOFF: " "" subject))
+               (short (if (> (length clean) 30)
+                          (concat (substring clean 0 29) "…")
+                        clean)))
+          (vui-text (format " → %s" short))))
+      (when (and unread (> unread 0))
+        (list (vui-text " ")
+              (gastown-status--vui-mail-button unread))))))
 
-(defun gastown-status--insert-services (data)
-  "Insert the compact services line from DATA."
-  (let* ((daemon       (alist-get 'daemon data))
-         (dolt         (alist-get 'dolt data))
-         (tmux         (alist-get 'tmux data))
-         (d-pid        (alist-get 'pid daemon))
-         (dolt-pid     (alist-get 'pid dolt))
-         (dolt-port    (alist-get 'port dolt))
-         (dolt-dir     (gastown-status--abbreviate-path (alist-get 'data_dir dolt)))
-         (dolt-dir-abs (alist-get 'data_dir dolt))
-         (tmux-socket  (alist-get 'socket tmux))
-         (tmux-pid     (alist-get 'pid tmux))
-         (tmux-count   (alist-get 'session_count tmux))
-         (tmux-path    (alist-get 'socket_path tmux)))
-    (insert "\nServices:")
-    ;; Daemon
-    (when daemon
-      (insert (format "  daemon%s"
-                      (if d-pid (format " (PID %d)" d-pid) ""))))
-    ;; Dolt
-    (when dolt
-      (insert (format "  dolt (PID %d, :%d, "
-                      (or dolt-pid 0)
-                      (or dolt-port 0)))
-      (if (and dolt-dir-abs (not (string-empty-p dolt-dir-abs)))
-          (gastown-status--insert-dired-link dolt-dir dolt-dir-abs)
-        (insert (or dolt-dir "")))
-      (insert ")"))
-    ;; Tmux
-    (when tmux
-      (insert (format "  tmux (-L %s, PID %d, %d session%s, %s)"
-                      (or tmux-socket "")
-                      (or tmux-pid 0)
-                      (or tmux-count 0)
-                      (if (eql tmux-count 1) "" "s")
-                      (or tmux-path ""))))
-    (insert "\n")))
-
-(defun gastown-status--insert-agent-line (agent)
-  "Insert a single AGENT line."
-  (let* ((name      (or (alist-get 'name agent) ""))
-         (role      (or (alist-get 'role agent) ""))
-         (running   (alist-get 'running agent))
-         (session   (alist-get 'session agent))
-         (info      (or (alist-get 'agent_info agent) ""))
-         (unread    (alist-get 'unread_mail agent))
-         (subject   (alist-get 'first_subject agent))
-         (icon      (gastown-status--role-icon role))
-         (indicator (gastown-status--running-indicator running)))
-    (insert icon " ")
-    ;; Agent name: clickable -> tmux session if running
-    (if (and session running)
-        (gastown-status--insert-tmux-link (format "%-12s" name) session)
-      (insert (format "%-12s" name)))
-    (insert " " indicator)
-    ;; Agent info in brackets
+(defun gastown-status--vui-worktree-line (name running info path &optional unread)
+  "Return a vui hstack for a polecat or crew line.
+NAME, RUNNING, INFO describe the agent.  PATH is the Dired target or nil.
+Optional UNREAD is the unread mail count."
+  (vui-hstack :spacing 0
+    (vui-text "   ")
+    (if path
+        (vui-button (format "%-12s" name)
+          :no-decoration t
+          :face 'gastown-status-link
+          :on-click (let ((p path)) (lambda () (dired p)))
+          :help-echo (format "Open Dired: %s" path))
+      (vui-text (format "%-12s" name)))
+    (vui-text " ")
+    (vui-text (if running "●" "○")
+              :face (if running 'gastown-status-running 'gastown-status-stopped))
     (unless (string-empty-p info)
-      (insert (format " [%s]" info)))
-    ;; Mail subject preview (e.g., "→ witness Handoff")
-    (when (and subject (not (string-empty-p subject)))
-      (let* ((subject-clean (replace-regexp-in-string "^🤝 HANDOFF: " "" subject))
-             (subject-short (if (> (length subject-clean) 30)
-                                (concat (substring subject-clean 0 29) "…")
-                              subject-clean)))
-        (insert " → " subject-short)))
-    ;; Unread mail indicator
+      (vui-text (format " [%s]" info)))
     (when (and unread (> unread 0))
-      (insert " ")
-      (insert-text-button
-       (propertize (format "📬%d" unread) 'face 'gastown-status-mail-indicator)
-       'action (lambda (_btn)
-                 (when (fboundp 'gastown-mail-inbox)
-                   (call-interactively #'gastown-mail-inbox)))
-       'follow-link t
-       'help-echo "Open mail inbox"))
-    (insert "\n")))
+      (list (vui-text " ")
+            (gastown-status--vui-mail-button unread)))))
 
-(defun gastown-status--insert-rig-section (rig town-location)
-  "Insert a complete rig section for RIG using TOWN-LOCATION."
-  (let* ((rig-name  (or (alist-get 'name rig) "unknown"))
-         (agents    (or (alist-get 'agents rig) []))
-         ;; Partition agents by role
+;;; ============================================================
+;;; vui Section Renderers
+;;; ============================================================
+
+(defun gastown-status--vui-overseer (data)
+  "Return a vui hstack vnode for the overseer line from DATA, or nil."
+  (let ((overseer (alist-get 'overseer data)))
+    (when overseer
+      (let* ((o-name  (or (alist-get 'name overseer) ""))
+             (o-email (or (alist-get 'email overseer) ""))
+             (o-unread (alist-get 'unread_mail overseer)))
+        (vui-hstack :spacing 0
+          (vui-text (format "👤 Overseer: %s%s"
+                            o-name
+                            (if (string-empty-p o-email) ""
+                              (format " <%s>" o-email))))
+          (when (and o-unread (> o-unread 0))
+            (list (vui-text " ")
+                  (gastown-status--vui-mail-button o-unread))))))))
+
+(defun gastown-status--vui-services (data)
+  "Return a vui hstack vnode for the compact services line from DATA."
+  (let* ((daemon (alist-get 'daemon data))
+         (dolt   (alist-get 'dolt data))
+         (tmux   (alist-get 'tmux data))
+         (d-pid       (alist-get 'pid daemon))
+         (dolt-pid    (alist-get 'pid dolt))
+         (dolt-port   (alist-get 'port dolt))
+         (dolt-dir    (gastown-status--abbreviate-path (alist-get 'data_dir dolt)))
+         (dolt-dir-abs (alist-get 'data_dir dolt))
+         (tmux-socket (alist-get 'socket tmux))
+         (tmux-pid    (alist-get 'pid tmux))
+         (tmux-count  (alist-get 'session_count tmux))
+         (tmux-path   (alist-get 'socket_path tmux)))
+    (vui-hstack :spacing 0
+      (vui-text "Services:")
+      (when daemon
+        (vui-text (format "  daemon%s"
+                          (if d-pid (format " (PID %d)" d-pid) ""))))
+      (when dolt
+        (list
+         (vui-text (format "  dolt (PID %d, :%d, "
+                           (or dolt-pid 0) (or dolt-port 0)))
+         (if (and dolt-dir-abs (not (string-empty-p dolt-dir-abs)))
+             (vui-button dolt-dir
+               :no-decoration t
+               :face 'gastown-status-link
+               :on-click (let ((p dolt-dir-abs)) (lambda () (dired p)))
+               :help-echo (format "Open Dired: %s" dolt-dir-abs))
+           (vui-text (or dolt-dir "")))
+         (vui-text ")")))
+      (when tmux
+        (vui-text (format "  tmux (-L %s, PID %d, %d session%s, %s)"
+                          (or tmux-socket "")
+                          (or tmux-pid 0)
+                          (or tmux-count 0)
+                          (if (eql tmux-count 1) "" "s")
+                          (or tmux-path "")))))))
+
+(defun gastown-status--vui-rig (rig town-location)
+  "Return a vui vstack vnode for a complete rig section.
+RIG is the rig data alist; TOWN-LOCATION is the town's root path."
+  (let* ((rig-name   (or (alist-get 'name rig) "unknown"))
+         (agents     (seq-into (or (alist-get 'agents rig) []) 'list))
          (witnesses  (seq-filter (lambda (a) (equal (alist-get 'role a) "witness")) agents))
          (refineries (seq-filter (lambda (a) (equal (alist-get 'role a) "refinery")) agents))
          (polecats   (seq-filter (lambda (a) (equal (alist-get 'role a) "polecat")) agents))
-         (crews      (seq-filter (lambda (a) (equal (alist-get 'role a) "crew")) agents)))
-    ;; Rig separator: ─── rigname/ ──────...
-    (let* ((sep-label (format " %s/ " rig-name))
-           (sep-left  "─── ")
-           (sep-right (make-string (max 0 (- 55 (length sep-label) (length sep-left))) ?─)))
-      (insert "\n"
-              (propertize (concat sep-left sep-label sep-right)
-                          'face 'gastown-status-rig-separator)
-              "\n\n"))
-    ;; Witness and refinery individually
-    (seq-do #'gastown-status--insert-agent-line witnesses)
-    (seq-do #'gastown-status--insert-agent-line refineries)
-    ;; Crew block
-    (when crews
-      (let ((crew-count (length crews)))
-        (insert (format "👷 Crew (%d)\n" crew-count))
-        (seq-do
-         (lambda (a)
-           (let* ((name    (or (alist-get 'name a) ""))
-                  (running (alist-get 'running a))
-                  (info    (or (alist-get 'agent_info a) ""))
-                  (indicator (gastown-status--running-indicator running))
-                  (crew-path (when (and town-location rig-name)
-                               (expand-file-name
-                                (format "%s/crew/%s/%s/" rig-name name rig-name)
-                                town-location))))
-             (insert "   ")
-             (if crew-path
-                 (gastown-status--insert-dired-link (format "%-12s" name) crew-path)
-               (insert (format "%-12s" name)))
-             (insert " " indicator)
-             (unless (string-empty-p info) (insert (format " [%s]" info)))
-             (insert "\n")))
-         crews)))
-    ;; Polecats block
-    (when polecats
-      (let ((pc-count (length polecats)))
-        (insert (format "😺 Polecats (%d)\n" pc-count))
-        (seq-do
-         (lambda (a)
-           (let* ((name    (or (alist-get 'name a) ""))
-                  (running (alist-get 'running a))
-                  (info    (or (alist-get 'agent_info a) ""))
-                  (indicator (gastown-status--running-indicator running))
-                  (pc-path (when (and town-location rig-name)
-                             (expand-file-name
-                              (format "%s/polecats/%s/%s/" rig-name name rig-name)
-                              town-location))))
-             (insert "   ")
-             (if pc-path
-                 (gastown-status--insert-dired-link (format "%-12s" name) pc-path)
-               (insert (format "%-12s" name)))
-             (insert " " indicator)
-             (unless (string-empty-p info) (insert (format " [%s]" info)))
-             ;; Unread mail on polecat line
-             (let ((unread (alist-get 'unread_mail a)))
-               (when (and unread (> unread 0))
-                 (insert " ")
-                 (insert-text-button
-                  (propertize (format "📬%d" unread) 'face 'gastown-status-mail-indicator)
-                  'action (lambda (_btn)
-                            (when (fboundp 'gastown-mail-inbox)
-                              (call-interactively #'gastown-mail-inbox)))
-                  'follow-link t
-                  'help-echo "Open mail inbox")))
-             (insert "\n")))
-         polecats)))))
+         (crews      (seq-filter (lambda (a) (equal (alist-get 'role a) "crew")) agents))
+         (sep-label  (format " %s/ " rig-name))
+         (sep-left   "─── ")
+         (sep-right  (make-string (max 0 (- 55 (length sep-label) (length sep-left))) ?─)))
+    (apply #'vui-vstack
+           (delq nil
+                 (list
+                  (vui-newline)
+                  (vui-text (concat sep-left sep-label sep-right)
+                            :face 'gastown-status-rig-separator)
+                  (vui-newline)
+                  (when witnesses
+                    (apply #'vui-vstack
+                           (mapcar #'gastown-status--vui-agent-line witnesses)))
+                  (when refineries
+                    (apply #'vui-vstack
+                           (mapcar #'gastown-status--vui-agent-line refineries)))
+                  (when crews
+                    (apply #'vui-vstack
+                           (cons
+                            (vui-text (format "👷 Crew (%d)" (length crews)))
+                            (mapcar (lambda (a)
+                                      (let* ((n (or (alist-get 'name a) ""))
+                                             (r (alist-get 'running a))
+                                             (i (or (alist-get 'agent_info a) ""))
+                                             (p (when (and town-location rig-name)
+                                                  (expand-file-name
+                                                   (format "%s/crew/%s/%s/" rig-name n rig-name)
+                                                   town-location))))
+                                        (gastown-status--vui-worktree-line n r i p)))
+                                    crews))))
+                  (when polecats
+                    (apply #'vui-vstack
+                           (cons
+                            (vui-text (format "😺 Polecats (%d)" (length polecats)))
+                            (mapcar (lambda (a)
+                                      (let* ((n (or (alist-get 'name a) ""))
+                                             (r (alist-get 'running a))
+                                             (i (or (alist-get 'agent_info a) ""))
+                                             (u (alist-get 'unread_mail a))
+                                             (p (when (and town-location rig-name)
+                                                  (expand-file-name
+                                                   (format "%s/polecats/%s/%s/" rig-name n rig-name)
+                                                   town-location))))
+                                        (gastown-status--vui-worktree-line n r i p u)))
+                                    polecats)))))))))
+
+(defun gastown-status--vui-content (data)
+  "Return a vui vstack vnode tree for the full status view of DATA."
+  (let* ((name   (or (alist-get 'name data) "unknown"))
+         (location (or (alist-get 'location data) ""))
+         (agents (seq-into (or (alist-get 'agents data) []) 'list))
+         (rigs   (seq-into (or (alist-get 'rigs data) []) 'list)))
+    (apply #'vui-vstack
+           (delq nil
+                 (append
+                  (list
+                   (vui-text (format "Town: %s" name))
+                   (vui-text location)
+                   (gastown-status--vui-overseer data)
+                   (gastown-status--vui-services data)
+                   (when agents (vui-newline))
+                   (when agents
+                     (apply #'vui-vstack
+                            (mapcar #'gastown-status--vui-agent-line agents))))
+                  (mapcar (lambda (r)
+                            (gastown-status--vui-rig r location))
+                          rigs))))))
 
 ;;; ============================================================
-;;; Main Render
+;;; Component (interactive use with auto-refresh)
+;;; ============================================================
+
+(vui-defcomponent gastown-status-root (watch refresh-key)
+  "Root component for the Gas Town status buffer."
+  :state ((data nil))
+  :render
+  (progn
+    ;; Fetch data on mount or explicit refresh
+    (vui-use-effect (refresh-key)
+      (let ((new-data (gastown-command-status! :json t)))
+        (vui-set-state :data new-data)))
+    ;; Auto-refresh timer — set up when watch is enabled
+    (vui-use-effect (watch)
+      (when watch
+        (let* ((interval gastown-status--watch-interval)
+               (refresh-cb
+                (vui-with-async-context
+                  (let ((new-data (gastown-command-status! :json t)))
+                    (vui-set-state :data new-data)))))
+          (setq gastown-status--watch-timer
+                (run-with-timer interval interval refresh-cb))
+          (lambda ()
+            (cancel-timer gastown-status--watch-timer)
+            (setq gastown-status--watch-timer nil)))))
+    ;; Render content or loading placeholder
+    (if data
+        (gastown-status--vui-content data)
+      (vui-text "Loading..."))))
+
+;;; ============================================================
+;;; Main Render (used by tests and manual calls)
 ;;; ============================================================
 
 (defun gastown-status--render (data)
   "Render status DATA into the current buffer."
-  (let* ((inhibit-read-only t)
-         (location (or (alist-get 'location data) ""))
-         (agents   (or (alist-get 'agents data) []))
-         (rigs     (or (alist-get 'rigs data) [])))
-    (erase-buffer)
-    ;; Town: name + location
-    (gastown-status--insert-town data)
-    ;; Overseer line
-    (gastown-status--insert-overseer data)
-    ;; Services line
-    (gastown-status--insert-services data)
-    ;; Global agents (mayor, deacon, etc.)
-    (when (> (length agents) 0)
-      (insert "\n")
-      (seq-do #'gastown-status--insert-agent-line agents))
-    ;; Rig sections
-    (seq-do (lambda (r) (gastown-status--insert-rig-section r location)) rigs)
-    (goto-char (point-min))))
+  (setq gastown-status--data data)
+  (vui-render (gastown-status--vui-content data)))
 
 ;;; ============================================================
 ;;; Interactive Commands
@@ -376,10 +391,17 @@ Key bindings:
 (defun gastown-status-refresh ()
   "Refresh the *gastown-status* buffer with current status."
   (interactive)
-  (let ((data (gastown-command-status! :json t)))
-    (setq gastown-status--data data)
-    (gastown-status--render data)
-    (message "Status refreshed")))
+  (if gastown-status--root-instance
+      (let* ((props (vui-instance-props gastown-status--root-instance))
+             (key   (or (plist-get props :refresh-key) 0)))
+        (vui-update gastown-status--root-instance
+                    (list :watch (plist-get props :watch)
+                          :refresh-key (1+ key)))
+        (message "Status refreshed"))
+    ;; Fallback for buffers rendered without component (e.g., tests)
+    (when gastown-status--data
+      (gastown-status--render gastown-status--data)
+      (message "Status refreshed"))))
 
 (defun gastown-status--cancel-watch ()
   "Cancel the watch timer if active."
@@ -391,21 +413,29 @@ Key bindings:
 (defun gastown-status-toggle-watch ()
   "Toggle auto-refresh watch mode for the status buffer."
   (interactive)
-  (if gastown-status--watch-timer
-      (progn
-        (gastown-status--cancel-watch)
-        (message "Watch mode disabled"))
-    (let ((buf (current-buffer)))
-      (setq gastown-status--watch-timer
-            (run-with-timer
-             gastown-status--watch-interval
-             gastown-status--watch-interval
-             (lambda ()
-               (when (buffer-live-p buf)
-                 (with-current-buffer buf
-                   (gastown-status-refresh)))))))
-    (message "Watch mode enabled (refresh every %ds)"
-             gastown-status--watch-interval)))
+  (if gastown-status--root-instance
+      (let* ((props   (vui-instance-props gastown-status--root-instance))
+             (current (plist-get props :watch)))
+        (vui-update gastown-status--root-instance
+                    (list :watch (not current)
+                          :refresh-key (plist-get props :refresh-key)))
+        (message "Watch mode %s" (if (not current) "enabled" "disabled")))
+    ;; Fallback: manual timer management (e.g., when used outside component)
+    (if gastown-status--watch-timer
+        (progn
+          (gastown-status--cancel-watch)
+          (message "Watch mode disabled"))
+      (let ((buf (current-buffer)))
+        (setq gastown-status--watch-timer
+              (run-with-timer
+               gastown-status--watch-interval
+               gastown-status--watch-interval
+               (lambda ()
+                 (when (buffer-live-p buf)
+                   (with-current-buffer buf
+                     (gastown-status-refresh))))))
+        (message "Watch mode enabled (refresh every %ds)"
+                 gastown-status--watch-interval)))))
 
 ;;; ============================================================
 ;;; Buffer Entry Point
@@ -415,13 +445,17 @@ Key bindings:
 (defun gastown-status-show-buffer ()
   "Show the *gastown-status* buffer with current Gas Town status."
   (interactive)
-  (let* ((buf  (get-buffer-create gastown-status-buffer-name))
-         (data (gastown-command-status! :json t)))
+  (let ((buf (get-buffer-create gastown-status-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-status-mode)
         (gastown-status-mode))
-      (setq gastown-status--data data)
-      (gastown-status--render data))
+      (unless gastown-status--root-instance
+        (setq gastown-status--root-instance
+              (vui-mount
+               (vui-component 'gastown-status-root
+                              :watch nil
+                              :refresh-key 0)
+               gastown-status-buffer-name))))
     (pop-to-buffer buf)))
 
 ;;; ============================================================
