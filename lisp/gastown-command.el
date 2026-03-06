@@ -263,7 +263,7 @@ Returns a list of strings starting with the executable.")
   "Preview what COMMAND would execute without running it.")
 
 (cl-defgeneric gastown-command-parse (command execution)
-  "Parse EXECUTION output and return the parsed result.")
+  "Parse EXECUTION output for COMMAND and return the parsed result.")
 
 ;;; Bridge Methods for beads-meta Compatibility
 ;;
@@ -277,15 +277,15 @@ Returns a list of strings starting with the executable.")
 (declare-function beads-command-preview "beads-command")
 
 (cl-defmethod beads-command-validate ((command gastown-command))
-  "Bridge: delegate to `gastown-command-validate'."
+  "Bridge COMMAND: delegate to `gastown-command-validate'."
   (gastown-command-validate command))
 
 (cl-defmethod beads-command-execute-interactive ((command gastown-command))
-  "Bridge: delegate to `gastown-command-execute-interactive'."
+  "Bridge COMMAND: delegate to `gastown-command-execute-interactive'."
   (gastown-command-execute-interactive command))
 
 (cl-defmethod beads-command-preview ((command gastown-command))
-  "Bridge: delegate to `gastown-command-preview'."
+  "Bridge COMMAND: delegate to `gastown-command-preview'."
   (gastown-command-preview command))
 
 ;;; Base Implementations
@@ -305,7 +305,7 @@ Returns a list of strings starting with the executable.")
       global-args)))
 
 (cl-defmethod gastown-command-validate ((_command gastown-command))
-  "Default validation returns nil (valid)."
+  "Default validation: return nil (valid)."
   nil)
 
 (cl-defmethod gastown-command-subcommand ((_command gastown-command))
