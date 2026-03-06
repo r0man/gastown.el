@@ -13,119 +13,150 @@
 (require 'gastown-custom)
 (require 'gastown-command-ready)
 
-;;; Priority formatting tests
+;;; Priority face tests
 
-(ert-deftest gastown-ready-test-format-priority-critical ()
-  "Format priority 0 as P0 with critical face."
-  (let ((result (gastown-ready--format-priority 0)))
-    (should (string= "P0" result))
+(ert-deftest gastown-ready-test-priority-face-critical ()
+  "Priority 0 maps to critical face."
+  (should (eq 'gastown-ready-priority-critical
+              (gastown-ready--priority-face 0))))
+
+(ert-deftest gastown-ready-test-priority-face-high ()
+  "Priority 1 maps to high face."
+  (should (eq 'gastown-ready-priority-high
+              (gastown-ready--priority-face 1))))
+
+(ert-deftest gastown-ready-test-priority-face-medium ()
+  "Priority 2 maps to medium face."
+  (should (eq 'gastown-ready-priority-medium
+              (gastown-ready--priority-face 2))))
+
+(ert-deftest gastown-ready-test-priority-face-low ()
+  "Priority 3 maps to low face."
+  (should (eq 'gastown-ready-priority-low
+              (gastown-ready--priority-face 3))))
+
+;;; Priority tag formatting tests
+
+(ert-deftest gastown-ready-test-format-priority-tag-zero ()
+  "Priority 0 formats as [P0] with critical face."
+  (let ((result (gastown-ready--format-priority-tag 0)))
+    (should (string= "[P0]" result))
     (should (eq 'gastown-ready-priority-critical
                 (get-text-property 0 'face result)))))
 
-(ert-deftest gastown-ready-test-format-priority-high ()
-  "Format priority 1 as P1 with high face."
-  (let ((result (gastown-ready--format-priority 1)))
-    (should (string= "P1" result))
+(ert-deftest gastown-ready-test-format-priority-tag-one ()
+  "Priority 1 formats as [P1] with high face."
+  (let ((result (gastown-ready--format-priority-tag 1)))
+    (should (string= "[P1]" result))
     (should (eq 'gastown-ready-priority-high
                 (get-text-property 0 'face result)))))
 
-(ert-deftest gastown-ready-test-format-priority-medium ()
-  "Format priority 2 as P2 with medium face."
-  (let ((result (gastown-ready--format-priority 2)))
-    (should (string= "P2" result))
+(ert-deftest gastown-ready-test-format-priority-tag-two ()
+  "Priority 2 formats as [P2] with medium face."
+  (let ((result (gastown-ready--format-priority-tag 2)))
+    (should (string= "[P2]" result))
     (should (eq 'gastown-ready-priority-medium
                 (get-text-property 0 'face result)))))
 
-(ert-deftest gastown-ready-test-format-priority-low ()
-  "Format priority 3 as P3 with low face."
-  (let ((result (gastown-ready--format-priority 3)))
-    (should (string= "P3" result))
-    (should (eq 'gastown-ready-priority-low
-                (get-text-property 0 'face result)))))
+(ert-deftest gastown-ready-test-format-priority-tag-nil ()
+  "Nil priority formats as [P?]."
+  (let ((result (gastown-ready--format-priority-tag nil)))
+    (should (string= "[P?]" result))))
 
-(ert-deftest gastown-ready-test-format-priority-nil ()
-  "Format nil priority as empty string."
-  (let ((result (gastown-ready--format-priority nil)))
-    (should (string= "" result))))
+;;; Count issues tests
 
-;;; Truncation tests
+(ert-deftest gastown-ready-test-count-issues-empty ()
+  "Empty sources returns zeros."
+  (cl-destructuring-bind (total p1 p2)
+      (gastown-ready--count-issues [])
+    (should (= 0 total))
+    (should (= 0 p1))
+    (should (= 0 p2))))
 
-(ert-deftest gastown-ready-test-truncate-short ()
-  "Short strings pass through unchanged."
-  (should (string= "hello" (gastown-ready--truncate "hello" 10))))
+(ert-deftest gastown-ready-test-count-issues-mixed ()
+  "Mixed priorities are counted correctly."
+  (let ((sources
+         (vector
+          `((name . "town")
+            (issues . ,(vector '((id . "hq-1") (priority . 1))
+                               '((id . "hq-2") (priority . 1))
+                               '((id . "hq-3") (priority . 2))))))))
+    (cl-destructuring-bind (total p1 p2)
+        (gastown-ready--count-issues sources)
+      (should (= 3 total))
+      (should (= 2 p1))
+      (should (= 1 p2)))))
 
-(ert-deftest gastown-ready-test-truncate-long ()
-  "Long strings are truncated with ellipsis."
-  (let ((result (gastown-ready--truncate "abcdefghij" 5)))
-    (should (= 5 (length result)))
-    (should (string-suffix-p "…" result))))
+;;; Render tests
 
-(ert-deftest gastown-ready-test-truncate-nil ()
-  "Nil returns empty string."
-  (should (string= "" (gastown-ready--truncate nil 10))))
+(ert-deftest gastown-ready-test-render-header ()
+  "Render inserts the '📋 Ready work' header."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (gastown-ready--render '((sources . [])))
+    (goto-char (point-min))
+    (should (search-forward "Ready work across town" nil t))))
 
-;;; Section entry tests
+(ert-deftest gastown-ready-test-render-section-with-items ()
+  "Render inserts section header with item count."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (gastown-ready--render
+     `((sources . ,(vector
+                    `((name . "town")
+                      (issues . ,(vector '((id . "hq-1") (title . "Fix it")
+                                           (priority . 1)))))))))
+    (goto-char (point-min))
+    (should (search-forward "town/ (1 item)" nil t))))
 
-(ert-deftest gastown-ready-test-section-entry-id ()
-  "Section entry ID has 'section:' prefix."
-  (let ((entry (gastown-ready--section-entry "town")))
-    (should (string= "section:town" (car entry)))))
+(ert-deftest gastown-ready-test-render-section-none ()
+  "Render inserts '(none)' for empty source."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (gastown-ready--render
+     `((sources . ,(vector '((name . "sooper_whisper") (issues . []))))))
+    (goto-char (point-min))
+    (should (search-forward "sooper_whisper/ (none)" nil t))))
 
-(ert-deftest gastown-ready-test-section-entry-vector-length ()
-  "Section entry vector has 5 columns."
-  (let ((entry (gastown-ready--section-entry "gastown_el")))
-    (should (= 5 (length (cadr entry))))))
+(ert-deftest gastown-ready-test-render-issue-line ()
+  "Render inserts issue line with priority tag and ID."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (gastown-ready--render
+     `((sources . ,(vector
+                    `((name . "gastown_el")
+                      (issues . ,(vector '((id . "ge-abc") (title . "Fix bug")
+                                           (priority . 2)))))))))
+    (goto-char (point-min))
+    (should (search-forward "[P2]" nil t))
+    (should (search-forward "ge-abc" nil t))
+    (should (search-forward "Fix bug" nil t))))
 
-(ert-deftest gastown-ready-test-section-entry-face ()
-  "Section entry first column has section-header face."
-  (let* ((entry (gastown-ready--section-entry "town"))
-         (vec   (cadr entry))
-         (header (aref vec 0)))
-    (should (eq 'gastown-ready-section-header
-                (get-text-property 0 'face header)))))
+(ert-deftest gastown-ready-test-render-footer ()
+  "Render inserts total footer when items exist."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (gastown-ready--render
+     `((sources . ,(vector
+                    `((name . "town")
+                      (issues . ,(vector '((id . "hq-1") (priority . 1)))))))))
+    (goto-char (point-min))
+    (should (search-forward "Total: 1 item ready" nil t))))
 
-;;; Issue entry tests
-
-(ert-deftest gastown-ready-test-issue-entry-id ()
-  "Issue entry ID matches issue id field."
-  (let* ((issue '((id . "ge-abc") (title . "Fix bug") (issue_type . "bug")
-                  (priority . 1) (assignee . "chrome")))
-         (entry (gastown-ready--issue-entry issue)))
-    (should (string= "ge-abc" (car entry)))))
-
-(ert-deftest gastown-ready-test-issue-entry-vector ()
-  "Issue entry vector has 5 columns."
-  (let* ((issue '((id . "ge-abc") (title . "Fix bug") (issue_type . "bug")
-                  (priority . 1) (assignee . "chrome")))
-         (entry (gastown-ready--issue-entry issue))
-         (vec   (cadr entry)))
-    (should (= 5 (length vec)))
-    (should (string= "ge-abc" (aref vec 1)))
-    (should (string= "bug"    (aref vec 2)))))
-
-;;; Build entries tests
-
-(ert-deftest gastown-ready-test-build-entries-empty ()
-  "Empty sources vector produces no entries."
-  (should (null (gastown-ready--build-entries []))))
-
-(ert-deftest gastown-ready-test-build-entries-sections ()
-  "Each source produces a section header plus issue rows."
-  (let* ((sources
-          (vector
-           `((name . "town")
-             (issues . ,(vector '((id . "hq-1") (title . "A") (issue_type . "task")
-                                  (priority . 1) (assignee . "mayor/")))))
-           `((name . "gastown_el")
-             (issues . ,(vector '((id . "ge-2") (title . "B") (issue_type . "bug")
-                                  (priority . 2) (assignee . "chrome")))))))
-         (entries (gastown-ready--build-entries sources)))
-    ;; Two sources × (1 header + 1 issue) = 4 entries
-    (should (= 4 (length entries)))
-    (should (string= "section:town" (car (nth 0 entries))))
-    (should (string= "hq-1"         (car (nth 1 entries))))
-    (should (string= "section:gastown_el" (car (nth 2 entries))))
-    (should (string= "ge-2"         (car (nth 3 entries))))))
+(ert-deftest gastown-ready-test-render-issue-has-text-property ()
+  "Issue ID in rendered buffer has gastown-ready-issue-id property."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (gastown-ready--render
+     `((sources . ,(vector
+                    `((name . "gastown_el")
+                      (issues . ,(vector '((id . "ge-xyz") (title . "Test")
+                                           (priority . 2)))))))))
+    (goto-char (point-min))
+    (search-forward "ge-xyz")
+    (backward-char 1)
+    (should (equal "ge-xyz"
+                   (get-text-property (point) 'gastown-ready-issue-id)))))
 
 ;;; Mode and method existence tests
 
@@ -144,6 +175,10 @@
 (ert-deftest gastown-ready-test-execute-interactive-method ()
   "execute-interactive method is defined for gastown-command-ready."
   (should (fboundp 'gastown-command-execute-interactive)))
+
+(ert-deftest gastown-ready-test-entry-point-defined ()
+  "gastown-ready entry point is defined as autoload."
+  (should (fboundp 'gastown-ready)))
 
 (provide 'gastown-command-ready-test)
 ;;; gastown-command-ready-test.el ends here

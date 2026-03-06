@@ -262,10 +262,6 @@ List merge queue entries.")
 (beads-meta-define-transient gastown-command-hook "gastown-hook"
   "Show or attach work on a hook.")
 
-;;;###autoload (autoload 'gastown-ready "gastown-command-work" nil t)
-(beads-meta-define-transient gastown-command-ready "gastown-ready"
-  "Show work ready across town.")
-
 ;;;###autoload (autoload 'gastown-escalate "gastown-command-work" nil t)
 (beads-meta-define-transient gastown-command-escalate "gastown-escalate"
   "Escalate a critical issue.")

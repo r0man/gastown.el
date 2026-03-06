@@ -6,14 +6,15 @@
 
 ;;; Commentary:
 
-;; Provides a dedicated Emacs buffer for `gt ready --json' output with
-;; full beads.el integration.  Issues are grouped by source (rig/town)
-;; and displayed in tabulated-list-mode with priority/type/assignee/title
-;; columns.  Pressing RET on an issue row opens it with `beads-show'.
+;; Provides a dedicated Emacs buffer for `gt ready --json' output.
+;; Issues are grouped by source (rig/town) and displayed in a
+;; special-mode buffer matching the CLI rendering, with Emacs-native
+;; interactivity: clicking or pressing RET on an issue ID opens it
+;; with `beads-show'.
 ;;
 ;; Key bindings in gastown-ready-mode:
 ;;   g   - Refresh
-;;   RET - Open issue in beads
+;;   RET - Open issue at point in beads
 ;;   q   - Quit window
 
 ;;; Code:
@@ -22,7 +23,7 @@
 (require 'gastown-command-work)
 (require 'beads-command-show)
 
-;;; Faces (mirroring beads-list visual style)
+;;; Faces
 
 (defface gastown-ready-priority-critical
   '((t :foreground "red" :weight bold))
@@ -40,21 +41,38 @@
   :group 'gastown)
 
 (defface gastown-ready-priority-low
-  '((t :foreground "dim gray"))
+  '((t :inherit shadow))
   "Face for priority 3-4 (low/backlog)."
   :group 'gastown)
 
 (defface gastown-ready-section-header
-  '((t :weight bold :underline t))
+  '((t :weight bold))
   "Face for source section headers."
   :group 'gastown)
 
-;;; Buffer-local state
+(defface gastown-ready-issue-id
+  '((t :inherit link))
+  "Face for clickable issue IDs."
+  :group 'gastown)
 
-(defvar-local gastown-ready--sources nil
-  "Last fetched sources data (list of alists).")
+;;; Mode
 
-;;; Formatting helpers
+(defvar gastown-ready-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map special-mode-map)
+    (define-key map (kbd "g")   #'gastown-ready-refresh)
+    (define-key map (kbd "RET") #'gastown-ready-show-issue)
+    map)
+  "Keymap for `gastown-ready-mode'.")
+
+(define-derived-mode gastown-ready-mode special-mode "GT-Ready"
+  "Major mode for displaying Gas Town ready work.
+
+\\{gastown-ready-mode-map}"
+  (setq truncate-lines t)
+  (hl-line-mode 1))
+
+;;; Priority helpers
 
 (defun gastown-ready--priority-face (priority)
   "Return face for PRIORITY integer."
@@ -64,120 +82,110 @@
     (2 'gastown-ready-priority-medium)
     (_ 'gastown-ready-priority-low)))
 
-(defun gastown-ready--format-priority (priority)
-  "Format PRIORITY as a propertized string."
-  (let ((str (if (numberp priority) (format "P%d" priority) "")))
-    (propertize str 'face (gastown-ready--priority-face priority))))
+(defun gastown-ready--format-priority-tag (priority)
+  "Return propertized '[PN]' tag for PRIORITY."
+  (let* ((str (format "[P%s]" (if (numberp priority) priority "?")))
+         (face (gastown-ready--priority-face priority)))
+    (propertize str 'face face)))
 
-(defun gastown-ready--truncate (str width)
-  "Truncate STR to WIDTH characters."
-  (if (and str (> (length str) width))
-      (concat (substring str 0 (- width 1)) "…")
-    (or str "")))
+;;; Rendering
 
-;;; Tabulated-list entry builders
-
-(defconst gastown-ready--columns
-  (vector (list "Pri"      4  nil)
-          (list "ID"       10 t)
-          (list "Type"     9  t)
-          (list "Assignee" 24 t)
-          (list "Title"    60 t))
-  "Column format for `gastown-ready-mode'.")
-
-(defun gastown-ready--section-entry (source-name)
-  "Build a tabulated-list section header entry for SOURCE-NAME."
-  (let ((header (propertize (format "── %s " source-name)
-                            'face 'gastown-ready-section-header)))
-    (list (concat "section:" source-name)
-          (vector header "" "" "" ""))))
-
-(defun gastown-ready--issue-entry (issue)
-  "Build a tabulated-list entry from ISSUE alist."
+(defun gastown-ready--insert-issue (issue)
+  "Insert a single ISSUE line into the current buffer."
   (let* ((id       (or (alist-get 'id issue) ""))
          (title    (or (alist-get 'title issue) ""))
-         (type     (or (alist-get 'issue_type issue) ""))
          (priority (alist-get 'priority issue))
-         (assignee (or (alist-get 'assignee issue) "")))
-    (list id
-          (vector (gastown-ready--format-priority priority)
-                  id
-                  type
-                  (gastown-ready--truncate assignee 24)
-                  (gastown-ready--truncate title 60)))))
+         (pri-tag  (gastown-ready--format-priority-tag priority))
+         (id-btn   (propertize id
+                               'face 'gastown-ready-issue-id
+                               'gastown-ready-issue-id id
+                               'mouse-face 'highlight
+                               'help-echo (format "RET: open %s in beads" id)
+                               'keymap (let ((m (make-sparse-keymap))
+                                             (issue-id id))
+                                         (define-key m [mouse-1]
+                                           (lambda (_e) (interactive "e")
+                                             (beads-show issue-id)))
+                                         m))))
+    (insert "  " pri-tag " " id-btn " " title "\n")))
 
-(defun gastown-ready--build-entries (sources)
-  "Build tabulated-list entries from SOURCES vector."
-  (let (entries)
+(defun gastown-ready--count-issues (sources)
+  "Return (total p1-count p2-count) across all SOURCES."
+  (let ((total 0) (p1 0) (p2 0))
+    (seq-doseq (source sources)
+      (let ((issues (or (alist-get 'issues source) [])))
+        (seq-doseq (issue issues)
+          (cl-incf total)
+          (let ((pri (alist-get 'priority issue)))
+            (cond ((eql pri 1) (cl-incf p1))
+                  ((eql pri 2) (cl-incf p2)))))))
+    (list total p1 p2)))
+
+(defun gastown-ready--render (data)
+  "Render ready DATA into the current buffer."
+  (let* ((inhibit-read-only t)
+         (sources (or (alist-get 'sources data) [])))
+    (erase-buffer)
+    (insert (propertize "📋 Ready work across town:\n\n"
+                        'face 'gastown-ready-section-header))
     (seq-doseq (source sources)
       (let* ((name   (or (alist-get 'name source) "unknown"))
-             (issues (or (alist-get 'issues source) [])))
-        (push (gastown-ready--section-entry name) entries)
+             (issues (or (alist-get 'issues source) []))
+             (count  (length issues))
+             (header (if (> count 0)
+                         (format "%s/ (%d item%s)"
+                                 name count (if (= count 1) "" "s"))
+                       (format "%s/ (none)" name))))
+        (insert (propertize header 'face 'gastown-ready-section-header) "\n")
         (seq-doseq (issue issues)
-          (push (gastown-ready--issue-entry issue) entries))))
-    (nreverse entries)))
+          (gastown-ready--insert-issue issue))
+        (when (> count 0) (insert "\n"))))
+    (cl-destructuring-bind (total p1 p2)
+        (gastown-ready--count-issues sources)
+      (when (> total 0)
+        (insert (format "Total: %d item%s ready (%d P1, %d P2)\n"
+                        total (if (= total 1) "" "s") p1 p2))))
+    (goto-char (point-min))))
 
-;;; Mode definition
-
-(defvar gastown-ready-mode-map
-  (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
-    (define-key map (kbd "g")   #'gastown-ready-refresh)
-    (define-key map (kbd "RET") #'gastown-ready-show-issue)
-    (define-key map (kbd "q")   #'quit-window)
-    map)
-  "Keymap for `gastown-ready-mode'.")
-
-(define-derived-mode gastown-ready-mode tabulated-list-mode "Gastown-Ready"
-  "Major mode for displaying Gas Town ready work.
-
-\\{gastown-ready-mode-map}"
-  (setq tabulated-list-format gastown-ready--columns)
-  (setq tabulated-list-padding 1)
-  (tabulated-list-init-header)
-  (hl-line-mode 1))
-
-;;; Interactive commands within the buffer
+;;; Interactive commands
 
 (defun gastown-ready-show-issue ()
   "Open the issue at point in beads."
   (interactive)
-  (let ((id (tabulated-list-get-id)))
-    (cond
-     ((null id)
-      (user-error "No issue at point"))
-     ((string-prefix-p "section:" id)
-      (user-error "Point is on a section header, not an issue"))
-     (t
-      (beads-show id)))))
+  (let ((id (get-text-property (point) 'gastown-ready-issue-id)))
+    (if id
+        (beads-show id)
+      (user-error "No issue at point"))))
 
 (defun gastown-ready-refresh ()
   "Refresh the *gastown-ready* buffer."
   (interactive)
-  (gastown-ready--populate-buffer))
-
-;;; Buffer population
-
-(defun gastown-ready--populate-buffer ()
-  "Fetch gt ready --json and render into the current buffer."
-  (let* ((cmd (gastown-command-ready :json t))
-         (execution (gastown-command-execute cmd))
-         (data (oref execution result))
-         (sources (or (alist-get 'sources data) [])))
-    (setq gastown-ready--sources sources)
-    (setq tabulated-list-entries (gastown-ready--build-entries sources))
-    (tabulated-list-print t)
-    (message "Gastown ready: refreshed")))
+  (let* ((cmd  (gastown-command-ready :json t))
+         (exec (gastown-command-execute cmd))
+         (data (oref exec result)))
+    (gastown-ready--render data)
+    (message "Ready: refreshed")))
 
 ;;; Override gastown-command-execute-interactive
 
 (cl-defmethod gastown-command-execute-interactive ((_command gastown-command-ready))
   "Show ready work in a dedicated buffer instead of a terminal."
-  (let ((buf (get-buffer-create "*gastown-ready*")))
+  (gastown-ready))
+
+;;; Entry point
+
+;;;###autoload
+(defun gastown-ready ()
+  "Show ready work across town in a dedicated buffer."
+  (interactive)
+  (let* ((buf  (get-buffer-create "*gastown-ready*"))
+         (cmd  (gastown-command-ready :json t))
+         (exec (gastown-command-execute cmd))
+         (data (oref exec result)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-ready-mode)
         (gastown-ready-mode))
-      (gastown-ready--populate-buffer))
+      (gastown-ready--render data))
     (pop-to-buffer buf)))
 
 (provide 'gastown-command-ready)
