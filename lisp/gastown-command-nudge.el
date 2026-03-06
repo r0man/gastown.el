@@ -21,7 +21,7 @@
 ;;; Nudge Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-nudge (gastown-command)
+  (gastown-defcommand gastown-command-nudge (gastown-command-global-options)
     ((target
       :initarg :target
       :type (or null string)

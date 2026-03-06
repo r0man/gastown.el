@@ -21,7 +21,7 @@
 ;;; Rig List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-rig-list (gastown-command)
+  (gastown-defcommand gastown-command-rig-list (gastown-command-global-options)
     ()
     :documentation "Represents gt rig list command.
 Lists all rigs in the workspace with status, polecat count, and crew count."))
@@ -33,7 +33,7 @@ Lists all rigs in the workspace with status, polecat count, and crew count."))
 ;;; Rig Dock Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-rig-dock (gastown-command)
+  (gastown-defcommand gastown-command-rig-dock (gastown-command-global-options)
     ((rig-name
       :initarg :rig-name
       :type (or null string)
@@ -58,7 +58,7 @@ Docks a rig (makes it active)."))
 ;;; Rig Undock Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-rig-undock (gastown-command)
+  (gastown-defcommand gastown-command-rig-undock (gastown-command-global-options)
     ((rig-name
       :initarg :rig-name
       :type (or null string)
@@ -83,7 +83,7 @@ Undocks a rig (makes it inactive)."))
 ;;; Rig Park Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-rig-park (gastown-command)
+  (gastown-defcommand gastown-command-rig-park (gastown-command-global-options)
     ((rig-name
       :initarg :rig-name
       :type (or null string)
@@ -108,7 +108,7 @@ Parks a rig (pauses all workers)."))
 ;;; Rig Unpark Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-rig-unpark (gastown-command)
+  (gastown-defcommand gastown-command-rig-unpark (gastown-command-global-options)
     ((rig-name
       :initarg :rig-name
       :type (or null string)

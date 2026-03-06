@@ -22,7 +22,7 @@
 ;;; Done Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-done (gastown-command)
+  (gastown-defcommand gastown-command-done (gastown-command-global-options)
     ((cleanup-status
       :initarg :cleanup-status
       :type (or null string)
@@ -65,7 +65,7 @@ Signal work ready for merge queue."))
 ;;; Hook Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-hook (gastown-command)
+  (gastown-defcommand gastown-command-hook (gastown-command-global-options)
     ()
     :documentation "Represents gt hook command.
 Show or attach work on a hook."))
@@ -77,7 +77,7 @@ Show or attach work on a hook."))
 ;;; Ready Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-ready (gastown-command)
+  (gastown-defcommand gastown-command-ready (gastown-command-global-options)
     ()
     :documentation "Represents gt ready command.
 Show work ready across town."))
@@ -89,7 +89,7 @@ Show work ready across town."))
 ;;; Escalate Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-escalate (gastown-command)
+  (gastown-defcommand gastown-command-escalate (gastown-command-global-options)
     ((description
       :initarg :description
       :type (or null string)
@@ -146,7 +146,7 @@ Escalation system for critical issues."))
 ;;; Broadcast Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-broadcast (gastown-command)
+  (gastown-defcommand gastown-command-broadcast (gastown-command-global-options)
     ((message-text
       :initarg :message-text
       :type (or null string)
@@ -171,7 +171,7 @@ Send a nudge message to all workers."))
 ;;; Handoff Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-handoff (gastown-command)
+  (gastown-defcommand gastown-command-handoff (gastown-command-global-options)
     ((subject
       :initarg :subject
       :type (or null string)
@@ -212,7 +212,7 @@ Hand off to a fresh session, work continues from hook."))
 ;;; Unsling Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-unsling (gastown-command)
+  (gastown-defcommand gastown-command-unsling (gastown-command-global-options)
     ((target
       :initarg :target
       :type (or null string)
@@ -237,7 +237,7 @@ Remove work from an agent's hook."))
 ;;; MQ List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mq-list (gastown-command)
+  (gastown-defcommand gastown-command-mq-list (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -297,7 +297,7 @@ List merge queue entries."))
 ;;; Simple Work Commands
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-bead (gastown-command)
+  (gastown-defcommand gastown-command-bead (gastown-command-global-options)
     ()
     :documentation "Represents gt bead command.
 Show bead information."))
@@ -307,7 +307,7 @@ Show bead information."))
   "bead")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-cat (gastown-command)
+  (gastown-defcommand gastown-command-cat (gastown-command-global-options)
     ()
     :documentation "Represents gt cat command.
 Show bead content."))
@@ -317,7 +317,7 @@ Show bead content."))
   "cat")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-cleanup (gastown-command)
+  (gastown-defcommand gastown-command-cleanup (gastown-command-global-options)
     ()
     :documentation "Represents gt cleanup command.
 Clean up Gas Town resources."))
@@ -327,7 +327,7 @@ Clean up Gas Town resources."))
   "cleanup")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-close (gastown-command)
+  (gastown-defcommand gastown-command-close (gastown-command-global-options)
     ()
     :documentation "Represents gt close command.
 Close a bead."))
@@ -337,7 +337,7 @@ Close a bead."))
   "close")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-commit (gastown-command)
+  (gastown-defcommand gastown-command-commit (gastown-command-global-options)
     ()
     :documentation "Represents gt commit command.
 Commit work to git."))
@@ -347,7 +347,7 @@ Commit work to git."))
   "commit")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-compact (gastown-command)
+  (gastown-defcommand gastown-command-compact (gastown-command-global-options)
     ()
     :documentation "Represents gt compact command.
 Compact context for a session."))
@@ -357,7 +357,7 @@ Compact context for a session."))
   "compact")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-forget (gastown-command)
+  (gastown-defcommand gastown-command-forget (gastown-command-global-options)
     ()
     :documentation "Represents gt forget command.
 Remove a memory entry."))
@@ -367,7 +367,7 @@ Remove a memory entry."))
   "forget")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-formula (gastown-command)
+  (gastown-defcommand gastown-command-formula (gastown-command-global-options)
     ()
     :documentation "Represents gt formula command.
 Manage workflow formulas."))
@@ -377,7 +377,7 @@ Manage workflow formulas."))
   "formula")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-memories (gastown-command)
+  (gastown-defcommand gastown-command-memories (gastown-command-global-options)
     ()
     :documentation "Represents gt memories command.
 Show agent memories."))
@@ -387,7 +387,7 @@ Show agent memories."))
   "memories")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mol (gastown-command)
+  (gastown-defcommand gastown-command-mol (gastown-command-global-options)
     ()
     :documentation "Represents gt mol command.
 Manage molecules and workflow steps."))
@@ -397,7 +397,7 @@ Manage molecules and workflow steps."))
   "mol")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-orphans (gastown-command)
+  (gastown-defcommand gastown-command-orphans (gastown-command-global-options)
     ()
     :documentation "Represents gt orphans command.
 Show orphaned agents."))
@@ -407,7 +407,7 @@ Show orphaned agents."))
   "orphans")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-prune-branches (gastown-command)
+  (gastown-defcommand gastown-command-prune-branches (gastown-command-global-options)
     ()
     :documentation "Represents gt prune-branches command.
 Prune stale git branches."))
@@ -417,7 +417,7 @@ Prune stale git branches."))
   "prune-branches")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-release (gastown-command)
+  (gastown-defcommand gastown-command-release (gastown-command-global-options)
     ()
     :documentation "Represents gt release command.
 Release a bead or resource."))
@@ -427,7 +427,7 @@ Release a bead or resource."))
   "release")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-remember (gastown-command)
+  (gastown-defcommand gastown-command-remember (gastown-command-global-options)
     ()
     :documentation "Represents gt remember command.
 Add a memory entry."))
@@ -437,7 +437,7 @@ Add a memory entry."))
   "remember")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-resume (gastown-command)
+  (gastown-defcommand gastown-command-resume (gastown-command-global-options)
     ()
     :documentation "Represents gt resume command.
 Resume a session."))
@@ -447,7 +447,7 @@ Resume a session."))
   "resume")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-scheduler (gastown-command)
+  (gastown-defcommand gastown-command-scheduler (gastown-command-global-options)
     ()
     :documentation "Represents gt scheduler command.
 Show scheduler status."))
@@ -457,7 +457,7 @@ Show scheduler status."))
   "scheduler")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-show (gastown-command)
+  (gastown-defcommand gastown-command-show (gastown-command-global-options)
     ()
     :documentation "Represents gt show command.
 Show a bead."))
@@ -467,7 +467,7 @@ Show a bead."))
   "show")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-synthesis (gastown-command)
+  (gastown-defcommand gastown-command-synthesis (gastown-command-global-options)
     ()
     :documentation "Represents gt synthesis command.
 Synthesize work from multiple sources."))
@@ -477,7 +477,7 @@ Synthesize work from multiple sources."))
   "synthesis")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-wl (gastown-command)
+  (gastown-defcommand gastown-command-wl (gastown-command-global-options)
     ()
     :documentation "Represents gt wl command.
 Show work list."))

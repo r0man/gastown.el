@@ -21,7 +21,7 @@
 ;;; Convoy List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-convoy-list (gastown-command)
+  (gastown-defcommand gastown-command-convoy-list (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -63,7 +63,7 @@ Lists convoys with progress bars and status."))
 ;;; Convoy Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-convoy-status (gastown-command)
+  (gastown-defcommand gastown-command-convoy-status (gastown-command-global-options)
     ((convoy-id
       :initarg :convoy-id
       :type (or null string)

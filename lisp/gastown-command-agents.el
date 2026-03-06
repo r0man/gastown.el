@@ -21,7 +21,7 @@
 ;;; Agents List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-agents (gastown-command)
+  (gastown-defcommand gastown-command-agents (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -47,7 +47,7 @@ Lists all Gas Town agent sessions."))
 ;;; Witness Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-witness-status (gastown-command)
+  (gastown-defcommand gastown-command-witness-status (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -73,7 +73,7 @@ Shows witness health and monitoring status."))
 ;;; Refinery Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-refinery-status (gastown-command)
+  (gastown-defcommand gastown-command-refinery-status (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -99,7 +99,7 @@ Shows merge queue processor status."))
 ;;; Session List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-session-list (gastown-command)
+  (gastown-defcommand gastown-command-session-list (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -143,7 +143,7 @@ Lists polecat sessions."))
 ;;; Additional Agent Commands
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-boot (gastown-command)
+  (gastown-defcommand gastown-command-boot (gastown-command-global-options)
     ()
     :documentation "Represents gt boot command.
 Boot an agent."))
@@ -153,7 +153,7 @@ Boot an agent."))
   "boot")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-callbacks (gastown-command)
+  (gastown-defcommand gastown-command-callbacks (gastown-command-global-options)
     ()
     :documentation "Represents gt callbacks command.
 Show or manage callbacks."))
@@ -163,7 +163,7 @@ Show or manage callbacks."))
   "callbacks")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-deacon (gastown-command)
+  (gastown-defcommand gastown-command-deacon (gastown-command-global-options)
     ()
     :documentation "Represents gt deacon command.
 Manage deacon agents."))
@@ -173,7 +173,7 @@ Manage deacon agents."))
   "deacon")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-dog (gastown-command)
+  (gastown-defcommand gastown-command-dog (gastown-command-global-options)
     ()
     :documentation "Represents gt dog command.
 Manage dog agents."))
@@ -183,7 +183,7 @@ Manage dog agents."))
   "dog")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mayor (gastown-command)
+  (gastown-defcommand gastown-command-mayor (gastown-command-global-options)
     ()
     :documentation "Represents gt mayor command.
 Interact with the mayor agent."))
@@ -193,7 +193,7 @@ Interact with the mayor agent."))
   "mayor")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-role (gastown-command)
+  (gastown-defcommand gastown-command-role (gastown-command-global-options)
     ()
     :documentation "Represents gt role command.
 Show or manage agent roles."))
@@ -203,7 +203,7 @@ Show or manage agent roles."))
   "role")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-signal (gastown-command)
+  (gastown-defcommand gastown-command-signal (gastown-command-global-options)
     ()
     :documentation "Represents gt signal command.
 Send a signal to an agent."))

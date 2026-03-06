@@ -22,7 +22,7 @@
 ;;; Account Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-account (gastown-command)
+  (gastown-defcommand gastown-command-account (gastown-command-global-options)
     ()
     :documentation "Represents gt account command.
 Manage Gas Town account settings."))
@@ -34,7 +34,7 @@ Manage Gas Town account settings."))
 ;;; Completion Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-completion (gastown-command)
+  (gastown-defcommand gastown-command-completion (gastown-command-global-options)
     ()
     :documentation "Represents gt completion command.
 Generate shell completion scripts."))
@@ -46,7 +46,7 @@ Generate shell completion scripts."))
 ;;; Config Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-config (gastown-command)
+  (gastown-defcommand gastown-command-config (gastown-command-global-options)
     ()
     :documentation "Represents gt config command.
 Show or edit Gas Town configuration."))
@@ -58,7 +58,7 @@ Show or edit Gas Town configuration."))
 ;;; Disable Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-disable (gastown-command)
+  (gastown-defcommand gastown-command-disable (gastown-command-global-options)
     ()
     :documentation "Represents gt disable command.
 Disable a feature or plugin."))
@@ -70,7 +70,7 @@ Disable a feature or plugin."))
 ;;; Enable Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-enable (gastown-command)
+  (gastown-defcommand gastown-command-enable (gastown-command-global-options)
     ()
     :documentation "Represents gt enable command.
 Enable a feature or plugin."))
@@ -82,7 +82,7 @@ Enable a feature or plugin."))
 ;;; Hooks Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-hooks (gastown-command)
+  (gastown-defcommand gastown-command-hooks (gastown-command-global-options)
     ()
     :documentation "Represents gt hooks command.
 Manage Gas Town hooks."))
@@ -94,7 +94,7 @@ Manage Gas Town hooks."))
 ;;; Issue Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-issue (gastown-command)
+  (gastown-defcommand gastown-command-issue (gastown-command-global-options)
     ()
     :documentation "Represents gt issue command.
 Manage issues and configuration."))
@@ -106,7 +106,7 @@ Manage issues and configuration."))
 ;;; Plugin Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-plugin (gastown-command)
+  (gastown-defcommand gastown-command-plugin (gastown-command-global-options)
     ()
     :documentation "Represents gt plugin command.
 Manage Gas Town plugins."))
@@ -118,7 +118,7 @@ Manage Gas Town plugins."))
 ;;; Shell Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-shell (gastown-command)
+  (gastown-defcommand gastown-command-shell (gastown-command-global-options)
     ()
     :documentation "Represents gt shell command.
 Configure shell integration."))
@@ -130,7 +130,7 @@ Configure shell integration."))
 ;;; Theme Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-theme (gastown-command)
+  (gastown-defcommand gastown-command-theme (gastown-command-global-options)
     ()
     :documentation "Represents gt theme command.
 Manage Gas Town UI themes."))
@@ -142,7 +142,7 @@ Manage Gas Town UI themes."))
 ;;; Uninstall Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-uninstall (gastown-command)
+  (gastown-defcommand gastown-command-uninstall (gastown-command-global-options)
     ()
     :documentation "Represents gt uninstall command.
 Uninstall Gas Town components."))

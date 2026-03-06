@@ -22,7 +22,7 @@
 ;;; Up Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-up (gastown-command)
+  (gastown-defcommand gastown-command-up (gastown-command-global-options)
     ()
     :documentation "Represents gt up command.
 Brings up all Gas Town services."))
@@ -34,7 +34,7 @@ Brings up all Gas Town services."))
 ;;; Down Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-down (gastown-command)
+  (gastown-defcommand gastown-command-down (gastown-command-global-options)
     ()
     :documentation "Represents gt down command.
 Stops all Gas Town services."))
@@ -46,7 +46,7 @@ Stops all Gas Town services."))
 ;;; Shutdown Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-shutdown (gastown-command)
+  (gastown-defcommand gastown-command-shutdown (gastown-command-global-options)
     ((force
       :initarg :force
       :type boolean
@@ -71,7 +71,7 @@ Shutdown Gas Town with cleanup."))
 ;;; Daemon Status Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-daemon-status (gastown-command)
+  (gastown-defcommand gastown-command-daemon-status (gastown-command-global-options)
     ()
     :documentation "Represents gt daemon status command.
 Shows the Gas Town daemon status."))
@@ -101,7 +101,7 @@ Shows the Gas Town daemon status."))
 ;;; Additional Service Commands
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-dolt (gastown-command)
+  (gastown-defcommand gastown-command-dolt (gastown-command-global-options)
     ()
     :documentation "Represents gt dolt command.
 Manage the Dolt database server."))
@@ -111,7 +111,7 @@ Manage the Dolt database server."))
   "dolt")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-maintain (gastown-command)
+  (gastown-defcommand gastown-command-maintain (gastown-command-global-options)
     ()
     :documentation "Represents gt maintain command.
 Run maintenance tasks."))
@@ -121,7 +121,7 @@ Run maintenance tasks."))
   "maintain")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-quota (gastown-command)
+  (gastown-defcommand gastown-command-quota (gastown-command-global-options)
     ()
     :documentation "Represents gt quota command.
 Show or manage resource quotas."))
@@ -131,7 +131,7 @@ Show or manage resource quotas."))
   "quota")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-reaper (gastown-command)
+  (gastown-defcommand gastown-command-reaper (gastown-command-global-options)
     ()
     :documentation "Represents gt reaper command.
 Manage the reaper process."))
@@ -141,7 +141,7 @@ Manage the reaper process."))
   "reaper")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-start (gastown-command)
+  (gastown-defcommand gastown-command-start (gastown-command-global-options)
     ()
     :documentation "Represents gt start command.
 Start a specific service."))

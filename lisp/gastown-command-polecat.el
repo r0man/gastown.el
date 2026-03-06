@@ -21,7 +21,7 @@
 ;;; Polecat List Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-polecat-list (gastown-command)
+  (gastown-defcommand gastown-command-polecat-list (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -47,7 +47,7 @@ Lists polecats with name, status, hooked work, and session info."))
 ;;; Polecat Nuke Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-polecat-nuke (gastown-command)
+  (gastown-defcommand gastown-command-polecat-nuke (gastown-command-global-options)
     ((polecat-name
       :initarg :polecat-name
       :type (or null string)

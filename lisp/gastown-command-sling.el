@@ -21,7 +21,7 @@
 ;;; Sling Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-sling (gastown-command)
+  (gastown-defcommand gastown-command-sling (gastown-command-global-options)
     ((bead-id
       :initarg :bead-id
       :type (or null string)

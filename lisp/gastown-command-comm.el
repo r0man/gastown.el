@@ -22,7 +22,7 @@
 ;;; DND Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-dnd (gastown-command)
+  (gastown-defcommand gastown-command-dnd (gastown-command-global-options)
     ()
     :documentation "Represents gt dnd command.
 Toggle do-not-disturb mode."))
@@ -34,7 +34,7 @@ Toggle do-not-disturb mode."))
 ;;; Notify Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-notify (gastown-command)
+  (gastown-defcommand gastown-command-notify (gastown-command-global-options)
     ()
     :documentation "Represents gt notify command.
 Send a notification."))

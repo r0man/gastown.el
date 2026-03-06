@@ -15,7 +15,7 @@
 ;;; gastown-defcommand tests
 
 (eval-and-compile
-  (gastown-defcommand gastown-command--test-simple (gastown-command)
+  (gastown-defcommand gastown-command--test-simple (gastown-command-global-options)
     ((name
       :initarg :name
       :type (or null string)
@@ -93,7 +93,7 @@
 ;;; JSON command tests
 
 (eval-and-compile
-  (gastown-defcommand gastown-command--test-json (gastown-command)
+  (gastown-defcommand gastown-command--test-json (gastown-command-global-options)
     ()
     :documentation "Test JSON command."))
 

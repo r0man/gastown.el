@@ -21,7 +21,7 @@
 ;;; Peek Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-peek (gastown-command)
+  (gastown-defcommand gastown-command-peek (gastown-command-global-options)
     ((target
       :initarg :target
       :type (or null string)

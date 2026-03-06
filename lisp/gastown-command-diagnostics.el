@@ -21,7 +21,7 @@
 ;;; Vitals Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-vitals (gastown-command)
+  (gastown-defcommand gastown-command-vitals (gastown-command-global-options)
     ()
     :documentation "Represents gt vitals command.
 Shows unified health dashboard."))
@@ -33,7 +33,7 @@ Shows unified health dashboard."))
 ;;; Doctor Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-doctor (gastown-command)
+  (gastown-defcommand gastown-command-doctor (gastown-command-global-options)
     ((fix
       :initarg :fix
       :type boolean
@@ -58,7 +58,7 @@ Diagnose and optionally fix Gas Town issues."))
 ;;; Log Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-log (gastown-command)
+  (gastown-defcommand gastown-command-log (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -115,7 +115,7 @@ Show Gas Town logs."))
 ;;; Activity Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-activity (gastown-command)
+  (gastown-defcommand gastown-command-activity (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -141,7 +141,7 @@ Show recent agent activity."))
 ;;; Info Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-info (gastown-command)
+  (gastown-defcommand gastown-command-info (gastown-command-global-options)
     ()
     :documentation "Represents gt info command.
 Show Gas Town workspace information."))
@@ -153,7 +153,7 @@ Show Gas Town workspace information."))
 ;;; Whoami Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-whoami (gastown-command)
+  (gastown-defcommand gastown-command-whoami (gastown-command-global-options)
     ()
     :documentation "Represents gt whoami command.
 Show current identity for mail commands."))
@@ -165,7 +165,7 @@ Show current identity for mail commands."))
 ;;; Costs Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-costs (gastown-command)
+  (gastown-defcommand gastown-command-costs (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -191,7 +191,7 @@ Show cost metrics."))
 ;;; Trail Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-trail (gastown-command)
+  (gastown-defcommand gastown-command-trail (gastown-command-global-options)
     ((rig
       :initarg :rig
       :type (or null string)
@@ -217,7 +217,7 @@ Show recent agent activity trail."))
 ;;; Version Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-version (gastown-command)
+  (gastown-defcommand gastown-command-version (gastown-command-global-options)
     ()
     :documentation "Represents gt version command.
 Print version information."))
@@ -267,7 +267,7 @@ Print version information."))
 ;;; Additional Diagnostic Commands
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-audit (gastown-command)
+  (gastown-defcommand gastown-command-audit (gastown-command-global-options)
     ()
     :documentation "Represents gt audit command.
 Audit Gas Town configuration and state."))
@@ -277,7 +277,7 @@ Audit Gas Town configuration and state."))
   "audit")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-checkpoint (gastown-command)
+  (gastown-defcommand gastown-command-checkpoint (gastown-command-global-options)
     ()
     :documentation "Represents gt checkpoint command.
 Create a checkpoint snapshot."))
@@ -287,7 +287,7 @@ Create a checkpoint snapshot."))
   "checkpoint")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-dashboard (gastown-command)
+  (gastown-defcommand gastown-command-dashboard (gastown-command-global-options)
     ()
     :documentation "Represents gt dashboard command.
 Show the Gas Town dashboard."))
@@ -297,7 +297,7 @@ Show the Gas Town dashboard."))
   "dashboard")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-feed (gastown-command)
+  (gastown-defcommand gastown-command-feed (gastown-command-global-options)
     ()
     :documentation "Represents gt feed command.
 Show activity feed."))
@@ -307,7 +307,7 @@ Show activity feed."))
   "feed")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-heartbeat (gastown-command)
+  (gastown-defcommand gastown-command-heartbeat (gastown-command-global-options)
     ()
     :documentation "Represents gt heartbeat command.
 Show agent heartbeats."))
@@ -317,7 +317,7 @@ Show agent heartbeats."))
   "heartbeat")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-health (gastown-command)
+  (gastown-defcommand gastown-command-health (gastown-command-global-options)
     ()
     :documentation "Represents gt health command.
 Show overall health status."))
@@ -327,7 +327,7 @@ Show overall health status."))
   "health")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-metrics (gastown-command)
+  (gastown-defcommand gastown-command-metrics (gastown-command-global-options)
     ()
     :documentation "Represents gt metrics command.
 Show performance metrics."))
@@ -337,7 +337,7 @@ Show performance metrics."))
   "metrics")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-patrol (gastown-command)
+  (gastown-defcommand gastown-command-patrol (gastown-command-global-options)
     ()
     :documentation "Represents gt patrol command.
 Run patrol checks."))
@@ -347,7 +347,7 @@ Run patrol checks."))
   "patrol")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-prime (gastown-command)
+  (gastown-defcommand gastown-command-prime (gastown-command-global-options)
     ()
     :documentation "Represents gt prime command.
 Load full role context."))
@@ -357,7 +357,7 @@ Load full role context."))
   "prime")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-seance (gastown-command)
+  (gastown-defcommand gastown-command-seance (gastown-command-global-options)
     ()
     :documentation "Represents gt seance command.
 Investigate past sessions."))
@@ -367,7 +367,7 @@ Investigate past sessions."))
   "seance")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-stale (gastown-command)
+  (gastown-defcommand gastown-command-stale (gastown-command-global-options)
     ()
     :documentation "Represents gt stale command.
 Show stale resources."))
@@ -377,7 +377,7 @@ Show stale resources."))
   "stale")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-thanks (gastown-command)
+  (gastown-defcommand gastown-command-thanks (gastown-command-global-options)
     ()
     :documentation "Represents gt thanks command.
 Send thanks to an agent."))
@@ -387,7 +387,7 @@ Send thanks to an agent."))
   "thanks")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-upgrade (gastown-command)
+  (gastown-defcommand gastown-command-upgrade (gastown-command-global-options)
     ()
     :documentation "Represents gt upgrade command.
 Upgrade Gas Town."))
@@ -399,7 +399,7 @@ Upgrade Gas Town."))
 ;;; Additional Misc Commands
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-cycle (gastown-command)
+  (gastown-defcommand gastown-command-cycle (gastown-command-global-options)
     ()
     :documentation "Represents gt cycle command.
 Cycle to a fresh session."))
@@ -409,7 +409,7 @@ Cycle to a fresh session."))
   "cycle")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-krc (gastown-command)
+  (gastown-defcommand gastown-command-krc (gastown-command-global-options)
     ()
     :documentation "Represents gt krc command.
 Show krc information."))
@@ -419,7 +419,7 @@ Show krc information."))
   "krc")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-tap (gastown-command)
+  (gastown-defcommand gastown-command-tap (gastown-command-global-options)
     ()
     :documentation "Represents gt tap command.
 Tap into agent output."))
@@ -429,7 +429,7 @@ Tap into agent output."))
   "tap")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-town (gastown-command)
+  (gastown-defcommand gastown-command-town (gastown-command-global-options)
     ()
     :documentation "Represents gt town command.
 Show town information."))
@@ -439,7 +439,7 @@ Show town information."))
   "town")
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-warrant (gastown-command)
+  (gastown-defcommand gastown-command-warrant (gastown-command-global-options)
     ()
     :documentation "Represents gt warrant command.
 Show or manage warrants."))

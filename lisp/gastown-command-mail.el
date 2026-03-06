@@ -21,7 +21,7 @@
 ;;; Mail Inbox Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mail-inbox (gastown-command)
+  (gastown-defcommand gastown-command-mail-inbox (gastown-command-global-options)
     ((all
       :initarg :all
       :type boolean
@@ -46,7 +46,7 @@ Lists messages with read/unread indicators."))
 ;;; Mail Read Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mail-read (gastown-command)
+  (gastown-defcommand gastown-command-mail-read (gastown-command-global-options)
     ((mail-id
       :initarg :mail-id
       :type (or null string)
@@ -71,7 +71,7 @@ Reads a specific mail message."))
 ;;; Mail Send Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-mail-send (gastown-command)
+  (gastown-defcommand gastown-command-mail-send (gastown-command-global-options)
     ((recipient
       :initarg :recipient
       :type (or null string)

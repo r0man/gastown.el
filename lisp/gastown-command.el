@@ -14,8 +14,8 @@
 ;; generation.
 ;;
 ;; Class hierarchy:
-;;   gastown-command-global-options (global CLI flags: verbose, json)
-;;     └─ gastown-command (abstract base, with parse method)
+;;   gastown-command (abstract base)
+;;     └─ gastown-command-global-options (global CLI flags: verbose, json)
 ;;         ├─ gastown-command-status
 ;;         ├─ gastown-command-rig-list
 ;;         ├─ gastown-command-polecat-list
@@ -72,7 +72,7 @@ This macro:
    and returns the result from the execution object
 
 Example:
-  (gastown-defcommand gastown-command-foo (gastown-command)
+  (gastown-defcommand gastown-command-foo (gastown-command-global-options)
     ((name :initarg :name)
      (force :initarg :force :type boolean))
     :documentation \"Foo command.\")
@@ -197,9 +197,18 @@ When nil, auto-detects best available backend."
       ('term (gastown-command--run-term cmd-string buffer-name default-dir))
       (_ (gastown-command--run-term cmd-string buffer-name default-dir)))))
 
-;;; Global Options Mixin Class
+;;; Base Command Class
 
-(defclass gastown-command-global-options ()
+(defclass gastown-command ()
+  ()
+  :abstract t
+  :documentation "Abstract base class for all gt commands.
+Concrete commands inherit from `gastown-command-global-options'.
+Execution results are returned in `gastown-command-execution' objects.")
+
+;;; Global Options Class
+
+(defclass gastown-command-global-options (gastown-command)
   ((verbose
     :initarg :verbose
     :type boolean
@@ -215,17 +224,8 @@ When nil, auto-detects best available backend."
     :documentation "Output in JSON format (--json)."
     :long-option "json"
     :option-type :boolean))
-  :documentation "Mixin class providing global gt CLI options.
+  :documentation "Global gt CLI options; all concrete commands inherit from this.
 These flags apply to all gt commands.")
-
-;;; Base Command Class
-
-(defclass gastown-command (gastown-command-global-options)
-  ()
-  :abstract t
-  :documentation "Abstract base class for all gt commands.
-Inherits global options from `gastown-command-global-options'.
-Execution results are returned in `gastown-command-execution' objects.")
 
 ;;; Command Execution Result
 

@@ -21,7 +21,7 @@
 ;;; Crew Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-crew (gastown-command)
+  (gastown-defcommand gastown-command-crew (gastown-command-global-options)
     ()
     :documentation "Represents gt crew command.
 Manage the Gas Town crew."))
@@ -33,7 +33,7 @@ Manage the Gas Town crew."))
 ;;; Git-Init Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-git-init (gastown-command)
+  (gastown-defcommand gastown-command-git-init (gastown-command-global-options)
     ()
     :documentation "Represents gt git-init command.
 Initialize a git repository for Gas Town."))
@@ -45,7 +45,7 @@ Initialize a git repository for Gas Town."))
 ;;; Init Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-init (gastown-command)
+  (gastown-defcommand gastown-command-init (gastown-command-global-options)
     ()
     :documentation "Represents gt init command.
 Initialize a Gas Town workspace."))
@@ -57,7 +57,7 @@ Initialize a Gas Town workspace."))
 ;;; Install Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-install (gastown-command)
+  (gastown-defcommand gastown-command-install (gastown-command-global-options)
     ()
     :documentation "Represents gt install command.
 Install Gas Town components."))
@@ -69,7 +69,7 @@ Install Gas Town components."))
 ;;; Namepool Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-namepool (gastown-command)
+  (gastown-defcommand gastown-command-namepool (gastown-command-global-options)
     ()
     :documentation "Represents gt namepool command.
 Manage agent name pools."))
@@ -81,7 +81,7 @@ Manage agent name pools."))
 ;;; Worktree Command
 
 (eval-and-compile
-  (gastown-defcommand gastown-command-worktree (gastown-command)
+  (gastown-defcommand gastown-command-worktree (gastown-command-global-options)
     ()
     :documentation "Represents gt worktree command.
 Manage git worktrees."))
