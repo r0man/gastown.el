@@ -49,6 +49,7 @@
 (require 'gastown-command-services)
 (require 'gastown-command-sling)
 (require 'gastown-command-status)
+(require 'gastown-status-buffer)
 (require 'gastown-command-work)
 (require 'gastown-command-ready)
 (require 'gastown-command-workspace)
