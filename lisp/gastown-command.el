@@ -23,7 +23,7 @@
 ;;
 ;; Usage:
 ;;
-;;   (let ((cmd (gastown-command-status :json t :verbose t)))
+;;   (let ((cmd (gastown-command-status :json t)))
 ;;     (gastown-command-execute cmd))
 ;;
 ;;   (gastown-command-line cmd)
@@ -83,7 +83,8 @@ This generates:
   (declare (indent 2))
   (let ((bang-fn (intern (concat (symbol-name name) "!"))))
     `(progn
-       (defclass ,name ,superclasses ,slots ,@options)
+       (eval-and-compile
+         (defclass ,name ,superclasses ,slots ,@options))
        (defun ,bang-fn (&rest args)
          ,(format "Execute %s and return result.\n\nARGS are passed to the constructor." name)
          (oref (gastown-command-execute (apply #',name args)) result)))))
@@ -210,7 +211,7 @@ When nil, auto-detects best available backend."
    (json
     :initarg :json
     :type boolean
-    :initform t
+    :initform nil
     :documentation "Output in JSON format (--json)."
     :long-option "json"
     :option-type :boolean))
@@ -344,8 +345,8 @@ Returns a list of strings starting with the executable.")
 
 (cl-defmethod gastown-command-parse ((command gastown-command) execution)
   "Parse output from COMMAND using EXECUTION data.
-When :json is t (default), parses stdout as JSON and returns an alist.
-When :json is nil, returns stdout string."
+When :json is t, parses stdout as JSON and returns an alist.
+When :json is nil (default), returns stdout string."
   (if (not (oref command json))
       (oref execution stdout)
     (let ((stdout (oref execution stdout)))
