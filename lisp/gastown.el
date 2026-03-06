@@ -4,7 +4,7 @@
 
 ;; Author: Gas Town Contributors
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "27.1") (transient "0.10.1") (sesman "0.3.2"))
+;; Package-Requires: ((emacs "29.1") (transient "0.10.1") (sesman "0.3.2"))
 ;; Keywords: tools, processes
 ;; URL: https://github.com/r0man/gastown.el
 

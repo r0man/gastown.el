@@ -149,7 +149,7 @@ Key bindings:
         (insert "  ")
         (insert-text-button
          (format "%d unread" o-mail)
-         'action (lambda (_btn) (gastown-mail-inbox))
+         'action (lambda (_btn) (call-interactively #'gastown-mail-inbox))
          'follow-link t
          'help-echo "Open mail inbox"))
       (insert "\n"))))
