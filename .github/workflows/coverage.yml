@@ -1,0 +1,78 @@
+name: Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Emacs
+        uses: purcell/setup-emacs@master
+        with:
+          version: '30.2'
+
+      - name: Cache Eldev dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.emacs.d/eldev
+          key: ${{ runner.os }}-eldev-coverage-v3-${{ hashFiles('Eldev') }}
+          restore-keys: |
+            ${{ runner.os }}-eldev-coverage-v3-
+
+      - name: Install Eldev
+        run: curl --fail --silent --show-error --location https://raw.github.com/doublep/eldev/master/webinstall/github-eldev | sh
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install Beads via Homebrew
+        run: |
+          brew tap steveyegge/beads
+          brew install bd
+
+      - name: Verify Beads installation
+        run: bd version
+
+      - name: Install Dolt
+        run: sudo bash -c 'curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | bash'
+
+      - name: Verify Dolt installation
+        run: dolt version
+
+      - name: Clone beads.el dependency
+        run: |
+          mkdir -p ~/workspace
+          git clone https://github.com/r0man/beads.el.git ~/workspace/beads.el
+
+      - name: Create coverage directory
+        run: mkdir -p coverage
+
+      - name: Run tests with coverage
+        # Use source loading mode (-s) instead of packaged mode (-p) because
+        # undercover cannot instrument byte-compiled files.
+        # The Eldev file configures codecov format via eldev-undercover-config.
+        # EMACS_TEST_JUNIT_REPORT generates JUnit XML for Codecov Test Analytics.
+        # Use absolute path for JUnit report since Eldev changes cwd during tests.
+        run: CI=true BD_NO_DAEMON=1 EMACS_TEST_JUNIT_REPORT=${{ github.workspace }}/coverage/junit.xml eldev -s -dtT test -U coverage/codecov.json
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/codecov.json
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          files: coverage/junit.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
