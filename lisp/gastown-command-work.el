@@ -57,9 +57,6 @@
   :documentation "Represents gt done command.
 Signal work ready for merge queue.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-done))
-  "Return \"done\" as the CLI subcommand name."
-  "done")
 
 ;;; Hook Command
 
@@ -68,9 +65,6 @@ Signal work ready for merge queue.")
   :documentation "Represents gt hook command.
 Show or attach work on a hook.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-hook))
-  "Return \"hook\" as the CLI subcommand name."
-  "hook")
 
 ;;; Ready Command
 
@@ -79,9 +73,6 @@ Show or attach work on a hook.")
   :documentation "Represents gt ready command.
 Show work ready across town.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-ready))
-  "Return \"ready\" as the CLI subcommand name."
-  "ready")
 
 ;;; Escalate Command
 
@@ -135,9 +126,6 @@ Show work ready across town.")
   :documentation "Represents gt escalate command.
 Escalation system for critical issues.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-escalate))
-  "Return \"escalate\" as the CLI subcommand name."
-  "escalate")
 
 ;;; Broadcast Command
 
@@ -159,9 +147,6 @@ Escalation system for critical issues.")
   :documentation "Represents gt broadcast command.
 Send a nudge message to all workers.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-broadcast))
-  "Return \"broadcast\" as the CLI subcommand name."
-  "broadcast")
 
 ;;; Handoff Command
 
@@ -199,9 +184,6 @@ Send a nudge message to all workers.")
   :documentation "Represents gt handoff command.
 Hand off to a fresh session, work continues from hook.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-handoff))
-  "Return \"handoff\" as the CLI subcommand name."
-  "handoff")
 
 ;;; Unsling Command
 
@@ -223,9 +205,6 @@ Hand off to a fresh session, work continues from hook.")
   :documentation "Represents gt unsling command.
 Remove work from an agent's hook.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-unsling))
-  "Return \"unsling\" as the CLI subcommand name."
-  "unsling")
 
 ;;; MQ List Command
 
@@ -248,9 +227,6 @@ Remove work from an agent's hook.")
   :documentation "Represents gt mq list command.
 List merge queue entries.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-mq-list))
-  "Return \"mq list\" as the CLI subcommand name."
-  "mq list")
 
 ;;; Transient Menus
 
@@ -289,171 +265,114 @@ List merge queue entries.")
   :documentation "Represents gt bead command.
 Show bead information.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-bead))
-  "Return \"bead\" as the CLI subcommand name."
-  "bead")
 
 (gastown-defcommand gastown-command-cat (gastown-command-global-options)
   ()
   :documentation "Represents gt cat command.
 Show bead content.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-cat))
-  "Return \"cat\" as the CLI subcommand name."
-  "cat")
 
 (gastown-defcommand gastown-command-cleanup (gastown-command-global-options)
   ()
   :documentation "Represents gt cleanup command.
 Clean up Gas Town resources.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-cleanup))
-  "Return \"cleanup\" as the CLI subcommand name."
-  "cleanup")
 
 (gastown-defcommand gastown-command-close (gastown-command-global-options)
   ()
   :documentation "Represents gt close command.
 Close a bead.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-close))
-  "Return \"close\" as the CLI subcommand name."
-  "close")
 
 (gastown-defcommand gastown-command-commit (gastown-command-global-options)
   ()
   :documentation "Represents gt commit command.
 Commit work to git.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-commit))
-  "Return \"commit\" as the CLI subcommand name."
-  "commit")
 
 (gastown-defcommand gastown-command-compact (gastown-command-global-options)
   ()
   :documentation "Represents gt compact command.
 Compact context for a session.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-compact))
-  "Return \"compact\" as the CLI subcommand name."
-  "compact")
 
 (gastown-defcommand gastown-command-forget (gastown-command-global-options)
   ()
   :documentation "Represents gt forget command.
 Remove a memory entry.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-forget))
-  "Return \"forget\" as the CLI subcommand name."
-  "forget")
 
 (gastown-defcommand gastown-command-formula (gastown-command-global-options)
   ()
   :documentation "Represents gt formula command.
 Manage workflow formulas.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-formula))
-  "Return \"formula\" as the CLI subcommand name."
-  "formula")
 
 (gastown-defcommand gastown-command-memories (gastown-command-global-options)
   ()
   :documentation "Represents gt memories command.
 Show agent memories.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-memories))
-  "Return \"memories\" as the CLI subcommand name."
-  "memories")
 
 (gastown-defcommand gastown-command-mol (gastown-command-global-options)
   ()
   :documentation "Represents gt mol command.
 Manage molecules and workflow steps.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-mol))
-  "Return \"mol\" as the CLI subcommand name."
-  "mol")
 
 (gastown-defcommand gastown-command-orphans (gastown-command-global-options)
   ()
   :documentation "Represents gt orphans command.
 Show orphaned agents.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-orphans))
-  "Return \"orphans\" as the CLI subcommand name."
-  "orphans")
 
 (gastown-defcommand gastown-command-prune-branches (gastown-command-global-options)
   ()
   :documentation "Represents gt prune-branches command.
-Prune stale git branches.")
-
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-prune-branches))
-  "Return \"prune-branches\" as the CLI subcommand name."
-  "prune-branches")
+Prune stale git branches."
+  :cli-command "prune-branches")
 
 (gastown-defcommand gastown-command-release (gastown-command-global-options)
   ()
   :documentation "Represents gt release command.
 Release a bead or resource.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-release))
-  "Return \"release\" as the CLI subcommand name."
-  "release")
 
 (gastown-defcommand gastown-command-remember (gastown-command-global-options)
   ()
   :documentation "Represents gt remember command.
 Add a memory entry.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-remember))
-  "Return \"remember\" as the CLI subcommand name."
-  "remember")
 
 (gastown-defcommand gastown-command-resume (gastown-command-global-options)
   ()
   :documentation "Represents gt resume command.
 Resume a session.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-resume))
-  "Return \"resume\" as the CLI subcommand name."
-  "resume")
 
 (gastown-defcommand gastown-command-scheduler (gastown-command-global-options)
   ()
   :documentation "Represents gt scheduler command.
 Show scheduler status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-scheduler))
-  "Return \"scheduler\" as the CLI subcommand name."
-  "scheduler")
 
 (gastown-defcommand gastown-command-show (gastown-command-global-options)
   ()
   :documentation "Represents gt show command.
 Show a bead.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-show))
-  "Return \"show\" as the CLI subcommand name."
-  "show")
 
 (gastown-defcommand gastown-command-synthesis (gastown-command-global-options)
   ()
   :documentation "Represents gt synthesis command.
 Synthesize work from multiple sources.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-synthesis))
-  "Return \"synthesis\" as the CLI subcommand name."
-  "synthesis")
 
 (gastown-defcommand gastown-command-wl (gastown-command-global-options)
   ()
   :documentation "Represents gt wl command.
 Show work list.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-wl))
-  "Return \"wl\" as the CLI subcommand name."
-  "wl")
 
 ;;; Transients for Simple Work Commands
 

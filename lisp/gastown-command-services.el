@@ -26,9 +26,6 @@
   :documentation "Represents gt up command.
 Brings up all Gas Town services.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-up))
-  "Return \"up\" as the CLI subcommand name."
-  "up")
 
 ;;; Down Command
 
@@ -37,9 +34,6 @@ Brings up all Gas Town services.")
   :documentation "Represents gt down command.
 Stops all Gas Town services.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-down))
-  "Return \"down\" as the CLI subcommand name."
-  "down")
 
 ;;; Shutdown Command
 
@@ -61,9 +55,6 @@ Stops all Gas Town services.")
   :documentation "Represents gt shutdown command.
 Shutdown Gas Town with cleanup.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-shutdown))
-  "Return \"shutdown\" as the CLI subcommand name."
-  "shutdown")
 
 ;;; Daemon Status Command
 
@@ -72,9 +63,6 @@ Shutdown Gas Town with cleanup.")
   :documentation "Represents gt daemon status command.
 Shows the Gas Town daemon status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-daemon-status))
-  "Return \"daemon status\" as the CLI subcommand name."
-  "daemon status")
 
 ;;; Transient Menus
 
@@ -101,45 +89,30 @@ Shows the Gas Town daemon status.")
   :documentation "Represents gt dolt command.
 Manage the Dolt database server.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-dolt))
-  "Return \"dolt\" as the CLI subcommand name."
-  "dolt")
 
 (gastown-defcommand gastown-command-maintain (gastown-command-global-options)
   ()
   :documentation "Represents gt maintain command.
 Run maintenance tasks.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-maintain))
-  "Return \"maintain\" as the CLI subcommand name."
-  "maintain")
 
 (gastown-defcommand gastown-command-quota (gastown-command-global-options)
   ()
   :documentation "Represents gt quota command.
 Show or manage resource quotas.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-quota))
-  "Return \"quota\" as the CLI subcommand name."
-  "quota")
 
 (gastown-defcommand gastown-command-reaper (gastown-command-global-options)
   ()
   :documentation "Represents gt reaper command.
 Manage the reaper process.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-reaper))
-  "Return \"reaper\" as the CLI subcommand name."
-  "reaper")
 
 (gastown-defcommand gastown-command-start (gastown-command-global-options)
   ()
   :documentation "Represents gt start command.
 Start a specific service.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-start))
-  "Return \"start\" as the CLI subcommand name."
-  "start")
 
 ;;; Transients for Additional Service Commands
 

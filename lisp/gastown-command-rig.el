@@ -25,9 +25,6 @@
   :documentation "Represents gt rig list command.
 Lists all rigs in the workspace with status, polecat count, and crew count.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-list))
-  "Return \"rig list\" as the CLI subcommand name."
-  "rig list")
 
 ;;; Rig Dock Command
 
@@ -49,9 +46,6 @@ Lists all rigs in the workspace with status, polecat count, and crew count.")
   :documentation "Represents gt rig dock command.
 Docks a rig (makes it active).")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-dock))
-  "Return \"rig dock\" as the CLI subcommand name."
-  "rig dock")
 
 ;;; Rig Undock Command
 
@@ -73,9 +67,6 @@ Docks a rig (makes it active).")
   :documentation "Represents gt rig undock command.
 Undocks a rig (makes it inactive).")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-undock))
-  "Return \"rig undock\" as the CLI subcommand name."
-  "rig undock")
 
 ;;; Rig Park Command
 
@@ -97,9 +88,6 @@ Undocks a rig (makes it inactive).")
   :documentation "Represents gt rig park command.
 Parks a rig (pauses all workers).")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-park))
-  "Return \"rig park\" as the CLI subcommand name."
-  "rig park")
 
 ;;; Rig Unpark Command
 
@@ -121,9 +109,6 @@ Parks a rig (pauses all workers).")
   :documentation "Represents gt rig unpark command.
 Unparks a rig (resumes workers).")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-rig-unpark))
-  "Return \"rig unpark\" as the CLI subcommand name."
-  "rig unpark")
 
 ;;; Transient Menus
 

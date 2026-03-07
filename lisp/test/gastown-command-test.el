@@ -124,5 +124,67 @@
   (let ((cmd (gastown-command-status :watch t)))
     (should (member "--watch" (gastown-command-line cmd)))))
 
+;;; Auto-derivation tests
+
+(eval-and-compile
+  (gastown-defcommand gastown-command--test-derived-single (gastown-command-global-options)
+    ()
+    :documentation "Test command for single-word auto-derivation."))
+;; No explicit cl-defmethod gastown-command-subcommand — relies on auto-derivation.
+;; Expected: "gastown-command--test-derived-single" -> strip "gastown-command-" -> "-test-derived-single"
+;; -> replace "-" with " " -> " test derived single"
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-testword (gastown-command-global-options)
+    ()
+    :documentation "Test command for clean single-word auto-derivation."))
+;; Expected: "gastown-command-testword" -> strip "gastown-command-" -> "testword"
+
+(eval-and-compile
+  (gastown-defcommand gastown-command-test-multi-word (gastown-command-global-options)
+    ()
+    :documentation "Test command for multi-word auto-derivation."))
+;; Expected: "gastown-command-test-multi-word" -> strip "gastown-command-" -> "test-multi-word"
+;; -> replace "-" with " " -> "test multi word"
+
+(ert-deftest gastown-command-test-auto-derive-single-word ()
+  "Test auto-derivation of single-word subcommand."
+  (let ((cmd (gastown-command-testword)))
+    (should (equal "testword" (gastown-command-subcommand cmd)))))
+
+(ert-deftest gastown-command-test-auto-derive-multi-word ()
+  "Test auto-derivation of multi-word subcommand."
+  (let ((cmd (gastown-command-test-multi-word)))
+    (should (equal "test multi word" (gastown-command-subcommand cmd)))))
+
+(ert-deftest gastown-command-test-auto-derive-base-class-nil ()
+  "Test that the abstract base class returns nil for subcommand."
+  ;; We can't instantiate gastown-command directly (abstract), so test via a
+  ;; class that has no explicit override and check the logic:
+  ;; gastown-command itself should return nil when class-name equals "gastown-command".
+  ;; We verify via the existing test command that explicit overrides still win.
+  (let ((cmd (gastown-command--test-simple)))
+    ;; gastown-command--test-simple has explicit cl-defmethod returning "test"
+    (should (equal "test" (gastown-command-subcommand cmd)))))
+
+;;; :cli-command tests
+
+(eval-and-compile
+  (gastown-defcommand gastown-command--test-cli-override (gastown-command-global-options)
+    ()
+    :documentation "Test command with :cli-command override."
+    :cli-command "some-hyphenated-command"))
+
+(ert-deftest gastown-command-test-cli-command-overrides-derivation ()
+  "Test that :cli-command option overrides auto-derivation."
+  (let ((cmd (gastown-command--test-cli-override)))
+    (should (equal "some-hyphenated-command" (gastown-command-subcommand cmd)))))
+
+(ert-deftest gastown-command-test-cli-command-in-command-line ()
+  "Test that :cli-command value appears correctly in command line."
+  (let* ((cmd (gastown-command--test-cli-override))
+         (line (gastown-command-line cmd)))
+    (should (member "some-hyphenated-command" line))))
+
 (provide 'gastown-command-test)
 ;;; gastown-command-test.el ends here

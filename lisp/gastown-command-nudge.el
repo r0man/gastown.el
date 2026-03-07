@@ -52,9 +52,6 @@
   :documentation "Represents gt nudge command.
 Send a synchronous message to any Gas Town worker.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-nudge))
-  "Return \"nudge\" as the CLI subcommand name."
-  "nudge")
 
 ;;; Transient Menu
 

@@ -38,9 +38,6 @@
   :documentation "Represents gt mail inbox command.
 Lists messages with read/unread indicators.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-mail-inbox))
-  "Return \"mail inbox\" as the CLI subcommand name."
-  "mail inbox")
 
 ;;; Mail Read Command
 
@@ -62,9 +59,6 @@ Lists messages with read/unread indicators.")
   :documentation "Represents gt mail read command.
 Reads a specific mail message.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-mail-read))
-  "Return \"mail read\" as the CLI subcommand name."
-  "mail read")
 
 ;;; Mail Send Command
 
@@ -117,9 +111,6 @@ Reads a specific mail message.")
   :documentation "Represents gt mail send command.
 Sends a message to an agent.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-mail-send))
-  "Return \"mail send\" as the CLI subcommand name."
-  "mail send")
 
 ;;; Transient Menus
 

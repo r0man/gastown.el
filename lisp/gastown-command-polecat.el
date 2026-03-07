@@ -39,9 +39,6 @@
   :documentation "Represents gt polecat list command.
 Lists polecats with name, status, hooked work, and session info.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-polecat-list))
-  "Return \"polecat list\" as the CLI subcommand name."
-  "polecat list")
 
 ;;; Polecat Nuke Command
 
@@ -78,9 +75,6 @@ Lists polecats with name, status, hooked work, and session info.")
   :documentation "Represents gt polecat nuke command.
 Terminates a polecat's session and cleans up its worktree.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-polecat-nuke))
-  "Return \"polecat nuke\" as the CLI subcommand name."
-  "polecat nuke")
 
 ;;; Transient Menus
 

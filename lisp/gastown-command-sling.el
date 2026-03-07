@@ -82,9 +82,6 @@
   :documentation "Represents gt sling command.
 Assigns work to an agent — the unified work dispatch command.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-sling))
-  "Return \"sling\" as the CLI subcommand name."
-  "sling")
 
 ;;; Transient Menu
 

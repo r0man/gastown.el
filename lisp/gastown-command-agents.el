@@ -39,9 +39,6 @@
   :documentation "Represents gt agents command.
 Lists all Gas Town agent sessions.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-agents))
-  "Return \"agents\" as the CLI subcommand name."
-  "agents")
 
 ;;; Witness Status Command
 
@@ -64,9 +61,6 @@ Lists all Gas Town agent sessions.")
   :documentation "Represents gt witness status command.
 Shows witness health and monitoring status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-witness-status))
-  "Return \"witness status\" as the CLI subcommand name."
-  "witness status")
 
 ;;; Refinery Status Command
 
@@ -89,9 +83,6 @@ Shows witness health and monitoring status.")
   :documentation "Represents gt refinery status command.
 Shows merge queue processor status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-refinery-status))
-  "Return \"refinery status\" as the CLI subcommand name."
-  "refinery status")
 
 ;;; Session List Command
 
@@ -114,9 +105,6 @@ Shows merge queue processor status.")
   :documentation "Represents gt session list command.
 Lists polecat sessions.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-session-list))
-  "Return \"session list\" as the CLI subcommand name."
-  "session list")
 
 ;;; Transient Menus
 
@@ -143,63 +131,42 @@ Lists polecat sessions.")
   :documentation "Represents gt boot command.
 Boot an agent.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-boot))
-  "Return \"boot\" as the CLI subcommand name."
-  "boot")
 
 (gastown-defcommand gastown-command-callbacks (gastown-command-global-options)
   ()
   :documentation "Represents gt callbacks command.
 Show or manage callbacks.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-callbacks))
-  "Return \"callbacks\" as the CLI subcommand name."
-  "callbacks")
 
 (gastown-defcommand gastown-command-deacon (gastown-command-global-options)
   ()
   :documentation "Represents gt deacon command.
 Manage deacon agents.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-deacon))
-  "Return \"deacon\" as the CLI subcommand name."
-  "deacon")
 
 (gastown-defcommand gastown-command-dog (gastown-command-global-options)
   ()
   :documentation "Represents gt dog command.
 Manage dog agents.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-dog))
-  "Return \"dog\" as the CLI subcommand name."
-  "dog")
 
 (gastown-defcommand gastown-command-mayor (gastown-command-global-options)
   ()
   :documentation "Represents gt mayor command.
 Interact with the mayor agent.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-mayor))
-  "Return \"mayor\" as the CLI subcommand name."
-  "mayor")
 
 (gastown-defcommand gastown-command-role (gastown-command-global-options)
   ()
   :documentation "Represents gt role command.
 Show or manage agent roles.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-role))
-  "Return \"role\" as the CLI subcommand name."
-  "role")
 
 (gastown-defcommand gastown-command-signal (gastown-command-global-options)
   ()
   :documentation "Represents gt signal command.
 Send a signal to an agent.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-signal))
-  "Return \"signal\" as the CLI subcommand name."
-  "signal")
 
 ;;; Transients for Additional Agent Commands
 

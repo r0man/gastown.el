@@ -26,9 +26,6 @@
   :documentation "Represents gt account command.
 Manage Gas Town account settings.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-account))
-  "Return \"account\" as the CLI subcommand name."
-  "account")
 
 ;;; Completion Command
 
@@ -37,9 +34,6 @@ Manage Gas Town account settings.")
   :documentation "Represents gt completion command.
 Generate shell completion scripts.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-completion))
-  "Return \"completion\" as the CLI subcommand name."
-  "completion")
 
 ;;; Config Command
 
@@ -48,9 +42,6 @@ Generate shell completion scripts.")
   :documentation "Represents gt config command.
 Show or edit Gas Town configuration.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-config))
-  "Return \"config\" as the CLI subcommand name."
-  "config")
 
 ;;; Disable Command
 
@@ -59,9 +50,6 @@ Show or edit Gas Town configuration.")
   :documentation "Represents gt disable command.
 Disable a feature or plugin.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-disable))
-  "Return \"disable\" as the CLI subcommand name."
-  "disable")
 
 ;;; Enable Command
 
@@ -70,9 +58,6 @@ Disable a feature or plugin.")
   :documentation "Represents gt enable command.
 Enable a feature or plugin.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-enable))
-  "Return \"enable\" as the CLI subcommand name."
-  "enable")
 
 ;;; Hooks Command
 
@@ -81,9 +66,6 @@ Enable a feature or plugin.")
   :documentation "Represents gt hooks command.
 Manage Gas Town hooks.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-hooks))
-  "Return \"hooks\" as the CLI subcommand name."
-  "hooks")
 
 ;;; Issue Command
 
@@ -92,9 +74,6 @@ Manage Gas Town hooks.")
   :documentation "Represents gt issue command.
 Manage issues and configuration.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-issue))
-  "Return \"issue\" as the CLI subcommand name."
-  "issue")
 
 ;;; Plugin Command
 
@@ -103,9 +82,6 @@ Manage issues and configuration.")
   :documentation "Represents gt plugin command.
 Manage Gas Town plugins.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-plugin))
-  "Return \"plugin\" as the CLI subcommand name."
-  "plugin")
 
 ;;; Shell Command
 
@@ -114,9 +90,6 @@ Manage Gas Town plugins.")
   :documentation "Represents gt shell command.
 Configure shell integration.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-shell))
-  "Return \"shell\" as the CLI subcommand name."
-  "shell")
 
 ;;; Theme Command
 
@@ -125,9 +98,6 @@ Configure shell integration.")
   :documentation "Represents gt theme command.
 Manage Gas Town UI themes.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-theme))
-  "Return \"theme\" as the CLI subcommand name."
-  "theme")
 
 ;;; Uninstall Command
 
@@ -136,9 +106,6 @@ Manage Gas Town UI themes.")
   :documentation "Represents gt uninstall command.
 Uninstall Gas Town components.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-uninstall))
-  "Return \"uninstall\" as the CLI subcommand name."
-  "uninstall")
 
 ;;; Transient Menus
 

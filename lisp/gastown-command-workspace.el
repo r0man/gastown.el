@@ -25,20 +25,14 @@
   :documentation "Represents gt crew command.
 Manage the Gas Town crew.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-crew))
-  "Return \"crew\" as the CLI subcommand name."
-  "crew")
 
 ;;; Git-Init Command
 
 (gastown-defcommand gastown-command-git-init (gastown-command-global-options)
   ()
   :documentation "Represents gt git-init command.
-Initialize a git repository for Gas Town.")
-
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-git-init))
-  "Return \"git-init\" as the CLI subcommand name."
-  "git-init")
+Initialize a git repository for Gas Town."
+  :cli-command "git-init")
 
 ;;; Init Command
 
@@ -47,9 +41,6 @@ Initialize a git repository for Gas Town.")
   :documentation "Represents gt init command.
 Initialize a Gas Town workspace.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-init))
-  "Return \"init\" as the CLI subcommand name."
-  "init")
 
 ;;; Install Command
 
@@ -58,9 +49,6 @@ Initialize a Gas Town workspace.")
   :documentation "Represents gt install command.
 Install Gas Town components.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-install))
-  "Return \"install\" as the CLI subcommand name."
-  "install")
 
 ;;; Namepool Command
 
@@ -69,9 +57,6 @@ Install Gas Town components.")
   :documentation "Represents gt namepool command.
 Manage agent name pools.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-namepool))
-  "Return \"namepool\" as the CLI subcommand name."
-  "namepool")
 
 ;;; Worktree Command
 
@@ -80,9 +65,6 @@ Manage agent name pools.")
   :documentation "Represents gt worktree command.
 Manage git worktrees.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-worktree))
-  "Return \"worktree\" as the CLI subcommand name."
-  "worktree")
 
 ;;; Transient Menus
 

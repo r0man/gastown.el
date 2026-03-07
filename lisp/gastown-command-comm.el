@@ -26,9 +26,6 @@
   :documentation "Represents gt dnd command.
 Toggle do-not-disturb mode.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-dnd))
-  "Return \"dnd\" as the CLI subcommand name."
-  "dnd")
 
 ;;; Notify Command
 
@@ -37,9 +34,6 @@ Toggle do-not-disturb mode.")
   :documentation "Represents gt notify command.
 Send a notification.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-notify))
-  "Return \"notify\" as the CLI subcommand name."
-  "notify")
 
 ;;; Transient Menus
 

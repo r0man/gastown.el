@@ -71,6 +71,17 @@ This macro:
 2. Generates a NAME! convenience function that executes the command
    and returns the result from the execution object
 
+Custom keyword options (stripped before passing to defclass):
+  :cli-command STR    - Explicit CLI subcommand string.  When not
+                        specified, the subcommand is auto-derived
+                        from the class name by the default method
+                        on `gastown-command'.
+  :global-section SYM - Generate a transient menu and include SYM
+                        as a global options section.  The transient
+                        name is derived by stripping \"-command-\"
+                        from NAME.  The docstring uses the first
+                        sentence of :documentation.
+
 Example:
   (gastown-defcommand gastown-command-foo (gastown-command-global-options)
     ((name :initarg :name)
@@ -81,13 +92,42 @@ This generates:
   (defclass gastown-command-foo ...)
   (defun gastown-command-foo! (&rest args) ...)"
   (declare (indent 2))
-  (let ((bang-fn (intern (concat (symbol-name name) "!"))))
+  (let* ((result-1 (beads--extract-option :global-section options))
+         (global-section (car result-1))
+         (options-2 (cdr result-1))
+         (result-2 (beads--extract-option :cli-command options-2))
+         (cli-command (car result-2))
+         (defclass-options (cdr result-2))
+         (final-slots (if cli-command
+                          (append slots
+                                  `((cli-command
+                                     :initform ,cli-command
+                                     :allocation :class
+                                     :documentation "CLI subcommand name.")))
+                        slots))
+         (bang-fn (intern (concat (symbol-name name) "!")))
+         (transient-name (when global-section
+                           (beads--derive-transient-name name)))
+         (transient-prefix (when transient-name
+                             (symbol-name transient-name)))
+         (doc-pos (cl-position :documentation defclass-options))
+         (docstring (when doc-pos (nth (1+ doc-pos) defclass-options)))
+         (short-doc (when global-section
+                      (beads--extract-first-sentence docstring)))
+         (autoload-file (when transient-name
+                          (beads--current-feature-name))))
     `(progn
+       ,@(when (and transient-name autoload-file)
+           `((autoload ',transient-name ,autoload-file nil t)))
        (eval-and-compile
-         (defclass ,name ,superclasses ,slots ,@options))
+         (defclass ,name ,superclasses ,final-slots ,@defclass-options))
        (defun ,bang-fn (&rest args)
          ,(format "Execute %s and return result.\n\nARGS are passed to the constructor." name)
-         (oref (gastown-command-execute (apply #',name args)) result)))))
+         (oref (gastown-command-execute (apply #',name args)) result))
+       ,@(when global-section
+           `((beads-meta-define-transient ,name ,transient-prefix
+               ,short-doc
+               ,global-section))))))
 
 ;;; Terminal Backend Customization
 
@@ -324,9 +364,21 @@ Returns a list of strings starting with the executable.")
   "Default validation: return nil (valid)."
   nil)
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command))
-  "Return nil (no subcommand) for base command class."
-  nil)
+(cl-defmethod gastown-command-subcommand ((command gastown-command))
+  "Auto-derive subcommand name from COMMAND class name.
+Strips \"gastown-command-\" prefix and replaces hyphens with spaces.
+For the abstract `gastown-command' class itself, returns nil.
+Checks for a class-allocated cli-command slot first (set via :cli-command
+in `gastown-defcommand')."
+  (let ((class-name (symbol-name (eieio-object-class command))))
+    (unless (equal class-name "gastown-command")
+      (let ((cli-cmd (and (slot-exists-p command 'cli-command)
+                          (slot-boundp command 'cli-command)
+                          (oref command cli-command))))
+        (or cli-cmd
+            (when (string-match "\\`gastown-command-\\(.+\\)\\'" class-name)
+              (replace-regexp-in-string
+               "-" " " (match-string 1 class-name))))))))
 
 (cl-defmethod gastown-command-execute-interactive ((command gastown-command))
   "Default: run COMMAND in terminal buffer."

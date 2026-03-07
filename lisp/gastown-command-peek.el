@@ -54,9 +54,6 @@
   :documentation "Represents gt peek command.
 View recent output from a polecat or crew session.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-peek))
-  "Return \"peek\" as the CLI subcommand name."
-  "peek")
 
 ;;; Transient Menu
 

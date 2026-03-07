@@ -55,9 +55,6 @@
   :documentation "Represents gt convoy list command.
 Lists convoys with progress bars and status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-convoy-list))
-  "Return \"convoy list\" as the CLI subcommand name."
-  "convoy list")
 
 ;;; Convoy Status Command
 
@@ -79,9 +76,6 @@ Lists convoys with progress bars and status.")
   :documentation "Represents gt convoy status command.
 Shows detailed status for a specific convoy.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-convoy-status))
-  "Return \"convoy status\" as the CLI subcommand name."
-  "convoy status")
 
 ;;; Transient Menus
 

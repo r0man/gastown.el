@@ -70,9 +70,6 @@
   :documentation "Represents gt status command.
 Shows town name, registered rigs, polecats, and witness status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-status))
-  "Return \"status\" as the CLI subcommand name."
-  "status")
 
 ;;; Transient Menu
 

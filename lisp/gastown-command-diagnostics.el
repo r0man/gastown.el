@@ -25,9 +25,6 @@
   :documentation "Represents gt vitals command.
 Shows unified health dashboard.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-vitals))
-  "Return \"vitals\" as the CLI subcommand name."
-  "vitals")
 
 ;;; Doctor Command
 
@@ -49,9 +46,6 @@ Shows unified health dashboard.")
   :documentation "Represents gt doctor command.
 Diagnose and optionally fix Gas Town issues.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-doctor))
-  "Return \"doctor\" as the CLI subcommand name."
-  "doctor")
 
 ;;; Log Command
 
@@ -105,9 +99,6 @@ Diagnose and optionally fix Gas Town issues.")
   :documentation "Represents gt log command.
 Show Gas Town logs.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-log))
-  "Return \"log\" as the CLI subcommand name."
-  "log")
 
 ;;; Activity Command
 
@@ -130,9 +121,6 @@ Show Gas Town logs.")
   :documentation "Represents gt activity command.
 Show recent agent activity.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-activity))
-  "Return \"activity\" as the CLI subcommand name."
-  "activity")
 
 ;;; Info Command
 
@@ -141,9 +129,6 @@ Show recent agent activity.")
   :documentation "Represents gt info command.
 Show Gas Town workspace information.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-info))
-  "Return \"info\" as the CLI subcommand name."
-  "info")
 
 ;;; Whoami Command
 
@@ -152,9 +137,6 @@ Show Gas Town workspace information.")
   :documentation "Represents gt whoami command.
 Show current identity for mail commands.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-whoami))
-  "Return \"whoami\" as the CLI subcommand name."
-  "whoami")
 
 ;;; Costs Command
 
@@ -177,9 +159,6 @@ Show current identity for mail commands.")
   :documentation "Represents gt costs command.
 Show cost metrics.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-costs))
-  "Return \"costs\" as the CLI subcommand name."
-  "costs")
 
 ;;; Trail Command
 
@@ -202,9 +181,6 @@ Show cost metrics.")
   :documentation "Represents gt trail command.
 Show recent agent activity trail.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-trail))
-  "Return \"trail\" as the CLI subcommand name."
-  "trail")
 
 ;;; Version Command
 
@@ -213,9 +189,6 @@ Show recent agent activity trail.")
   :documentation "Represents gt version command.
 Print version information.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-version))
-  "Return \"version\" as the CLI subcommand name."
-  "version")
 
 ;;; Transient Menus
 
@@ -262,117 +235,78 @@ Print version information.")
   :documentation "Represents gt audit command.
 Audit Gas Town configuration and state.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-audit))
-  "Return \"audit\" as the CLI subcommand name."
-  "audit")
 
 (gastown-defcommand gastown-command-checkpoint (gastown-command-global-options)
   ()
   :documentation "Represents gt checkpoint command.
 Create a checkpoint snapshot.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-checkpoint))
-  "Return \"checkpoint\" as the CLI subcommand name."
-  "checkpoint")
 
 (gastown-defcommand gastown-command-dashboard (gastown-command-global-options)
   ()
   :documentation "Represents gt dashboard command.
 Show the Gas Town dashboard.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-dashboard))
-  "Return \"dashboard\" as the CLI subcommand name."
-  "dashboard")
 
 (gastown-defcommand gastown-command-feed (gastown-command-global-options)
   ()
   :documentation "Represents gt feed command.
 Show activity feed.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-feed))
-  "Return \"feed\" as the CLI subcommand name."
-  "feed")
 
 (gastown-defcommand gastown-command-heartbeat (gastown-command-global-options)
   ()
   :documentation "Represents gt heartbeat command.
 Show agent heartbeats.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-heartbeat))
-  "Return \"heartbeat\" as the CLI subcommand name."
-  "heartbeat")
 
 (gastown-defcommand gastown-command-health (gastown-command-global-options)
   ()
   :documentation "Represents gt health command.
 Show overall health status.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-health))
-  "Return \"health\" as the CLI subcommand name."
-  "health")
 
 (gastown-defcommand gastown-command-metrics (gastown-command-global-options)
   ()
   :documentation "Represents gt metrics command.
 Show performance metrics.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-metrics))
-  "Return \"metrics\" as the CLI subcommand name."
-  "metrics")
 
 (gastown-defcommand gastown-command-patrol (gastown-command-global-options)
   ()
   :documentation "Represents gt patrol command.
 Run patrol checks.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-patrol))
-  "Return \"patrol\" as the CLI subcommand name."
-  "patrol")
 
 (gastown-defcommand gastown-command-prime (gastown-command-global-options)
   ()
   :documentation "Represents gt prime command.
 Load full role context.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-prime))
-  "Return \"prime\" as the CLI subcommand name."
-  "prime")
 
 (gastown-defcommand gastown-command-seance (gastown-command-global-options)
   ()
   :documentation "Represents gt seance command.
 Investigate past sessions.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-seance))
-  "Return \"seance\" as the CLI subcommand name."
-  "seance")
 
 (gastown-defcommand gastown-command-stale (gastown-command-global-options)
   ()
   :documentation "Represents gt stale command.
 Show stale resources.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-stale))
-  "Return \"stale\" as the CLI subcommand name."
-  "stale")
 
 (gastown-defcommand gastown-command-thanks (gastown-command-global-options)
   ()
   :documentation "Represents gt thanks command.
 Send thanks to an agent.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-thanks))
-  "Return \"thanks\" as the CLI subcommand name."
-  "thanks")
 
 (gastown-defcommand gastown-command-upgrade (gastown-command-global-options)
   ()
   :documentation "Represents gt upgrade command.
 Upgrade Gas Town.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-upgrade))
-  "Return \"upgrade\" as the CLI subcommand name."
-  "upgrade")
 
 ;;; Additional Misc Commands
 
@@ -381,45 +315,30 @@ Upgrade Gas Town.")
   :documentation "Represents gt cycle command.
 Cycle to a fresh session.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-cycle))
-  "Return \"cycle\" as the CLI subcommand name."
-  "cycle")
 
 (gastown-defcommand gastown-command-krc (gastown-command-global-options)
   ()
   :documentation "Represents gt krc command.
 Show krc information.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-krc))
-  "Return \"krc\" as the CLI subcommand name."
-  "krc")
 
 (gastown-defcommand gastown-command-tap (gastown-command-global-options)
   ()
   :documentation "Represents gt tap command.
 Tap into agent output.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-tap))
-  "Return \"tap\" as the CLI subcommand name."
-  "tap")
 
 (gastown-defcommand gastown-command-town (gastown-command-global-options)
   ()
   :documentation "Represents gt town command.
 Show town information.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-town))
-  "Return \"town\" as the CLI subcommand name."
-  "town")
 
 (gastown-defcommand gastown-command-warrant (gastown-command-global-options)
   ()
   :documentation "Represents gt warrant command.
 Show or manage warrants.")
 
-(cl-defmethod gastown-command-subcommand ((_command gastown-command-warrant))
-  "Return \"warrant\" as the CLI subcommand name."
-  "warrant")
 
 ;;; Transients for Additional Diagnostic Commands
 
