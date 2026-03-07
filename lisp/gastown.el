@@ -53,6 +53,7 @@
 (require 'gastown-command-work)
 (require 'gastown-command-ready)
 (require 'gastown-command-workspace)
+(require 'gastown-tabulated)
 
 ;;; Variables
 
