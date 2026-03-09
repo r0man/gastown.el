@@ -11,6 +11,7 @@
 
 (require 'ert)
 (require 'gastown-tabulated)
+(require 'gastown-spec)
 
 ;;; ============================================================
 ;;; Helpers
@@ -304,6 +305,137 @@
   (should (fboundp 'gastown-session-list-show-buffer))
   (should (fboundp 'gastown-convoy-list-show-buffer))
   (should (fboundp 'gastown-mail-inbox-show-buffer)))
+
+;;; ============================================================
+;;; Filter key bindings
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-filter-key-bound ()
+  "Each mode's keymap has a \"/\" filter key binding."
+  (should (lookup-key gastown-rig-list-mode-map     (kbd "/")))
+  (should (lookup-key gastown-session-list-mode-map (kbd "/")))
+  (should (lookup-key gastown-convoy-list-mode-map  (kbd "/")))
+  (should (lookup-key gastown-mail-inbox-mode-map   (kbd "/"))))
+
+;;; ============================================================
+;;; Effective spec helpers
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-effective-rig-spec-uses-buffer-local ()
+  "gastown-tabulated--effective-rig-spec returns buffer-local spec when set."
+  (with-temp-buffer
+    (let ((my-spec (gastown-rig-spec :status "operational")))
+      (setq gastown-current-rig-spec my-spec)
+      (should (eq my-spec (gastown-tabulated--effective-rig-spec))))))
+
+(ert-deftest gastown-tabulated-test-effective-rig-spec-uses-default ()
+  "gastown-tabulated--effective-rig-spec returns default spec when buffer-local is nil."
+  (with-temp-buffer
+    (setq gastown-current-rig-spec nil)
+    (should (eq gastown-default-rig-spec
+                (gastown-tabulated--effective-rig-spec)))))
+
+(ert-deftest gastown-tabulated-test-effective-agent-spec-uses-buffer-local ()
+  "gastown-tabulated--effective-agent-spec returns buffer-local spec when set."
+  (with-temp-buffer
+    (let ((my-spec (gastown-agent-spec :role "polecat")))
+      (setq gastown-current-agent-spec my-spec)
+      (should (eq my-spec (gastown-tabulated--effective-agent-spec))))))
+
+(ert-deftest gastown-tabulated-test-effective-agent-spec-uses-default ()
+  "gastown-tabulated--effective-agent-spec returns default spec when buffer-local is nil."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec nil)
+    (should (eq gastown-default-agent-spec
+                (gastown-tabulated--effective-agent-spec)))))
+
+(ert-deftest gastown-tabulated-test-effective-convoy-spec-uses-buffer-local ()
+  "gastown-tabulated--effective-convoy-spec returns buffer-local spec when set."
+  (with-temp-buffer
+    (let ((my-spec (gastown-convoy-spec :status "open")))
+      (setq gastown-current-convoy-spec my-spec)
+      (should (eq my-spec (gastown-tabulated--effective-convoy-spec))))))
+
+(ert-deftest gastown-tabulated-test-effective-convoy-spec-uses-default ()
+  "gastown-tabulated--effective-convoy-spec returns default spec when buffer-local is nil."
+  (with-temp-buffer
+    (setq gastown-current-convoy-spec nil)
+    (should (eq gastown-default-convoy-spec
+                (gastown-tabulated--effective-convoy-spec)))))
+
+(ert-deftest gastown-tabulated-test-effective-mail-spec-uses-buffer-local ()
+  "gastown-tabulated--effective-mail-spec returns buffer-local spec when set."
+  (with-temp-buffer
+    (let ((my-spec (gastown-mail-spec :unread-only t)))
+      (setq gastown-current-mail-spec my-spec)
+      (should (eq my-spec (gastown-tabulated--effective-mail-spec))))))
+
+(ert-deftest gastown-tabulated-test-effective-mail-spec-uses-default ()
+  "gastown-tabulated--effective-mail-spec returns default spec when buffer-local is nil."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec nil)
+    (should (eq gastown-default-mail-spec
+                (gastown-tabulated--effective-mail-spec)))))
+
+;;; ============================================================
+;;; Refresh uses spec args
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-rig-refresh-passes-spec-args ()
+  "gastown-rig-list-refresh passes spec extra-args to the command."
+  (let (captured-args)
+    (cl-letf (((symbol-function 'gastown-command-rig-list!)
+               (lambda (&rest args)
+                 (setq captured-args args)
+                 []))
+              ((symbol-function 'gastown-rig-list--populate) #'ignore))
+      (with-temp-buffer
+        (setq gastown-current-rig-spec (gastown-rig-spec :status "operational"))
+        (gastown-rig-list-refresh)
+        (should (member "--status=operational"
+                        (plist-get captured-args :extra-args)))))))
+
+(ert-deftest gastown-tabulated-test-session-refresh-passes-spec-args ()
+  "gastown-session-list-refresh passes spec extra-args to the command."
+  (let (captured-args)
+    (cl-letf (((symbol-function 'gastown-command-session-list!)
+               (lambda (&rest args)
+                 (setq captured-args args)
+                 []))
+              ((symbol-function 'gastown-session-list--populate) #'ignore))
+      (with-temp-buffer
+        (setq gastown-current-agent-spec (gastown-agent-spec :role "polecat"))
+        (gastown-session-list-refresh)
+        (should (member "--role=polecat"
+                        (plist-get captured-args :extra-args)))))))
+
+(ert-deftest gastown-tabulated-test-convoy-refresh-passes-spec-args ()
+  "gastown-convoy-list-refresh passes spec extra-args to the command."
+  (let (captured-args)
+    (cl-letf (((symbol-function 'gastown-command-convoy-list!)
+               (lambda (&rest args)
+                 (setq captured-args args)
+                 []))
+              ((symbol-function 'gastown-convoy-list--populate) #'ignore))
+      (with-temp-buffer
+        (setq gastown-current-convoy-spec (gastown-convoy-spec :status "open"))
+        (gastown-convoy-list-refresh)
+        (should (member "--status=open"
+                        (plist-get captured-args :extra-args)))))))
+
+(ert-deftest gastown-tabulated-test-mail-refresh-passes-spec-args ()
+  "gastown-mail-inbox-refresh passes spec extra-args to the command."
+  (let (captured-args)
+    (cl-letf (((symbol-function 'gastown-command-mail-inbox!)
+               (lambda (&rest args)
+                 (setq captured-args args)
+                 []))
+              ((symbol-function 'gastown-mail-inbox--populate) #'ignore))
+      (with-temp-buffer
+        (setq gastown-current-mail-spec (gastown-mail-spec :unread-only t))
+        (gastown-mail-inbox-refresh)
+        (should (member "--unread"
+                        (plist-get captured-args :extra-args)))))))
 
 (provide 'gastown-tabulated-test)
 ;;; gastown-tabulated-test.el ends here

@@ -263,7 +263,14 @@ Execution results are returned in `gastown-command-execution' objects.")
     :initform nil
     :documentation "Output in JSON format (--json)."
     :long-option "json"
-    :option-type :boolean))
+    :option-type :boolean)
+   (extra-args
+    :initarg :extra-args
+    :type list
+    :initform nil
+    :documentation "Additional raw CLI arguments appended to the command line.
+Use this to pass filter or spec arguments that are not modelled as slots.
+Example: \\='(\"--status=operational\" \"--order=name\")"))
   :documentation "Global gt CLI options; all concrete commands inherit from this.
 These flags apply to all gt commands.")
 
@@ -353,12 +360,16 @@ Returns a list of strings starting with the executable.")
 (cl-defmethod gastown-command-line ((command gastown-command))
   "Build command arguments from COMMAND using slot metadata."
   (let ((global-args (gastown-command--build-global-options command))
-        (subcommand (gastown-command-subcommand command)))
+        (subcommand (gastown-command-subcommand command))
+        (extra (when (and (slot-exists-p command 'extra-args)
+                          (slot-boundp command 'extra-args))
+                 (oref command extra-args))))
     (if subcommand
         (append (split-string subcommand)
                 global-args
-                (beads-meta-build-command-line command))
-      global-args)))
+                (beads-meta-build-command-line command)
+                extra)
+      (append global-args extra))))
 
 (cl-defmethod gastown-command-validate ((_command gastown-command))
   "Default validation: return nil (valid)."

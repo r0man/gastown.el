@@ -28,6 +28,7 @@
 (require 'gastown-command-agents)
 (require 'gastown-command-convoy)
 (require 'gastown-command-mail)
+(require 'gastown-spec)
 
 ;;; ============================================================
 ;;; Pagination Mixin — Buffer-Local State
@@ -175,6 +176,30 @@ ALL-ENTRIES is the complete list of tabulated-list entries."
   "Keymap providing pagination bindings for tabulated-list views.")
 
 ;;; ============================================================
+;;; Effective Spec Helpers
+;;; ============================================================
+
+(defun gastown-tabulated--effective-rig-spec ()
+  "Return the effective rig spec for the current buffer.
+Returns `gastown-current-rig-spec' when set, else `gastown-default-rig-spec'."
+  (or gastown-current-rig-spec gastown-default-rig-spec))
+
+(defun gastown-tabulated--effective-agent-spec ()
+  "Return the effective agent spec for the current buffer.
+Returns `gastown-current-agent-spec' when set, else `gastown-default-agent-spec'."
+  (or gastown-current-agent-spec gastown-default-agent-spec))
+
+(defun gastown-tabulated--effective-convoy-spec ()
+  "Return the effective convoy spec for the current buffer.
+Returns `gastown-current-convoy-spec' when set, else `gastown-default-convoy-spec'."
+  (or gastown-current-convoy-spec gastown-default-convoy-spec))
+
+(defun gastown-tabulated--effective-mail-spec ()
+  "Return the effective mail spec for the current buffer.
+Returns `gastown-current-mail-spec' when set, else `gastown-default-mail-spec'."
+  (or gastown-current-mail-spec gastown-default-mail-spec))
+
+;;; ============================================================
 ;;; Rig List
 ;;; ============================================================
 
@@ -213,14 +238,20 @@ ALL-ENTRIES is the complete list of tabulated-list entries."
                   (number-to-string polecats)
                   (number-to-string crew)))))
 
+(defun gastown-rig-list-filter ()
+  "Invoke the rig list filter menu."
+  (interactive)
+  (message "Rig list filter: set `gastown-current-rig-spec' or use the filter menu (ge-f8m)."))
+
 (defvar gastown-rig-list-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map tabulated-list-mode-map)
-    (define-key map (kbd "g") #'gastown-rig-list-refresh)
+    (define-key map (kbd "g")   #'gastown-rig-list-refresh)
     (define-key map (kbd "RET") #'gastown-rig-list-show-rig)
-    (define-key map (kbd "]") #'gastown-paged-next-page)
-    (define-key map (kbd "[") #'gastown-paged-prev-page)
-    (define-key map (kbd "G") #'gastown-paged-goto-page)
+    (define-key map (kbd "/")   #'gastown-rig-list-filter)
+    (define-key map (kbd "]")   #'gastown-paged-next-page)
+    (define-key map (kbd "[")   #'gastown-paged-prev-page)
+    (define-key map (kbd "G")   #'gastown-paged-goto-page)
     map)
   "Keymap for `gastown-rig-list-mode'.")
 
@@ -249,9 +280,12 @@ Key bindings:
 
 ;;;###autoload
 (defun gastown-rig-list-refresh ()
-  "Refresh the *gastown-rig-list* buffer."
+  "Refresh the *gastown-rig-list* buffer.
+Applies the current buffer-local `gastown-current-rig-spec' filter."
   (interactive)
-  (let ((data (gastown-command-rig-list! :json t)))
+  (let* ((spec (gastown-tabulated--effective-rig-spec))
+         (data (gastown-command-rig-list! :json t
+                                          :extra-args (gastown-spec--to-args spec))))
     (gastown-rig-list--populate data)
     (message "Rig list refreshed")))
 
@@ -267,12 +301,11 @@ Key bindings:
 (defun gastown-rig-list-show-buffer ()
   "Open (or switch to) the *gastown-rig-list* paginated buffer."
   (interactive)
-  (let* ((buf  (get-buffer-create gastown-rig-list-buffer-name))
-         (data (gastown-command-rig-list! :json t)))
+  (let* ((buf  (get-buffer-create gastown-rig-list-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-rig-list-mode)
         (gastown-rig-list-mode))
-      (gastown-rig-list--populate data))
+      (gastown-rig-list-refresh))
     (pop-to-buffer buf)))
 
 (cl-defmethod gastown-command-execute-interactive ((_cmd gastown-command-rig-list))
@@ -309,11 +342,17 @@ Key bindings:
     (list session-id
           (vector rig polecat session-id indicator))))
 
+(defun gastown-session-list-filter ()
+  "Invoke the session list filter menu."
+  (interactive)
+  (message "Session list filter: set `gastown-current-agent-spec' or use the filter menu (ge-f8m)."))
+
 (defvar gastown-session-list-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map tabulated-list-mode-map)
     (define-key map (kbd "g")   #'gastown-session-list-refresh)
     (define-key map (kbd "RET") #'gastown-session-list-jump)
+    (define-key map (kbd "/")   #'gastown-session-list-filter)
     (define-key map (kbd "]")   #'gastown-paged-next-page)
     (define-key map (kbd "[")   #'gastown-paged-prev-page)
     (define-key map (kbd "G")   #'gastown-paged-goto-page)
@@ -343,9 +382,12 @@ Key bindings:
 
 ;;;###autoload
 (defun gastown-session-list-refresh ()
-  "Refresh the *gastown-session-list* buffer."
+  "Refresh the *gastown-session-list* buffer.
+Applies the current buffer-local `gastown-current-agent-spec' filter."
   (interactive)
-  (let ((data (gastown-command-session-list! :json t)))
+  (let* ((spec (gastown-tabulated--effective-agent-spec))
+         (data (gastown-command-session-list! :json t
+                                              :extra-args (gastown-spec--to-args spec))))
     (gastown-session-list--populate data)
     (message "Session list refreshed")))
 
@@ -361,12 +403,11 @@ Key bindings:
 (defun gastown-session-list-show-buffer ()
   "Open (or switch to) the *gastown-session-list* paginated buffer."
   (interactive)
-  (let* ((buf  (get-buffer-create gastown-session-list-buffer-name))
-         (data (gastown-command-session-list! :json t)))
+  (let* ((buf (get-buffer-create gastown-session-list-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-session-list-mode)
         (gastown-session-list-mode))
-      (gastown-session-list--populate data))
+      (gastown-session-list-refresh))
     (pop-to-buffer buf)))
 
 (cl-defmethod gastown-command-execute-interactive ((_cmd gastown-command-session-list))
@@ -393,11 +434,17 @@ Key bindings:
     (list id
           (vector id title status created progress))))
 
+(defun gastown-convoy-list-filter ()
+  "Invoke the convoy list filter menu."
+  (interactive)
+  (message "Convoy list filter: set `gastown-current-convoy-spec' or use the filter menu (ge-f8m)."))
+
 (defvar gastown-convoy-list-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map tabulated-list-mode-map)
     (define-key map (kbd "g")   #'gastown-convoy-list-refresh)
     (define-key map (kbd "RET") #'gastown-convoy-list-show-status)
+    (define-key map (kbd "/")   #'gastown-convoy-list-filter)
     (define-key map (kbd "]")   #'gastown-paged-next-page)
     (define-key map (kbd "[")   #'gastown-paged-prev-page)
     (define-key map (kbd "G")   #'gastown-paged-goto-page)
@@ -428,9 +475,12 @@ Key bindings:
 
 ;;;###autoload
 (defun gastown-convoy-list-refresh ()
-  "Refresh the *gastown-convoy-list* buffer."
+  "Refresh the *gastown-convoy-list* buffer.
+Applies the current buffer-local `gastown-current-convoy-spec' filter."
   (interactive)
-  (let ((data (gastown-command-convoy-list! :json t)))
+  (let* ((spec (gastown-tabulated--effective-convoy-spec))
+         (data (gastown-command-convoy-list! :json t
+                                             :extra-args (gastown-spec--to-args spec))))
     (gastown-convoy-list--populate data)
     (message "Convoy list refreshed")))
 
@@ -446,12 +496,11 @@ Key bindings:
 (defun gastown-convoy-list-show-buffer ()
   "Open (or switch to) the *gastown-convoy-list* paginated buffer."
   (interactive)
-  (let* ((buf  (get-buffer-create gastown-convoy-list-buffer-name))
-         (data (gastown-command-convoy-list! :json t)))
+  (let* ((buf (get-buffer-create gastown-convoy-list-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-convoy-list-mode)
         (gastown-convoy-list-mode))
-      (gastown-convoy-list--populate data))
+      (gastown-convoy-list-refresh))
     (pop-to-buffer buf)))
 
 (cl-defmethod gastown-command-execute-interactive ((_cmd gastown-command-convoy-list))
@@ -494,11 +543,17 @@ Key bindings:
     (list id
           (vector id from subj-str timestamp unread))))
 
+(defun gastown-mail-inbox-filter ()
+  "Invoke the mail inbox filter menu."
+  (interactive)
+  (message "Mail inbox filter: set `gastown-current-mail-spec' or use the filter menu (ge-f8m)."))
+
 (defvar gastown-mail-inbox-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map tabulated-list-mode-map)
     (define-key map (kbd "g")   #'gastown-mail-inbox-refresh)
     (define-key map (kbd "RET") #'gastown-mail-inbox-read)
+    (define-key map (kbd "/")   #'gastown-mail-inbox-filter)
     (define-key map (kbd "]")   #'gastown-paged-next-page)
     (define-key map (kbd "[")   #'gastown-paged-prev-page)
     (define-key map (kbd "G")   #'gastown-paged-goto-page)
@@ -529,9 +584,12 @@ Key bindings:
 
 ;;;###autoload
 (defun gastown-mail-inbox-refresh ()
-  "Refresh the *gastown-mail-inbox* buffer."
+  "Refresh the *gastown-mail-inbox* buffer.
+Applies the current buffer-local `gastown-current-mail-spec' filter."
   (interactive)
-  (let ((data (gastown-command-mail-inbox! :json t)))
+  (let* ((spec (gastown-tabulated--effective-mail-spec))
+         (data (gastown-command-mail-inbox! :json t
+                                            :extra-args (gastown-spec--to-args spec))))
     (gastown-mail-inbox--populate data)
     (message "Mail inbox refreshed")))
 
@@ -547,12 +605,11 @@ Key bindings:
 (defun gastown-mail-inbox-show-buffer ()
   "Open (or switch to) the *gastown-mail-inbox* paginated buffer."
   (interactive)
-  (let* ((buf  (get-buffer-create gastown-mail-inbox-buffer-name))
-         (data (gastown-command-mail-inbox! :json t)))
+  (let* ((buf (get-buffer-create gastown-mail-inbox-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-mail-inbox-mode)
         (gastown-mail-inbox-mode))
-      (gastown-mail-inbox--populate data))
+      (gastown-mail-inbox-refresh))
     (pop-to-buffer buf)))
 
 (cl-defmethod gastown-command-execute-interactive ((_cmd gastown-command-mail-inbox))
