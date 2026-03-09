@@ -479,7 +479,7 @@ Show work list.")
    ("C" "Close bead" gastown-close)]
   ["Molecules & Formulas"
    ("m" "Molecule" gastown-mol)
-   ("f" "Formula" gastown-formula)
+   ("f" "Formula..." gastown-formula-menu)
    ("y" "Synthesis" gastown-synthesis)
    ("q" "Merge queue" gastown-mq)
    ("v" "Convoy" gastown-convoy)]

@@ -41,6 +41,7 @@
 (require 'gastown-command-config)
 (require 'gastown-command-convoy)
 (require 'gastown-command-diagnostics)
+(require 'gastown-command-formula)
 (require 'gastown-command-mail)
 (require 'gastown-command-nudge)
 (require 'gastown-command-peek)

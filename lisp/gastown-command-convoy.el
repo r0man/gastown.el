@@ -77,6 +77,43 @@ Lists convoys with progress bars and status.")
 Shows detailed status for a specific convoy.")
 
 
+;;; Convoy Create Command
+
+(gastown-defcommand gastown-command-convoy-create (gastown-command-global-options)
+  ((title
+    :initarg :title
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy title (--title)."
+    :long-option "title"
+    :option-type :string
+    :key "t"
+    :transient "--title"
+    :class transient-option
+    :argument "--title="
+    :prompt "Title: "
+    :transient-group "Options"
+    :level 1
+    :order 1)
+   (issues
+    :initarg :issues
+    :type (or null string)
+    :initform nil
+    :documentation "Comma-separated issue IDs to track."
+    :positional 1
+    :option-type :string
+    :key "i"
+    :transient "Issues"
+    :class transient-option
+    :prompt "Issue IDs (comma-separated): "
+    :transient-group "Options"
+    :level 1
+    :order 2))
+  :documentation "Represents gt convoy create command.
+Create a new convoy tracking specified issues."
+  :cli-command "convoy create")
+
+
 ;;; Transient Menus
 
 ;;;###autoload (autoload 'gastown-convoy-list "gastown-command-convoy" nil t)
@@ -87,6 +124,10 @@ Shows detailed status for a specific convoy.")
 (beads-meta-define-transient gastown-command-convoy-status "gastown-convoy-status"
   "Show convoy status.")
 
+;;;###autoload (autoload 'gastown-convoy-create "gastown-command-convoy" nil t)
+(beads-meta-define-transient gastown-command-convoy-create "gastown-convoy-create"
+  "Create a new convoy.")
+
 ;;; Convoy Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-convoy "gastown-command-convoy" nil t)
@@ -94,7 +135,8 @@ Shows detailed status for a specific convoy.")
   "Track batches of work across rigs."
   ["Convoy Commands"
    ("l" "List convoys" gastown-convoy-list)
-   ("s" "Convoy status" gastown-convoy-status)])
+   ("s" "Convoy status" gastown-convoy-status)
+   ("c" "Create convoy" gastown-convoy-create)])
 
 (provide 'gastown-command-convoy)
 ;;; gastown-command-convoy.el ends here

@@ -136,6 +136,65 @@ Start a specific service.")
 (beads-meta-define-transient gastown-command-start "gastown-start"
   "Start a specific service.")
 
+;;; Dolt Subcommands
+
+(gastown-defcommand gastown-command-dolt-status (gastown-command-global-options)
+  ()
+  :documentation "Represents gt dolt status command.
+Show Dolt server status."
+  :cli-command "dolt status")
+
+
+(gastown-defcommand gastown-command-dolt-start (gastown-command-global-options)
+  ()
+  :documentation "Represents gt dolt start command.
+Start the Dolt server."
+  :cli-command "dolt start")
+
+
+(gastown-defcommand gastown-command-dolt-stop (gastown-command-global-options)
+  ()
+  :documentation "Represents gt dolt stop command.
+Stop the Dolt server."
+  :cli-command "dolt stop")
+
+
+(gastown-defcommand gastown-command-dolt-cleanup (gastown-command-global-options)
+  ()
+  :documentation "Represents gt dolt cleanup command.
+Remove orphaned databases from .dolt-data/."
+  :cli-command "dolt cleanup")
+
+
+;;; Transients for Dolt Subcommands
+
+;;;###autoload (autoload 'gastown-dolt-status "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-dolt-status "gastown-dolt-status"
+  "Show Dolt server status.")
+
+;;;###autoload (autoload 'gastown-dolt-start "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-dolt-start "gastown-dolt-start"
+  "Start the Dolt server.")
+
+;;;###autoload (autoload 'gastown-dolt-stop "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-dolt-stop "gastown-dolt-stop"
+  "Stop the Dolt server.")
+
+;;;###autoload (autoload 'gastown-dolt-cleanup "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-dolt-cleanup "gastown-dolt-cleanup"
+  "Remove orphaned Dolt databases.")
+
+;;; Dolt Dispatch Transient
+
+;;;###autoload (autoload 'gastown-dolt-menu "gastown-command-services" nil t)
+(transient-define-prefix gastown-dolt-menu ()
+  "Manage the Dolt SQL server."
+  ["Dolt Server"
+   ("s" "Status" gastown-dolt-status)
+   ("S" "Start server" gastown-dolt-start)
+   ("x" "Stop server" gastown-dolt-stop)
+   ("c" "Cleanup orphans" gastown-dolt-cleanup)])
+
 ;;; Services Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-services "gastown-command-services" nil t)
@@ -148,7 +207,7 @@ Start a specific service.")
    ("S" "Shutdown (with cleanup)" gastown-shutdown)]
   ["Management"
    ("D" "Daemon status" gastown-daemon-status)
-   ("o" "Dolt server" gastown-dolt)
+   ("o" "Dolt server..." gastown-dolt-menu)
    ("m" "Maintain" gastown-maintain)
    ("r" "Reaper" gastown-reaper)
    ("q" "Quota" gastown-quota)])

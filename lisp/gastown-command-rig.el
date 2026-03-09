@@ -110,6 +110,116 @@ Parks a rig (pauses all workers).")
 Unparks a rig (resumes workers).")
 
 
+;;; Rig Start Command
+
+(gastown-defcommand gastown-command-rig-start (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to start."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig start command.
+Start witness and refinery on patrol for one or more rigs."
+  :cli-command "rig start")
+
+
+;;; Rig Stop Command
+
+(gastown-defcommand gastown-command-rig-stop (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to stop."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig stop command.
+Stop one or more rigs (shutdown semantics)."
+  :cli-command "rig stop")
+
+
+;;; Rig Restart Command
+
+(gastown-defcommand gastown-command-rig-restart (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to restart."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig restart command.
+Restart one or more rigs (stop then start)."
+  :cli-command "rig restart")
+
+
+;;; Rig Reboot Command
+
+(gastown-defcommand gastown-command-rig-reboot (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to reboot."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig reboot command.
+Restart witness and refinery for a rig."
+  :cli-command "rig reboot")
+
+
+;;; Rig Status Command
+
+(gastown-defcommand gastown-command-rig-status (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to show status for."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Options"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig status command.
+Show detailed status for a specific rig."
+  :cli-command "rig status")
+
+
 ;;; Transient Menus
 
 ;;;###autoload (autoload 'gastown-rig-list "gastown-command-rig" nil t)
@@ -132,13 +242,40 @@ Unparks a rig (resumes workers).")
 (beads-meta-define-transient gastown-command-rig-unpark "gastown-rig-unpark"
   "Unpark a rig (resume workers).")
 
+;;;###autoload (autoload 'gastown-rig-start "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-start "gastown-rig-start"
+  "Start witness and refinery for a rig.")
+
+;;;###autoload (autoload 'gastown-rig-stop "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-stop "gastown-rig-stop"
+  "Stop a rig (shutdown semantics).")
+
+;;;###autoload (autoload 'gastown-rig-restart "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-restart "gastown-rig-restart"
+  "Restart a rig (stop then start).")
+
+;;;###autoload (autoload 'gastown-rig-reboot "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-reboot "gastown-rig-reboot"
+  "Reboot witness and refinery for a rig.")
+
+;;;###autoload (autoload 'gastown-rig-status "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-status "gastown-rig-status"
+  "Show detailed status for a rig.")
+
 ;;; Rig Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-rig "gastown-command-rig" nil t)
 (transient-define-prefix gastown-rig ()
   "Manage rigs in the workspace."
-  ["Rig Commands"
+  ["Rig Status"
    ("l" "List rigs" gastown-rig-list)
+   ("s" "Rig status" gastown-rig-status)]
+  ["Rig Lifecycle"
+   ("S" "Start rig" gastown-rig-start)
+   ("x" "Stop rig" gastown-rig-stop)
+   ("r" "Restart rig" gastown-rig-restart)
+   ("R" "Reboot rig" gastown-rig-reboot)]
+  ["Rig State"
    ("d" "Dock rig" gastown-rig-dock)
    ("u" "Undock rig" gastown-rig-undock)
    ("p" "Park rig" gastown-rig-park)
