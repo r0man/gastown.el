@@ -59,6 +59,58 @@
   "Test that gastown-status-mode is defined."
   (should (fboundp 'gastown-status-mode)))
 
+(ert-deftest gastown-status-buffer-test-mode-derives-from-magit-section ()
+  "gastown-status-mode must derive from magit-section-mode."
+  (should (get 'gastown-status-mode 'derived-mode-parent))
+  (with-temp-buffer
+    (gastown-status-mode)
+    (should (derived-mode-p 'magit-section-mode))))
+
+;;; Section Hook Tests
+
+(ert-deftest gastown-status-buffer-test-sections-hook-defined ()
+  "gastown-status-sections-hook defcustom must be defined."
+  (should (boundp 'gastown-status-sections-hook)))
+
+(ert-deftest gastown-status-buffer-test-sections-hook-default-functions ()
+  "gastown-status-sections-hook default must include the three insert functions."
+  (should (memq #'gastown-insert-services gastown-status-sections-hook))
+  (should (memq #'gastown-insert-global-agents gastown-status-sections-hook))
+  (should (memq #'gastown-insert-rigs gastown-status-sections-hook)))
+
+;;; Section Class Tests
+
+(ert-deftest gastown-status-buffer-test-rig-section-class-defined ()
+  "gastown-rig-section EIEIO class must exist."
+  (should (class-p 'gastown-rig-section)))
+
+(ert-deftest gastown-status-buffer-test-agent-section-class-defined ()
+  "gastown-agent-section EIEIO class must exist."
+  (should (class-p 'gastown-agent-section)))
+
+(ert-deftest gastown-status-buffer-test-services-section-class-defined ()
+  "gastown-services-section EIEIO class must exist."
+  (should (class-p 'gastown-services-section)))
+
+(ert-deftest gastown-status-buffer-test-rig-section-has-rig-slot ()
+  "gastown-rig-section must have a :rig slot."
+  (should (slot-exists-p 'gastown-rig-section 'rig)))
+
+(ert-deftest gastown-status-buffer-test-agent-section-has-agent-slot ()
+  "gastown-agent-section must have an :agent slot."
+  (should (slot-exists-p 'gastown-agent-section 'agent)))
+
+;;; Visit Function Tests
+
+(ert-deftest gastown-status-buffer-test-visit-section-defined ()
+  "gastown-status-visit-section interactive function must be defined."
+  (should (fboundp 'gastown-status-visit-section)))
+
+(ert-deftest gastown-status-buffer-test-keymap-ret-visit ()
+  "RET must be bound to gastown-status-visit-section."
+  (should (eq #'gastown-status-visit-section
+              (lookup-key gastown-status-mode-map (kbd "RET")))))
+
 (ert-deftest gastown-status-buffer-test-buffer-name-constant ()
   "Test that buffer name constant is defined and correct."
   (should (boundp 'gastown-status-buffer-name))
