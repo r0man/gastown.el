@@ -13,6 +13,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-context)
 (require 'beads-meta)
 
 (require 'transient)
@@ -53,7 +54,23 @@
     :transient-choices ("COMPLETED" "DEFERRED" "ESCALATED")
     :transient-group "Options"
     :level 2
-    :order 2))
+    :order 2)
+   (issue
+    :initarg :issue
+    :type (or null string)
+    :initform nil
+    :documentation "Source issue ID (--issue)."
+    :long-option "issue"
+    :option-type :string
+    :key "i"
+    :transient "--issue"
+    :class transient-option
+    :argument "--issue="
+    :prompt "Issue ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Options"
+    :level 2
+    :order 3))
   :documentation "Represents gt done command.
 Signal work ready for merge queue.")
 
@@ -61,7 +78,21 @@ Signal work ready for merge queue.")
 ;;; Hook Command
 
 (gastown-defcommand gastown-command-hook (gastown-command-global-options)
-  ()
+  ((bead-id
+    :initarg :bead-id
+    :type (or null string)
+    :initform nil
+    :documentation "Bead ID to attach to hook."
+    :positional 1
+    :option-type :string
+    :key "b"
+    :transient "Bead ID"
+    :class transient-option
+    :prompt "Bead ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Arguments"
+    :level 1
+    :order 1))
   :documentation "Represents gt hook command.
 Show or attach work on a hook.")
 

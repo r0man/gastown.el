@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-context)
 (require 'beads-meta)
 
 (require 'transient)
@@ -32,6 +33,7 @@
     :transient "Target (required)"
     :class transient-option
     :prompt "Target (rig/agent): "
+    :transient-reader gastown-reader-agent-target
     :transient-group "Required"
     :level 1
     :order 1)

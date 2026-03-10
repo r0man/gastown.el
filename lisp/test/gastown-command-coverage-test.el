@@ -287,5 +287,48 @@
   (require 'gastown-command-sling)
   (should (fboundp 'gastown-sling)))
 
+;;; Context-aware reader wiring
+
+(ert-deftest gastown-coverage-sling-bead-id-reader-wired ()
+  "gastown-command-sling bead-id slot should use gastown-reader-bead-id."
+  (require 'gastown-command-sling)
+  (should (eq (beads-meta-slot-property 'gastown-command-sling 'bead-id
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-done-issue-slot-exists ()
+  "gastown-command-done should have an issue slot."
+  (should (slot-exists-p (make-instance 'gastown-command-done) 'issue)))
+
+(ert-deftest gastown-coverage-done-issue-reader-wired ()
+  "gastown-command-done issue slot should use gastown-reader-bead-id."
+  (should (eq (beads-meta-slot-property 'gastown-command-done 'issue
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-hook-bead-id-slot-exists ()
+  "gastown-command-hook should have a bead-id slot."
+  (should (slot-exists-p (make-instance 'gastown-command-hook) 'bead-id)))
+
+(ert-deftest gastown-coverage-hook-bead-id-reader-wired ()
+  "gastown-command-hook bead-id slot should use gastown-reader-bead-id."
+  (should (eq (beads-meta-slot-property 'gastown-command-hook 'bead-id
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-peek-target-reader-wired ()
+  "gastown-command-peek target slot should use gastown-reader-agent-target."
+  (require 'gastown-command-peek)
+  (should (eq (beads-meta-slot-property 'gastown-command-peek 'target
+                                        :transient-reader)
+              'gastown-reader-agent-target)))
+
+(ert-deftest gastown-coverage-nudge-target-reader-wired ()
+  "gastown-command-nudge target slot should use gastown-reader-agent-target."
+  (require 'gastown-command-nudge)
+  (should (eq (beads-meta-slot-property 'gastown-command-nudge 'target
+                                        :transient-reader)
+              'gastown-reader-agent-target)))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here

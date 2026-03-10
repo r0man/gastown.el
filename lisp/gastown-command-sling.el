@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-context)
 (require 'beads-meta)
 
 (require 'transient)
@@ -32,6 +33,7 @@
     :transient "Bead ID (required)"
     :class transient-option
     :prompt "Bead ID: "
+    :transient-reader gastown-reader-bead-id
     :transient-group "Required"
     :level 1
     :order 1)
