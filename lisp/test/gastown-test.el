@@ -40,16 +40,6 @@
 ;;; Daemon isolation
 ;;; ============================================================
 
-(defvar gastown-test-no-daemon t
-  "When non-nil, tests use BD_NO_DAEMON=1 for file-backed bd storage.
-This prevents tests from connecting to the production Dolt server
-on port 3307.  Defaults to t for safety.
-
-Integration tests that explicitly need a real Dolt server use
-`gastown-test-with-dolt-server', which removes BD_NO_DAEMON from
-the subprocess environment so bd can connect to the isolated
-test server.")
-
 ;;; ============================================================
 ;;; Server State
 ;;; ============================================================
@@ -307,12 +297,9 @@ Example:
                          "BEADS_TEST_MODE=1")
                    ;; Remove GT_ROOT to prevent Gas Town auto-detection
                    ;; (which forces port 3307).
-                   ;; Remove BD_NO_DAEMON so bd can connect to the
-                   ;; isolated test server on BEADS_DOLT_PORT.
                    (cl-remove-if
                     (lambda (e)
-                      (or (string-prefix-p "GT_ROOT=" e)
-                          (string-prefix-p "BD_NO_DAEMON=" e)))
+                      (string-prefix-p "GT_ROOT=" e))
                     process-environment))))
              ,@body)
          (gastown-test-stop-dolt-server)))))

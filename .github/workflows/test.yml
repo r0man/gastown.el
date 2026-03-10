@@ -66,10 +66,7 @@ jobs:
           git clone https://github.com/r0man/beads.el.git ~/workspace/beads.el
 
       - name: Run tests
-        # BD_NO_DAEMON=1: unit tests use file-backed bd storage, never connect
-        # to the production Dolt server on port 3307.  Integration tests that
-        # need real Dolt use gastown-test-with-dolt-server, which removes
-        # BD_NO_DAEMON from the subprocess environment and routes bd commands
-        # to an isolated server on a random port.
-        # gt CLI not needed for current tests (command-line building only).
-        run: BD_NO_DAEMON=1 eldev -p -dtT test
+        # Tests use a suite-level isolated Dolt server on a random free port.
+        # BD_NO_DAEMON is removed — Dolt is the only backend (beads v0.58.0+).
+        # Production Dolt on port 3307 is never contacted.
+        run: eldev -p -dtT test
