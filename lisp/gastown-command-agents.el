@@ -101,7 +101,53 @@ Shows merge queue processor status.")
     :prompt "Rig: "
     :transient-group "Filters"
     :level 1
-    :order 1))
+    :order 1)
+   (role
+    :initarg :role
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by role (--role)."
+    :long-option "role"
+    :option-type :string
+    :key "R"
+    :transient "--role"
+    :class transient-option
+    :argument "--role="
+    :prompt "Role: "
+    :transient-choices ("polecat" "witness" "refinery" "crew")
+    :transient-group "Filters"
+    :level 1
+    :order 2)
+   (running
+    :initarg :running
+    :type boolean
+    :initform nil
+    :documentation "Show only running sessions (--running)."
+    :long-option "running"
+    :option-type :boolean
+    :key "u"
+    :transient "--running"
+    :class transient-switch
+    :argument "--running"
+    :transient-group "Filters"
+    :level 1
+    :order 3)
+   (order
+    :initarg :order
+    :type (or null string)
+    :initform nil
+    :documentation "Sort order (--order)."
+    :long-option "order"
+    :option-type :string
+    :key "o"
+    :transient "--order"
+    :class transient-option
+    :argument "--order="
+    :prompt "Order: "
+    :transient-choices ("name" "rig" "status")
+    :transient-group "Options"
+    :level 1
+    :order 4))
   :documentation "Represents gt session list command.
 Lists polecat sessions.")
 

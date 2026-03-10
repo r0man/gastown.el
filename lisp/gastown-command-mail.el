@@ -49,7 +49,69 @@
     :argument "--unread"
     :transient-group "Filters"
     :level 1
-    :order 2))
+    :order 2)
+   (from
+    :initarg :from
+    :type (or null string)
+    :initform nil
+    :documentation "Filter to messages from this sender (--from)."
+    :long-option "from"
+    :option-type :string
+    :key "f"
+    :transient "--from"
+    :class transient-option
+    :argument "--from="
+    :prompt "From: "
+    :transient-group "Filters"
+    :level 1
+    :order 3)
+   (priority
+    :initarg :priority
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by priority tag (--priority)."
+    :long-option "priority"
+    :option-type :string
+    :key "p"
+    :transient "--priority"
+    :class transient-option
+    :argument "--priority="
+    :prompt "Priority: "
+    :transient-choices ("low" "normal" "high" "critical")
+    :transient-group "Filters"
+    :level 1
+    :order 4)
+   (order
+    :initarg :order
+    :type (or null string)
+    :initform nil
+    :documentation "Sort order (--order)."
+    :long-option "order"
+    :option-type :string
+    :key "o"
+    :transient "--order"
+    :class transient-option
+    :argument "--order="
+    :prompt "Order: "
+    :transient-choices ("newest" "oldest")
+    :transient-group "Options"
+    :level 1
+    :order 5)
+   (limit
+    :initarg :limit
+    :type (or null integer)
+    :initform nil
+    :documentation "Maximum number of messages to show (--limit)."
+    :long-option "limit"
+    :option-type :string
+    :key "l"
+    :transient "--limit"
+    :class transient-option
+    :argument "--limit="
+    :prompt "Limit: "
+    :transient-group "Options"
+    :level 1
+    :order 6))
   :documentation "Represents gt mail inbox command.
 Lists messages with read/unread indicators.")
 

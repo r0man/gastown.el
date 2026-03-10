@@ -21,7 +21,38 @@
 ;;; Rig List Command
 
 (gastown-defcommand gastown-command-rig-list (gastown-command-global-options)
-  ()
+  ((status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by rig status (--status)."
+    :long-option "status"
+    :option-type :string
+    :key "s"
+    :transient "--status"
+    :class transient-option
+    :argument "--status="
+    :prompt "Status: "
+    :transient-choices ("operational" "degraded" "docked" "parked")
+    :transient-group "Filters"
+    :level 1
+    :order 1)
+   (order
+    :initarg :order
+    :type (or null string)
+    :initform nil
+    :documentation "Sort order (--order)."
+    :long-option "order"
+    :option-type :string
+    :key "o"
+    :transient "--order"
+    :class transient-option
+    :argument "--order="
+    :prompt "Order: "
+    :transient-choices ("name" "status")
+    :transient-group "Options"
+    :level 1
+    :order 2))
   :documentation "Represents gt rig list command.
 Lists all rigs in the workspace with status, polecat count, and crew count.")
 

@@ -321,20 +321,22 @@
 ;;; ============================================================
 
 (ert-deftest gastown-tabulated-test-filter-transients-exist ()
-  "Session, convoy, and mail filter transient prefixes are defined."
+  "All four list-view filter transient prefixes are defined."
+  (should (fboundp 'gastown-rig-list-filter))
   (should (fboundp 'gastown-session-list-filter))
   (should (fboundp 'gastown-convoy-list-filter))
   (should (fboundp 'gastown-mail-inbox-filter)))
 
 (ert-deftest gastown-tabulated-test-filter-functions-exist ()
   "All filter apply/clear functions are defined."
+  (should (fboundp 'gastown-rig-list--apply-filter))
+  (should (fboundp 'gastown-rig-list-clear-filter))
   (should (fboundp 'gastown-session-list--apply-filter))
   (should (fboundp 'gastown-session-list--clear-filter))
   (should (fboundp 'gastown-convoy-list--apply-filter))
   (should (fboundp 'gastown-convoy-list--clear-filter))
   (should (fboundp 'gastown-mail-inbox--apply-filter))
-  (should (fboundp 'gastown-mail-inbox--clear-filter))
-  (should (fboundp 'gastown-rig-list-clear-filter)))
+  (should (fboundp 'gastown-mail-inbox--clear-filter)))
 
 ;;; ============================================================
 ;;; Filter apply — spec updates
@@ -415,6 +417,154 @@
   "gastown-command-mail-inbox has unread slot for --unread filter."
   (let ((cmd (make-instance 'gastown-command-mail-inbox)))
     (should (slot-exists-p cmd 'unread))))
+
+;;; ============================================================
+;;; Full filter menus — rig
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-rig-filter-transient-exists ()
+  "Rig list filter transient prefix is defined."
+  (should (fboundp 'gastown-rig-list-filter)))
+
+(ert-deftest gastown-tabulated-test-rig-filter-key-is-filter ()
+  "Rig mode / key invokes filter menu, not just clear."
+  (should (eq #'gastown-rig-list-filter
+              (lookup-key gastown-rig-list-mode-map (kbd "/")))))
+
+(ert-deftest gastown-tabulated-test-rig-apply-filter-sets-status ()
+  "gastown-rig-list--apply-filter stores status in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-rig-spec nil)
+    (cl-letf (((symbol-function 'gastown-rig-list-refresh) #'ignore))
+      (gastown-rig-list--apply-filter '("--status=operational")))
+    (should (gastown-rig-spec-p gastown-current-rig-spec))
+    (should (equal "operational" (oref gastown-current-rig-spec status)))))
+
+(ert-deftest gastown-tabulated-test-rig-apply-filter-clears-status ()
+  "gastown-rig-list--apply-filter with no status stores nil."
+  (with-temp-buffer
+    (setq gastown-current-rig-spec (make-instance 'gastown-rig-spec :status "operational"))
+    (cl-letf (((symbol-function 'gastown-rig-list-refresh) #'ignore))
+      (gastown-rig-list--apply-filter '()))
+    (should (null (oref gastown-current-rig-spec status)))))
+
+(ert-deftest gastown-tabulated-test-rig-apply-filter-sets-order ()
+  "gastown-rig-list--apply-filter stores order in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-rig-spec nil)
+    (cl-letf (((symbol-function 'gastown-rig-list-refresh) #'ignore))
+      (gastown-rig-list--apply-filter '("--order=status")))
+    (should (gastown-rig-spec-p gastown-current-rig-spec))
+    (should (eq 'status (oref gastown-current-rig-spec order)))))
+
+(ert-deftest gastown-tabulated-test-rig-clear-filter-resets-spec ()
+  "gastown-rig-list--apply-filter with c clear action resets spec."
+  (with-temp-buffer
+    (setq gastown-current-rig-spec (make-instance 'gastown-rig-spec :status "degraded"))
+    (cl-letf (((symbol-function 'gastown-rig-list-refresh) #'ignore))
+      (gastown-rig-list-clear-filter))
+    (should (null gastown-current-rig-spec))))
+
+;;; ============================================================
+;;; Full filter menus — session (extended)
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-session-apply-filter-sets-role ()
+  "gastown-session-list--apply-filter stores role in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec nil)
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--apply-filter '("--role=polecat")))
+    (should (gastown-agent-spec-p gastown-current-agent-spec))
+    (should (equal "polecat" (oref gastown-current-agent-spec role)))))
+
+(ert-deftest gastown-tabulated-test-session-apply-filter-sets-running ()
+  "gastown-session-list--apply-filter stores running in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec nil)
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--apply-filter '("--running")))
+    (should (gastown-agent-spec-p gastown-current-agent-spec))
+    (should (oref gastown-current-agent-spec running))))
+
+(ert-deftest gastown-tabulated-test-session-apply-filter-clears-running ()
+  "gastown-session-list--apply-filter without --running stores nil."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec (make-instance 'gastown-agent-spec :running t))
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--apply-filter '()))
+    (should (null (oref gastown-current-agent-spec running)))))
+
+(ert-deftest gastown-tabulated-test-session-apply-filter-sets-order ()
+  "gastown-session-list--apply-filter stores order in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec nil)
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--apply-filter '("--order=rig")))
+    (should (gastown-agent-spec-p gastown-current-agent-spec))
+    (should (eq 'rig (oref gastown-current-agent-spec order)))))
+
+;;; ============================================================
+;;; Full filter menus — convoy (extended)
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-convoy-apply-filter-sets-order ()
+  "gastown-convoy-list--apply-filter stores order in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-convoy-spec nil)
+    (cl-letf (((symbol-function 'gastown-convoy-list-refresh) #'ignore))
+      (gastown-convoy-list--apply-filter '("--order=oldest")))
+    (should (gastown-convoy-spec-p gastown-current-convoy-spec))
+    (should (eq 'oldest (oref gastown-current-convoy-spec order)))))
+
+(ert-deftest gastown-tabulated-test-convoy-apply-filter-sets-limit ()
+  "gastown-convoy-list--apply-filter stores limit in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-convoy-spec nil)
+    (cl-letf (((symbol-function 'gastown-convoy-list-refresh) #'ignore))
+      (gastown-convoy-list--apply-filter '("--limit=25")))
+    (should (gastown-convoy-spec-p gastown-current-convoy-spec))
+    (should (= 25 (oref gastown-current-convoy-spec limit)))))
+
+;;; ============================================================
+;;; Full filter menus — mail (extended)
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-from ()
+  "gastown-mail-inbox--apply-filter stores from in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec nil)
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--apply-filter '("--from=gastown_el/witness")))
+    (should (gastown-mail-spec-p gastown-current-mail-spec))
+    (should (equal "gastown_el/witness" (oref gastown-current-mail-spec from)))))
+
+(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-priority ()
+  "gastown-mail-inbox--apply-filter stores priority in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec nil)
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--apply-filter '("--priority=high")))
+    (should (gastown-mail-spec-p gastown-current-mail-spec))
+    (should (equal "high" (oref gastown-current-mail-spec priority)))))
+
+(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-order ()
+  "gastown-mail-inbox--apply-filter stores order in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec nil)
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--apply-filter '("--order=oldest")))
+    (should (gastown-mail-spec-p gastown-current-mail-spec))
+    (should (eq 'oldest (oref gastown-current-mail-spec order)))))
+
+(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-limit ()
+  "gastown-mail-inbox--apply-filter stores limit in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec nil)
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--apply-filter '("--limit=20")))
+    (should (gastown-mail-spec-p gastown-current-mail-spec))
+    (should (= 20 (oref gastown-current-mail-spec limit)))))
 
 (provide 'gastown-tabulated-test)
 ;;; gastown-tabulated-test.el ends here
