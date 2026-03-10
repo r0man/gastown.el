@@ -66,7 +66,10 @@ jobs:
           git clone https://github.com/r0man/beads.el.git ~/workspace/beads.el
 
       - name: Run tests
-        # gt CLI not needed for current unit tests (command-line building only).
-        # BD_NO_DAEMON not needed — gastown tests don't use Dolt.
-        # Add gt install here when integration tests are introduced.
-        run: eldev -p -dtT test
+        # BD_NO_DAEMON=1: unit tests use file-backed bd storage, never connect
+        # to the production Dolt server on port 3307.  Integration tests that
+        # need real Dolt use gastown-test-with-dolt-server, which removes
+        # BD_NO_DAEMON from the subprocess environment and routes bd commands
+        # to an isolated server on a random port.
+        # gt CLI not needed for current tests (command-line building only).
+        run: BD_NO_DAEMON=1 eldev -p -dtT test

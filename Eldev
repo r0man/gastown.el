@@ -69,13 +69,29 @@
 (eldev-add-loading-roots 'test "lisp")
 (eldev-add-loading-roots 'test "lisp/test")
 
-;; Test Dolt server isolation
-;; Integration tests use gastown-test-with-dolt-server macro for per-test
-;; isolation.  For suite-level server (faster), set GASTOWN_TEST_DOLT=1:
+;; Test Dolt server isolation.
+;;
+;; Set BD_NO_DAEMON=1 unconditionally so ALL bd subprocesses spawned
+;; during tests use file-backed storage and never connect to the
+;; production Dolt server on port 3307.  This is the primary safety
+;; net — individual test macros (gastown-test-with-dolt-server) also
+;; remove it from process-environment to allow isolated integration
+;; tests to connect to their own temporary server.
+(setenv "BD_NO_DAEMON" "1")
+
+;; Suite-level Dolt server (optional, faster for Dolt integration tests).
+;; Set GASTOWN_TEST_DOLT=1 to start one isolated server for the whole suite:
 ;;   GASTOWN_TEST_DOLT=1 eldev test
-;; This starts an isolated Dolt server before any tests run and registers
-;; kill-emacs-hook for cleanup.  Production Dolt on port 3307 is never touched.
+;; Per-test isolation is also available via gastown-test-with-dolt-server.
+;; Production Dolt on port 3307 is never touched.
 (when (equal (getenv "GASTOWN_TEST_DOLT") "1")
   (require 'gastown-test)
   (gastown-test-suite-setup)
   (add-hook 'kill-emacs-hook #'gastown-test-suite-teardown))
+
+;; Safety net: stop any per-test Dolt server on Emacs exit.
+(add-hook 'kill-emacs-hook
+          (lambda ()
+            (when (and (fboundp 'gastown-test-stop-dolt-server)
+                       (bound-and-true-p gastown-test--dolt-server-process))
+              (gastown-test-stop-dolt-server))))
