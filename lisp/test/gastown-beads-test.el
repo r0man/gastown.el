@@ -43,7 +43,7 @@
 
 (ert-deftest gastown-beads-test-format-polecat-line-running ()
   "Test format for a running polecat includes name, rig, and running indicator."
-  (let* ((polecat '((name . "jasper") (rig . "beads_el") (running . t) (info . "")))
+  (let* ((polecat (cons "beads_el" (gastown-agent :name "jasper" :running t :agent-info "")))
          (result (gastown-beads--format-polecat-line polecat)))
     (should (stringp result))
     (should (string-match-p "jasper" result))
@@ -52,7 +52,7 @@
 
 (ert-deftest gastown-beads-test-format-polecat-line-stopped ()
   "Test format for a stopped polecat shows stopped indicator."
-  (let* ((polecat '((name . "nux") (rig . "gastown_el") (running . nil) (info . "")))
+  (let* ((polecat (cons "gastown_el" (gastown-agent :name "nux" :running nil :agent-info "")))
          (result (gastown-beads--format-polecat-line polecat)))
     (should (stringp result))
     (should (string-match-p "nux" result))
@@ -60,7 +60,7 @@
 
 (ert-deftest gastown-beads-test-format-polecat-line-returns-string ()
   "Test that format always returns a string even with nil fields."
-  (let* ((polecat '((name . nil) (rig . nil) (running . nil) (info . nil)))
+  (let* ((polecat (cons nil (gastown-agent)))
          (result (gastown-beads--format-polecat-line polecat)))
     (should (stringp result))))
 

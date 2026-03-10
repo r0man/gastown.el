@@ -10,47 +10,54 @@
 
 (require 'ert)
 (require 'gastown-status-buffer)
+(require 'gastown-types)
 
 ;;; Test Data
 
 (defconst gastown-status-buffer-test--sample-data
-  `((name . "gt")
-    (location . "/tmp/gt-test")
-    (overseer . ((name . "Test User")
-                 (email . "test@example.com")
-                 (username . "testuser")
-                 (unread_mail . 2)))
-    (daemon . ((running . t) (pid . 12345)))
-    (dolt . ((running . t) (pid . 23456) (port . 3307)
-             (data_dir . "/tmp/gt-test/.dolt-data")))
-    (tmux . ((socket . "gt") (socket_path . "/tmp/tmux-gt")
-             (running . t) (pid . 34567) (session_count . 5)))
-    (agents . [((name . "mayor") (address . "mayor/") (session . "hq-mayor")
-                (role . "coordinator") (running . t) (has_work . :json-false)
-                (unread_mail . 0) (agent_info . "claude"))
-               ((name . "deacon") (address . "hq-deacon") (session . "hq-deacon")
-                (role . "health-check") (running . t) (has_work . :json-false)
-                (unread_mail . 3) (agent_info . "claude"))])
-    (rigs . [((name . "beads_el")
-              (polecat_count . 2)
-              (crew_count . 1)
-              (has_witness . t)
-              (has_refinery . t)
-              (agents . [((name . "witness") (role . "witness") (running . t)
-                          (unread_mail . 0) (agent_info . "claude")
-                          (session . "be-witness"))
-                         ((name . "refinery") (role . "refinery") (running . t)
-                          (unread_mail . 0) (agent_info . "claude")
-                          (session . "be-refinery"))
-                         ((name . "roman") (role . "crew") (running . :json-false)
-                          (unread_mail . 0) (agent_info . "claude/sonnet")
-                          (session . "be-crew-roman"))
-                         ((name . "jasper") (role . "polecat") (running . t)
-                          (unread_mail . 0) (agent_info . "claude")
-                          (session . "be-jasper"))
-                         ((name . "obsidian") (role . "polecat") (running . :json-false)
-                          (unread_mail . 0) (agent_info . "claude/sonnet")
-                          (session . "be-obsidian"))]))]))
+  (gastown-gt-status
+   :name "gt"
+   :location "/tmp/gt-test"
+   :overseer (gastown-overseer
+              :name "Test User"
+              :email "test@example.com"
+              :unread-mail 2)
+   :daemon (gastown-daemon :pid 12345)
+   :dolt (gastown-dolt-service
+          :pid 23456
+          :port 3307
+          :data-dir "/tmp/gt-test/.dolt-data")
+   :tmux (gastown-tmux-service
+          :socket "gt"
+          :socket-path "/tmp/tmux-gt"
+          :pid 34567
+          :session-count 5)
+   :agents (list (gastown-agent
+                  :name "mayor" :session "hq-mayor"
+                  :role "coordinator" :running t
+                  :has-work nil :unread-mail 0 :agent-info "claude")
+                 (gastown-agent
+                  :name "deacon" :session "hq-deacon"
+                  :role "health-check" :running t
+                  :has-work nil :unread-mail 3 :agent-info "claude"))
+   :rigs (list (gastown-rig-data
+                :name "beads_el"
+                :agents (list
+                         (gastown-agent :name "witness" :role "witness" :running t
+                                        :unread-mail 0 :agent-info "claude"
+                                        :session "be-witness")
+                         (gastown-agent :name "refinery" :role "refinery" :running t
+                                        :unread-mail 0 :agent-info "claude"
+                                        :session "be-refinery")
+                         (gastown-agent :name "roman" :role "crew" :running nil
+                                        :unread-mail 0 :agent-info "claude/sonnet"
+                                        :session "be-crew-roman")
+                         (gastown-agent :name "jasper" :role "polecat" :running t
+                                        :unread-mail 0 :agent-info "claude"
+                                        :session "be-jasper")
+                         (gastown-agent :name "obsidian" :role "polecat" :running nil
+                                        :unread-mail 0 :agent-info "claude/sonnet"
+                                        :session "be-obsidian")))))
   "Sample status data for tests.")
 
 ;;; Mode Tests

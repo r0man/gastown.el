@@ -214,9 +214,9 @@
 
 (ert-deftest gastown-tabulated-test-rig-entry-structure ()
   "Rig entry has correct id and 6-column vector."
-  (let* ((rig   '((name . "beads_el") (status . "operational")
-                  (witness . "running") (refinery . "running")
-                  (polecats . 5) (crew . 1)))
+  (let* ((rig   (gastown-rig-data :name "beads_el" :status "operational"
+                                  :witness "running" :refinery "running"
+                                  :polecats 5 :crew 1))
          (entry (gastown-rig-list--entry rig)))
     (should (equal "beads_el" (car entry)))
     (should (= 6 (length (cadr entry))))
@@ -226,8 +226,8 @@
 
 (ert-deftest gastown-tabulated-test-session-entry-structure ()
   "Session entry has correct id and 4-column vector."
-  (let* ((session '((rig . "beads_el") (polecat . "jasper")
-                    (session_id . "be-jasper") (running . t)))
+  (let* ((session (gastown-session :rig "beads_el" :polecat "jasper"
+                                   :session-id "be-jasper" :running t))
          (entry   (gastown-session-list--entry session)))
     (should (equal "be-jasper" (car entry)))
     (should (= 4 (length (cadr entry))))
@@ -236,16 +236,17 @@
 
 (ert-deftest gastown-tabulated-test-session-entry-stopped ()
   "Stopped session uses the ○ indicator."
-  (let* ((session '((rig . "beads_el") (polecat . "test")
-                    (session_id . "be-test") (running . :json-false)))
+  (let* ((session (gastown-session :rig "beads_el" :polecat "test"
+                                   :session-id "be-test" :running nil))
          (entry (gastown-session-list--entry session)))
     (should (equal "○" (aref (cadr entry) 3)))))
 
 (ert-deftest gastown-tabulated-test-convoy-entry-structure ()
   "Convoy entry has correct id and 5-column vector."
-  (let* ((convoy '((id . "hq-cv-abc") (title . "Test convoy")
-                   (status . "open") (created_at . "2026-03-07T10:00:00Z")
-                   (completed . 2) (total . 5)))
+  (let* ((convoy (gastown-convoy-data :id "hq-cv-abc" :title "Test convoy"
+                                      :status "open"
+                                      :created-at "2026-03-07T10:00:00Z"
+                                      :completed 2 :total 5))
          (entry  (gastown-convoy-list--entry convoy)))
     (should (equal "hq-cv-abc" (car entry)))
     (should (= 5 (length (cadr entry))))
@@ -256,10 +257,10 @@
 
 (ert-deftest gastown-tabulated-test-mail-entry-structure ()
   "Mail entry has correct id and 5-column vector."
-  (let* ((mail  '((id . "hq-a5at") (from . "guix_home/witness")
-                  (subject . "Test subject")
-                  (timestamp . "2026-03-07T21:55:47Z")
-                  (read . t) (priority . "normal")))
+  (let* ((mail  (gastown-mail-message :id "hq-a5at" :from "guix_home/witness"
+                                      :subject "Test subject"
+                                      :timestamp "2026-03-07T21:55:47Z"
+                                      :read t :priority "normal"))
          (entry (gastown-mail-inbox--entry mail)))
     (should (equal "hq-a5at" (car entry)))
     (should (= 5 (length (cadr entry))))
@@ -271,9 +272,10 @@
 
 (ert-deftest gastown-tabulated-test-mail-entry-unread ()
   "Unread mail shows the ● indicator."
-  (let* ((mail  '((id . "hq-xyz") (from . "someone")
-                  (subject . "Unread") (timestamp . "2026-03-07T00:00:00Z")
-                  (read . :json-false) (priority . "normal")))
+  (let* ((mail  (gastown-mail-message :id "hq-xyz" :from "someone"
+                                      :subject "Unread"
+                                      :timestamp "2026-03-07T00:00:00Z"
+                                      :read nil :priority "normal"))
          (entry (gastown-mail-inbox--entry mail)))
     (should (equal "●" (aref (cadr entry) 4)))))
 

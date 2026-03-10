@@ -28,6 +28,7 @@
 
 (require 'magit-section)
 (require 'gastown-command-status)
+(require 'gastown-types)
 
 ;; Forward declarations for optional interactive features
 (declare-function gastown-mail-inbox "gastown-command-mail")
@@ -182,7 +183,7 @@ Key bindings:
 ;;; ============================================================
 
 (defvar-local gastown-status--data nil
-  "Current status data as a parsed JSON alist.")
+  "Current status data as a `gastown-status' object.")
 
 (defvar-local gastown-status--watch-timer nil
   "Auto-refresh timer, or nil when watch mode is off.")
@@ -251,18 +252,19 @@ Key bindings:
 (defun gastown-insert-services ()
   "Insert services section into the status buffer."
   (when-let ((data gastown-status--data))
-    (let* ((daemon      (alist-get 'daemon data))
-           (dolt        (alist-get 'dolt data))
-           (tmux        (alist-get 'tmux data))
-           (d-pid       (alist-get 'pid daemon))
-           (dolt-pid    (alist-get 'pid dolt))
-           (dolt-port   (alist-get 'port dolt))
-           (dolt-dir    (gastown-status--abbreviate-path (alist-get 'data_dir dolt)))
-           (dolt-dir-abs (alist-get 'data_dir dolt))
-           (tmux-socket (alist-get 'socket tmux))
-           (tmux-pid    (alist-get 'pid tmux))
-           (tmux-count  (alist-get 'session_count tmux))
-           (tmux-path   (alist-get 'socket_path tmux)))
+    (let* ((daemon      (oref data daemon))
+           (dolt        (oref data dolt))
+           (tmux        (oref data tmux))
+           (d-pid       (and daemon (oref daemon pid)))
+           (dolt-pid    (and dolt (oref dolt pid)))
+           (dolt-port   (and dolt (oref dolt port)))
+           (dolt-dir    (gastown-status--abbreviate-path
+                         (and dolt (oref dolt data-dir))))
+           (dolt-dir-abs (and dolt (oref dolt data-dir)))
+           (tmux-socket (and tmux (oref tmux socket)))
+           (tmux-pid    (and tmux (oref tmux pid)))
+           (tmux-count  (and tmux (oref tmux session-count)))
+           (tmux-path   (and tmux (oref tmux socket-path))))
       (magit-insert-section (gastown-services-section)
         (magit-insert-heading "Services:")
         (when daemon
@@ -287,22 +289,21 @@ Key bindings:
 (defun gastown-insert-global-agents ()
   "Insert global agents section into the status buffer."
   (when-let ((data gastown-status--data))
-    (let ((agents (alist-get 'agents data)))
+    (let ((agents (oref data agents)))
       (when (and agents (> (length agents) 0))
         (magit-insert-section (gastown-agents-section)
           (magit-insert-heading "Agents:")
-          (seq-do #'gastown-status--insert-agent-section-line
-                  (if (vectorp agents) (append agents nil) agents)))))))
+          (seq-do #'gastown-status--insert-agent-section-line agents))))))
 
 (defun gastown-insert-rigs ()
   "Insert rig sections into the status buffer."
   (when-let ((data gastown-status--data))
-    (let* ((location (or (alist-get 'location data) ""))
-           (rigs     (alist-get 'rigs data)))
+    (let* ((location (or (oref data location) ""))
+           (rigs     (oref data rigs)))
       (when (and rigs (> (length rigs) 0))
         (seq-do (lambda (rig)
                   (gastown-status--insert-rig-section rig location))
-                (if (vectorp rigs) (append rigs nil) rigs))))))
+                rigs)))))
 
 ;;; ============================================================
 ;;; Section Renderers
@@ -310,12 +311,12 @@ Key bindings:
 
 (defun gastown-status--insert-town-header (data)
   "Insert town name and location header from DATA (outside sections)."
-  (let* ((name     (or (alist-get 'name data) "unknown"))
-         (location (or (alist-get 'location data) ""))
-         (overseer  (alist-get 'overseer data))
-         (o-name    (or (alist-get 'name overseer) ""))
-         (o-email   (or (alist-get 'email overseer) ""))
-         (o-unread  (alist-get 'unread_mail overseer)))
+  (let* ((name     (or (oref data name) "unknown"))
+         (location (or (oref data location) ""))
+         (overseer  (oref data overseer))
+         (o-name    (or (and overseer (oref overseer name)) ""))
+         (o-email   (or (and overseer (oref overseer email)) ""))
+         (o-unread  (and overseer (oref overseer unread-mail))))
     (insert "Town: " name "\n")
     (insert location "\n")
     (when overseer
@@ -328,14 +329,14 @@ Key bindings:
     (insert "\n")))
 
 (defun gastown-status--insert-agent-section-line (agent)
-  "Insert a single AGENT as a magit section line."
-  (let* ((name      (or (alist-get 'name agent) ""))
-         (role      (or (alist-get 'role agent) ""))
-         (running   (alist-get 'running agent))
-         (session   (alist-get 'session agent))
-         (info      (or (alist-get 'agent_info agent) ""))
-         (unread    (alist-get 'unread_mail agent))
-         (subject   (alist-get 'first_subject agent))
+  "Insert a single AGENT (`gastown-agent') as a magit section line."
+  (let* ((name      (or (oref agent name) ""))
+         (role      (or (oref agent role) ""))
+         (running   (oref agent running))
+         (session   (oref agent session))
+         (info      (or (oref agent agent-info) ""))
+         (unread    (oref agent unread-mail))
+         (subject   (oref agent first-subject))
          (icon      (gastown-status--role-icon role))
          (indicator (gastown-status--running-indicator running)))
     (magit-insert-section (gastown-agent-section :agent agent)
@@ -359,15 +360,14 @@ Key bindings:
            (format " 📬%d" unread)))))))
 
 (defun gastown-status--insert-rig-section (rig town-location)
-  "Insert a collapsible section for RIG using TOWN-LOCATION."
-  (let* ((rig-name  (or (alist-get 'name rig) "unknown"))
-         (agents    (or (alist-get 'agents rig) []))
-         (agents-list (if (vectorp agents) (append agents nil) agents))
+  "Insert a collapsible section for RIG (`gastown-rig') using TOWN-LOCATION."
+  (let* ((rig-name  (or (oref rig name) "unknown"))
+         (agents-list (oref rig agents))
          ;; Partition agents by role
-         (witnesses  (seq-filter (lambda (a) (equal (alist-get 'role a) "witness")) agents-list))
-         (refineries (seq-filter (lambda (a) (equal (alist-get 'role a) "refinery")) agents-list))
-         (polecats   (seq-filter (lambda (a) (equal (alist-get 'role a) "polecat")) agents-list))
-         (crews      (seq-filter (lambda (a) (equal (alist-get 'role a) "crew")) agents-list)))
+         (witnesses  (seq-filter (lambda (a) (equal (oref a role) "witness")) agents-list))
+         (refineries (seq-filter (lambda (a) (equal (oref a role) "refinery")) agents-list))
+         (polecats   (seq-filter (lambda (a) (equal (oref a role) "polecat")) agents-list))
+         (crews      (seq-filter (lambda (a) (equal (oref a role) "crew")) agents-list)))
     (magit-insert-section (gastown-rig-section :rig rig)
       (magit-insert-heading
         (propertize (format "── %s/ ──" rig-name)
@@ -395,13 +395,13 @@ Key bindings:
                   polecats))))))
 
 (defun gastown-status--insert-agent-in-rig (agent _town-location _rig-name)
-  "Insert AGENT line (witness/refinery) within a rig section."
-  (let* ((name      (or (alist-get 'name agent) ""))
-         (role      (or (alist-get 'role agent) ""))
-         (running   (alist-get 'running agent))
-         (info      (or (alist-get 'agent_info agent) ""))
-         (unread    (alist-get 'unread_mail agent))
-         (subject   (alist-get 'first_subject agent))
+  "Insert AGENT (`gastown-agent') line (witness/refinery) within a rig section."
+  (let* ((name      (or (oref agent name) ""))
+         (role      (or (oref agent role) ""))
+         (running   (oref agent running))
+         (info      (or (oref agent agent-info) ""))
+         (unread    (oref agent unread-mail))
+         (subject   (oref agent first-subject))
          (icon      (gastown-status--role-icon role))
          (indicator (gastown-status--running-indicator running)))
     (magit-insert-section (gastown-agent-section :agent agent)
@@ -422,12 +422,12 @@ Key bindings:
 
 
 (defun gastown-status--insert-crew-or-polecat-line (agent _town-location rig-name _role)
-  "Insert a crew or polecat AGENT line within a rig section.
+  "Insert a crew or polecat AGENT (`gastown-agent') line within a rig section.
 RIG-NAME is used to build the polecat section metadata."
-  (let* ((name      (or (alist-get 'name agent) ""))
-         (running   (alist-get 'running agent))
-         (info      (or (alist-get 'agent_info agent) ""))
-         (unread    (alist-get 'unread_mail agent))
+  (let* ((name      (or (oref agent name) ""))
+         (running   (oref agent running))
+         (info      (or (oref agent agent-info) ""))
+         (unread    (oref agent unread-mail))
          (indicator (gastown-status--running-indicator running)))
     (magit-insert-section (gastown-polecat-section :polecat agent :rig-name rig-name)
       (magit-insert-heading
@@ -466,26 +466,24 @@ RIG-NAME is used to build the polecat section metadata."
   (if-let ((section (magit-current-section)))
       (cond
        ((object-of-class-p section 'gastown-rig-section)
-        (message "Rig: %s"
-                 (alist-get 'name (oref section rig))))
+        (message "Rig: %s" (oref (oref section rig) name)))
        ((object-of-class-p section 'gastown-agent-section)
         (let* ((agent (oref section agent))
-               (session (alist-get 'session agent))
-               (running (alist-get 'running agent)))
+               (session (oref agent session))
+               (running (oref agent running)))
           (if (and session running)
               (shell-command (format "tmux select-window -t gt:%s" session))
-            (message "Agent %s is not running" (alist-get 'name agent)))))
+            (message "Agent %s is not running" (oref agent name)))))
        ((object-of-class-p section 'gastown-polecat-section)
         (let* ((polecat  (oref section polecat))
                (rig-name (oref section rig-name)))
           (if (fboundp 'gastown-polecat-detail-show)
               (gastown-polecat-detail-show polecat rig-name)
-            (let ((session (alist-get 'session polecat))
-                  (running (alist-get 'running polecat)))
+            (let ((session (oref polecat session))
+                  (running (oref polecat running)))
               (if (and session running)
                   (shell-command (format "tmux select-window -t gt:%s" session))
-                (message "Polecat %s is not running"
-                         (alist-get 'name polecat)))))))
+                (message "Polecat %s is not running" (oref polecat name)))))))
        (t
         (magit-section-toggle section)))
     (user-error "No section at point")))
@@ -498,7 +496,7 @@ RIG-NAME is used to build the polecat section metadata."
 (defun gastown-status-refresh ()
   "Refresh the *gastown-status* buffer with current status."
   (interactive)
-  (let ((data (gastown-command-status! :json t)))
+  (let ((data (gastown-gt-status-from-json (gastown-command-status! :json t))))
     (gastown-status--render data)
     (message "Status refreshed")))
 
@@ -541,7 +539,7 @@ RIG-NAME is used to build the polecat section metadata."
   "Show the *gastown-status* buffer with current Gas Town status."
   (interactive)
   (let* ((buf  (get-buffer-create gastown-status-buffer-name))
-         (data (gastown-command-status! :json t)))
+         (data (gastown-gt-status-from-json (gastown-command-status! :json t))))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-status-mode)
         (gastown-status-mode))

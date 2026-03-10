@@ -106,22 +106,22 @@ Returns nil when not in a gastown buffer or no agent section is at point."
              (fboundp 'magit-current-section))
     (when-let* ((section (magit-current-section)))
       (cond
-       ;; Polecat section: rig-name and polecat alist both present
+       ;; Polecat section: rig-name and polecat (gastown-agent) both present
        ((object-of-class-p section 'gastown-polecat-section)
         (let* ((polecat  (oref section polecat))
                (rig-name (oref section rig-name))
-               (name     (alist-get 'name polecat)))
+               (name     (oref polecat name)))
           (when (and rig-name name)
             (format "%s/%s" rig-name name))))
        ;; Agent section: check parent for rig context
        ((object-of-class-p section 'gastown-agent-section)
         (let* ((agent   (oref section agent))
-               (name    (alist-get 'name agent))
+               (name    (oref agent name))
                (parent  (oref section parent))
                (rig-name
                 (when (and parent
                            (object-of-class-p parent 'gastown-rig-section))
-                  (alist-get 'name (oref parent rig)))))
+                  (oref (oref parent rig) name))))
           (when name
             (if rig-name
                 (format "%s/%s" rig-name name)

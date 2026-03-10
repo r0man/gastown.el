@@ -17,6 +17,7 @@
 
 (require 'ert)
 (require 'gastown-context)
+(require 'gastown-types)
 
 ;;; ============================================================
 ;;; Module structure tests
@@ -86,7 +87,7 @@
 (ert-deftest gastown-context-test-agent-at-point-polecat-section ()
   "Test gastown-agent-at-point on a gastown-polecat-section."
   (require 'gastown-status-buffer)
-  (let* ((agent '((name . "nux") (role . "polecat") (running . t)))
+  (let* ((agent (gastown-agent :name "nux" :role "polecat" :running t))
          (section (make-instance 'gastown-polecat-section
                                  :polecat agent
                                  :rig-name "gastown_el")))
@@ -99,7 +100,7 @@
 (ert-deftest gastown-context-test-agent-at-point-polecat-section-missing-rig ()
   "Test gastown-agent-at-point on polecat section with nil rig-name returns nil."
   (require 'gastown-status-buffer)
-  (let* ((agent '((name . "nux") (role . "polecat") (running . t)))
+  (let* ((agent (gastown-agent :name "nux" :role "polecat" :running t))
          (section (make-instance 'gastown-polecat-section
                                  :polecat agent
                                  :rig-name nil)))
@@ -110,7 +111,7 @@
 (ert-deftest gastown-context-test-agent-at-point-agent-section-global ()
   "Test gastown-agent-at-point on a global gastown-agent-section (no parent rig)."
   (require 'gastown-status-buffer)
-  (let* ((agent '((name . "mayor") (role . "coordinator") (running . t)))
+  (let* ((agent (gastown-agent :name "mayor" :role "coordinator" :running t))
          (section (make-instance 'gastown-agent-section
                                  :agent agent)))
     (cl-letf (((symbol-function 'magit-current-section)
@@ -122,9 +123,9 @@
 (ert-deftest gastown-context-test-agent-at-point-agent-section-with-rig ()
   "Test gastown-agent-at-point on a rig-scoped gastown-agent-section."
   (require 'gastown-status-buffer)
-  (let* ((rig '((name . "gastown_el")))
+  (let* ((rig (gastown-rig-data :name "gastown_el"))
          (parent-section (make-instance 'gastown-rig-section :rig rig))
-         (agent '((name . "witness") (role . "witness") (running . t)))
+         (agent (gastown-agent :name "witness" :role "witness" :running t))
          ;; magit-section inherits `parent' but without :initarg, so use oset
          (section (make-instance 'gastown-agent-section :agent agent)))
     (oset section parent parent-section)

@@ -29,6 +29,7 @@
 (require 'gastown-command-convoy)
 (require 'gastown-command-mail)
 (require 'gastown-spec)
+(require 'gastown-types)
 
 ;;; ============================================================
 ;;; Pagination Mixin — Buffer-Local State
@@ -199,13 +200,13 @@ ALL-ENTRIES is the complete list of tabulated-list entries."
     'gastown-rig-list-degraded))
 
 (defun gastown-rig-list--entry (rig)
-  "Convert RIG alist (from gt rig list --json) to a tabulated-list entry."
-  (let* ((name     (or (alist-get 'name rig) ""))
-         (status   (or (alist-get 'status rig) ""))
-         (witness  (or (alist-get 'witness rig) ""))
-         (refinery (or (alist-get 'refinery rig) ""))
-         (polecats (or (alist-get 'polecats rig) 0))
-         (crew     (or (alist-get 'crew rig) 0)))
+  "Convert RIG (`gastown-rig') to a tabulated-list entry."
+  (let* ((name     (or (oref rig name) ""))
+         (status   (or (oref rig status) ""))
+         (witness  (or (oref rig witness) ""))
+         (refinery (or (oref rig refinery) ""))
+         (polecats (or (oref rig polecats) 0))
+         (crew     (or (oref rig crew) 0)))
     (list name
           (vector name
                   (propertize status 'face (gastown-rig-list--status-face status))
@@ -277,9 +278,10 @@ Key bindings:
   (tabulated-list-init-header))
 
 (defun gastown-rig-list--populate (data)
-  "Populate the rig list buffer from DATA (JSON array of rig alists)."
+  "Populate the rig list buffer from DATA (JSON array of rig objects)."
   (let ((entries (mapcar #'gastown-rig-list--entry
-                         (if (vectorp data) (append data nil) data))))
+                         (mapcar #'gastown-rig-data-info-from-json
+                                 (if (vectorp data) (append data nil) data)))))
     (gastown-tabulated--init-paged "GT-Rigs" entries)))
 
 ;;;###autoload
@@ -376,12 +378,11 @@ Key bindings:
   :group 'gastown)
 
 (defun gastown-session-list--entry (session)
-  "Convert SESSION alist (from gt session list --json) to a tabulated-list entry."
-  (let* ((rig        (or (alist-get 'rig session) ""))
-         (polecat    (or (alist-get 'polecat session) ""))
-         (session-id (or (alist-get 'session_id session) ""))
-         (running    (let ((v (alist-get 'running session)))
-                       (and v (not (eq v :json-false)))))
+  "Convert SESSION (`gastown-session') to a tabulated-list entry."
+  (let* ((rig        (or (oref session rig) ""))
+         (polecat    (or (oref session polecat) ""))
+         (session-id (or (oref session session-id) ""))
+         (running    (oref session running))
          (indicator  (if running
                          (propertize "●" 'face 'gastown-session-list-running)
                        (propertize "○" 'face 'gastown-session-list-stopped))))
@@ -416,9 +417,10 @@ Key bindings:
   (tabulated-list-init-header))
 
 (defun gastown-session-list--populate (data)
-  "Populate the session list buffer from DATA (JSON array of session alists)."
+  "Populate the session list buffer from DATA (JSON array of session objects)."
   (let ((entries (mapcar #'gastown-session-list--entry
-                         (if (vectorp data) (append data nil) data))))
+                         (mapcar #'gastown-session-from-json
+                                 (if (vectorp data) (append data nil) data)))))
     (gastown-tabulated--init-paged "GT-Sessions" entries)))
 
 ;;;###autoload
@@ -506,14 +508,13 @@ Key bindings:
   "Buffer name for the Gas Town convoy list.")
 
 (defun gastown-convoy-list--entry (convoy)
-  "Convert CONVOY alist (from gt convoy list --json) to a tabulated-list entry."
-  (let* ((id        (or (alist-get 'id convoy) ""))
-         (title     (or (alist-get 'title convoy) ""))
-         (status    (or (alist-get 'status convoy) ""))
-         (created   (gastown-tabulated--format-timestamp
-                     (alist-get 'created_at convoy)))
-         (completed (or (alist-get 'completed convoy) 0))
-         (total     (or (alist-get 'total convoy) 0))
+  "Convert CONVOY (`gastown-convoy') to a tabulated-list entry."
+  (let* ((id        (or (oref convoy id) ""))
+         (title     (or (oref convoy title) ""))
+         (status    (or (oref convoy status) ""))
+         (created   (gastown-tabulated--format-timestamp (oref convoy created-at)))
+         (completed (or (oref convoy completed) 0))
+         (total     (or (oref convoy total) 0))
          (progress  (format "%d/%d" completed total)))
     (list id
           (vector id title status created progress))))
@@ -547,9 +548,10 @@ Key bindings:
   (tabulated-list-init-header))
 
 (defun gastown-convoy-list--populate (data)
-  "Populate the convoy list buffer from DATA (JSON array of convoy alists)."
+  "Populate the convoy list buffer from DATA (JSON array of convoy objects)."
   (let ((entries (mapcar #'gastown-convoy-list--entry
-                         (if (vectorp data) (append data nil) data))))
+                         (mapcar #'gastown-convoy-data-from-json
+                                 (if (vectorp data) (append data nil) data)))))
     (gastown-tabulated--init-paged "GT-Convoys" entries)))
 
 ;;;###autoload
@@ -651,15 +653,13 @@ Key bindings:
   :group 'gastown)
 
 (defun gastown-mail-inbox--entry (mail)
-  "Convert MAIL alist (from gt mail inbox --json) to a tabulated-list entry."
-  (let* ((id        (or (alist-get 'id mail) ""))
-         (from      (or (alist-get 'from mail) ""))
-         (subject   (or (alist-get 'subject mail) ""))
-         (timestamp (gastown-tabulated--format-timestamp
-                     (alist-get 'timestamp mail)))
-         (read      (let ((v (alist-get 'read mail)))
-                       (and v (not (eq v :json-false)))))
-         (priority  (or (alist-get 'priority mail) "normal"))
+  "Convert MAIL (`gastown-mail-message') to a tabulated-list entry."
+  (let* ((id        (or (oref mail id) ""))
+         (from      (or (oref mail from) ""))
+         (subject   (or (oref mail subject) ""))
+         (timestamp (gastown-tabulated--format-timestamp (oref mail timestamp)))
+         (read      (oref mail read))
+         (priority  (or (oref mail priority) "normal"))
          (unread    (if (not read)
                         (propertize "●" 'face 'gastown-mail-inbox-unread)
                       ""))
@@ -698,9 +698,10 @@ Key bindings:
   (tabulated-list-init-header))
 
 (defun gastown-mail-inbox--populate (data)
-  "Populate the mail inbox buffer from DATA (JSON array of mail alists)."
+  "Populate the mail inbox buffer from DATA (JSON array of mail objects)."
   (let ((entries (mapcar #'gastown-mail-inbox--entry
-                         (if (vectorp data) (append data nil) data))))
+                         (mapcar #'gastown-mail-message-from-json
+                                 (if (vectorp data) (append data nil) data)))))
     (gastown-tabulated--init-paged "GT-Mail" entries)))
 
 ;;;###autoload

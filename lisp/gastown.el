@@ -35,6 +35,7 @@
 ;;; Code:
 
 (require 'gastown-custom)
+(require 'gastown-types)
 (require 'transient)
 (require 'gastown-command-agents)
 (require 'gastown-command-comm)

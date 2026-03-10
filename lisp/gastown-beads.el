@@ -34,6 +34,7 @@
 ;;; Code:
 
 (require 'gastown)
+(require 'gastown-types)
 
 ;; Forward declarations for optional beads-section infrastructure
 (defvar beads-status-sections-hook)
@@ -78,21 +79,17 @@ Protected against double-injection by `gastown-beads--dispatch-injected'."
 (defun gastown-beads--fetch-agents ()
   "Fetch active polecats from Gas Town via `gt status --json'.
 
-Returns a list of polecat alists with keys: name, rig, running, info.
-Returns nil on error or when gt is not available."
+Returns a list of `gastown-agent' objects with the rig name stored
+in a buffer-local alist.  Returns nil on error or when gt is not available."
   (condition-case nil
-      (let* ((data (gastown-command-status! :json t)))
-        (when data
+      (let* ((status (gastown-gt-status-from-json (gastown-command-status! :json t))))
+        (when status
           (let ((polecats nil))
-            (dolist (rig (append (alist-get 'rigs data) nil))
-              (let ((rig-name (or (alist-get 'name rig) "")))
-                (dolist (agent (append (alist-get 'agents rig) nil))
-                  (when (equal (alist-get 'role agent) "polecat")
-                    (push (list (cons 'rig rig-name)
-                                (cons 'name (or (alist-get 'name agent) ""))
-                                (cons 'running (alist-get 'running agent))
-                                (cons 'info (or (alist-get 'agent_info agent) "")))
-                          polecats)))))
+            (dolist (rig (oref status rigs))
+              (dolist (agent (oref rig agents))
+                (when (equal (oref agent role) "polecat")
+                  ;; Store rig name alongside agent using a cons pair
+                  (push (cons (oref rig name) agent) polecats))))
             (nreverse polecats))))
     (error nil)))
 
@@ -100,18 +97,19 @@ Returns nil on error or when gt is not available."
 ;;; Polecat Line Rendering
 ;;; ============================================================
 
-(defun gastown-beads--format-polecat-line (polecat)
-  "Format a single POLECAT entry as a display string.
+(defun gastown-beads--format-polecat-line (rig-agent)
+  "Format a single polecat entry as a display string.
 
-POLECAT is an alist with keys: name, rig, running, info.
+RIG-AGENT is a cons of (rig-name . gastown-agent).
 Returns a propertized string with running indicator, name, and rig."
-  (let* ((name (or (alist-get 'name polecat) "unknown"))
-         (rig (or (alist-get 'rig polecat) ""))
-         (running (alist-get 'running polecat))
+  (let* ((rig-name (car rig-agent))
+         (agent    (cdr rig-agent))
+         (name     (or (oref agent name) "unknown"))
+         (running  (oref agent running))
          (indicator (if running
                         (propertize "●" 'face 'success)
                       (propertize "○" 'face 'shadow))))
-    (format "  %s %-12s %s" indicator name rig)))
+    (format "  %s %-12s %s" indicator name rig-name)))
 
 ;;; ============================================================
 ;;; Work Queue Section (requires beads-section.el)

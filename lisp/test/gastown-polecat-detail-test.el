@@ -12,38 +12,37 @@
 
 (require 'ert)
 (require 'gastown-polecat-detail)
+(require 'gastown-types)
 
 ;;; ============================================================
 ;;; Fixtures
 ;;; ============================================================
 
 (defconst gastown-polecat-detail-test--running-polecat
-  '((name . "furiosa")
-    (session . "ge-furiosa")
-    (role . "polecat")
-    (running . t)
-    (has_work . t)
-    (unread_mail . 2)
-    (agent_info . "claude"))
+  (gastown-agent
+   :name "furiosa"
+   :session "ge-furiosa"
+   :role "polecat"
+   :running t
+   :has-work t
+   :unread-mail 2
+   :agent-info "claude")
   "Fixture: running polecat with work and mail.")
 
 (defconst gastown-polecat-detail-test--stopped-polecat
-  '((name . "nux")
-    (session . "ge-nux")
-    (role . "polecat")
-    (running . nil)
-    (has_work . nil)
-    (unread_mail . 0)
-    (agent_info . "claude/sonnet"))
+  (gastown-agent
+   :name "nux"
+   :session "ge-nux"
+   :role "polecat"
+   :running nil
+   :has-work nil
+   :unread-mail 0
+   :agent-info "claude/sonnet")
   "Fixture: stopped polecat with no work or mail.")
 
 (defconst gastown-polecat-detail-test--sample-beads
-  '(((id . "ge-abc")
-     (title . "Fix the thing")
-     (status . "in_progress"))
-    ((id . "ge-def")
-     (title . "Update docs")
-     (status . "closed")))
+  (list (gastown-work-item :id "ge-abc" :title "Fix the thing" :status "in_progress")
+        (gastown-work-item :id "ge-def" :title "Update docs" :status "closed"))
   "Fixture: sample bead history list.")
 
 ;;; ============================================================
@@ -54,7 +53,7 @@
   "Buffer name includes rig and polecat names."
   (let* ((polecat gastown-polecat-detail-test--running-polecat)
          (rig "gastown_el")
-         (name (alist-get 'name polecat))
+         (name (oref polecat name))
          (expected (format "*gastown-polecat: %s/%s*" rig name)))
     (should (equal expected "*gastown-polecat: gastown_el/furiosa*"))))
 
@@ -119,7 +118,7 @@
     (should result)))
 
 (ert-deftest gastown-polecat-detail-test-work-item-renders ()
-  "Work item renders a single bead alist as a vnode."
+  "Work item renders a single gastown-work-item as a vnode."
   (let* ((bead (car gastown-polecat-detail-test--sample-beads))
          (result (gastown-polecat-detail--work-item bead)))
     (should result)))

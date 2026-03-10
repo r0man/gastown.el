@@ -30,6 +30,7 @@
 
 (require 'vui)
 (require 'json)
+(require 'gastown-types)
 
 ;; Forward declarations for optional beads integration
 (defvar beads-executable)
@@ -91,7 +92,7 @@
   "Fetch recent beads assigned to POLECAT-NAME in RIG-NAME.
 
 Calls `bd list --json --assignee=rig/polecats/name' and parses the result.
-Returns a list of bead alists, or nil on error."
+Returns a list of `gastown-work-item' objects, or nil on error."
   (condition-case _err
       (with-temp-buffer
         (let* ((assignee (format "%s/polecats/%s" rig-name polecat-name))
@@ -104,7 +105,8 @@ Returns a list of bead alists, or nil on error."
               (when (and output (not (string-empty-p (string-trim output))))
                 (let ((json-array-type 'list)
                       (json-object-type 'alist))
-                  (ignore-errors (json-read-from-string output))))))))
+                  (when-let ((raw (ignore-errors (json-read-from-string output))))
+                    (mapcar #'gastown-work-item-from-json raw))))))))
     (error nil)))
 
 ;;; ============================================================
@@ -122,10 +124,10 @@ Returns a list of bead alists, or nil on error."
   (vui-text (format "%-12s" text) :face 'gastown-polecat-detail-label))
 
 (defun gastown-polecat-detail--header (polecat rig-name)
-  "Render header row for POLECAT alist in RIG-NAME."
-  (let* ((name    (or (alist-get 'name polecat) ""))
-         (running (alist-get 'running polecat))
-         (info    (or (alist-get 'agent_info polecat) "")))
+  "Render header row for POLECAT (`gastown-agent') in RIG-NAME."
+  (let* ((name    (or (oref polecat name) ""))
+         (running (oref polecat running))
+         (info    (or (oref polecat agent-info) "")))
     (vui-vstack
      (vui-text
       (concat
@@ -138,8 +140,8 @@ Returns a list of bead alists, or nil on error."
                      'face 'gastown-polecat-detail-label)))))))
 
 (defun gastown-polecat-detail--hook-row (polecat)
-  "Render the hook/work assignment row for POLECAT alist."
-  (let ((has-work (alist-get 'has_work polecat)))
+  "Render the hook/work assignment row for POLECAT (`gastown-agent')."
+  (let ((has-work (oref polecat has-work)))
     (vui-hstack
      (gastown-polecat-detail--field-label "Hook")
      (if has-work
@@ -147,9 +149,9 @@ Returns a list of bead alists, or nil on error."
        (vui-text (propertize "no work" 'face 'gastown-polecat-detail-stopped))))))
 
 (defun gastown-polecat-detail--session-row (polecat)
-  "Render the tmux session row for POLECAT alist."
-  (let* ((session (alist-get 'session polecat))
-         (running (alist-get 'running polecat)))
+  "Render the tmux session row for POLECAT (`gastown-agent')."
+  (let* ((session (oref polecat session))
+         (running (oref polecat running)))
     (vui-hstack
      (gastown-polecat-detail--field-label "Session")
      (if (and session running)
@@ -162,8 +164,8 @@ Returns a list of bead alists, or nil on error."
                              'face 'gastown-polecat-detail-stopped))))))
 
 (defun gastown-polecat-detail--mail-row (polecat)
-  "Render the mail row for POLECAT alist."
-  (let ((unread (or (alist-get 'unread_mail polecat) 0)))
+  "Render the mail row for POLECAT (`gastown-agent')."
+  (let ((unread (or (oref polecat unread-mail) 0)))
     (vui-hstack
      (gastown-polecat-detail--field-label "Mail")
      (if (> unread 0)
@@ -179,10 +181,10 @@ Returns a list of bead alists, or nil on error."
                              'face 'gastown-polecat-detail-stopped))))))
 
 (defun gastown-polecat-detail--work-item (bead)
-  "Render a single BEAD alist as a work history row."
-  (let* ((id     (or (alist-get 'id bead) ""))
-         (title  (or (alist-get 'title bead) ""))
-         (status (or (alist-get 'status bead) "")))
+  "Render a single BEAD (`gastown-work-item') as a work history row."
+  (let* ((id     (or (oref bead id) ""))
+         (title  (or (oref bead title) ""))
+         (status (or (oref bead status) "")))
     (vui-hstack
      (vui-text (format "%-12s" id) :face 'gastown-polecat-detail-work-id)
      (vui-text (format "%-12s" status) :face 'gastown-polecat-detail-label)
@@ -238,14 +240,11 @@ Returns a list of bead alists, or nil on error."
 
 ;;;###autoload
 (defun gastown-polecat-detail-show (polecat rig-name)
-  "Show the detail view for POLECAT alist in rig RIG-NAME.
+  "Show the detail view for POLECAT (`gastown-agent') in rig RIG-NAME.
 
 Opens a dedicated vui.el buffer showing polecat status, hook,
-session, mail, and recent work history.
-
-POLECAT is an alist from `gt status --json' with keys:
-  name, running, session, has_work, unread_mail, agent_info."
-  (let* ((polecat-name (or (alist-get 'name polecat) ""))
+session, mail, and recent work history."
+  (let* ((polecat-name (or (oref polecat name) ""))
          (buf-name (format "*gastown-polecat: %s/%s*" rig-name polecat-name)))
     (vui-mount
      (vui-component 'gastown-polecat-detail-app
