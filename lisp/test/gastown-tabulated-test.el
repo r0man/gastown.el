@@ -305,5 +305,116 @@
   (should (fboundp 'gastown-convoy-list-show-buffer))
   (should (fboundp 'gastown-mail-inbox-show-buffer)))
 
+;;; ============================================================
+;;; Filter keybindings
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-filter-keys-bound ()
+  "Each mode's keymap has / filter keybinding."
+  (should (lookup-key gastown-rig-list-mode-map (kbd "/")))
+  (should (lookup-key gastown-session-list-mode-map (kbd "/")))
+  (should (lookup-key gastown-convoy-list-mode-map (kbd "/")))
+  (should (lookup-key gastown-mail-inbox-mode-map (kbd "/"))))
+
+;;; ============================================================
+;;; Filter transients and functions
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-filter-transients-exist ()
+  "Session, convoy, and mail filter transient prefixes are defined."
+  (should (fboundp 'gastown-session-list-filter))
+  (should (fboundp 'gastown-convoy-list-filter))
+  (should (fboundp 'gastown-mail-inbox-filter)))
+
+(ert-deftest gastown-tabulated-test-filter-functions-exist ()
+  "All filter apply/clear functions are defined."
+  (should (fboundp 'gastown-session-list--apply-filter))
+  (should (fboundp 'gastown-session-list--clear-filter))
+  (should (fboundp 'gastown-convoy-list--apply-filter))
+  (should (fboundp 'gastown-convoy-list--clear-filter))
+  (should (fboundp 'gastown-mail-inbox--apply-filter))
+  (should (fboundp 'gastown-mail-inbox--clear-filter))
+  (should (fboundp 'gastown-rig-list-clear-filter)))
+
+;;; ============================================================
+;;; Filter apply — spec updates
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-session-apply-filter-sets-rig ()
+  "gastown-session-list--apply-filter stores rig in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec nil)
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--apply-filter '("--rig=beads_el")))
+    (should (gastown-agent-spec-p gastown-current-agent-spec))
+    (should (equal "beads_el" (oref gastown-current-agent-spec rig)))))
+
+(ert-deftest gastown-tabulated-test-session-apply-filter-clears-rig ()
+  "gastown-session-list--apply-filter with empty rig stores nil."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec (make-instance 'gastown-agent-spec :rig "old"))
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--apply-filter '()))
+    (should (null (oref gastown-current-agent-spec rig)))))
+
+(ert-deftest gastown-tabulated-test-session-clear-filter-resets-spec ()
+  "gastown-session-list--clear-filter sets buffer-local spec to nil."
+  (with-temp-buffer
+    (setq gastown-current-agent-spec (make-instance 'gastown-agent-spec :rig "myrig"))
+    (cl-letf (((symbol-function 'gastown-session-list-refresh) #'ignore))
+      (gastown-session-list--clear-filter))
+    (should (null gastown-current-agent-spec))))
+
+(ert-deftest gastown-tabulated-test-convoy-apply-filter-sets-status ()
+  "gastown-convoy-list--apply-filter stores status in buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-convoy-spec nil)
+    (cl-letf (((symbol-function 'gastown-convoy-list-refresh) #'ignore))
+      (gastown-convoy-list--apply-filter '("--status=open")))
+    (should (gastown-convoy-spec-p gastown-current-convoy-spec))
+    (should (equal "open" (oref gastown-current-convoy-spec status)))))
+
+(ert-deftest gastown-tabulated-test-convoy-clear-filter-resets-spec ()
+  "gastown-convoy-list--clear-filter sets buffer-local spec to nil."
+  (with-temp-buffer
+    (setq gastown-current-convoy-spec (make-instance 'gastown-convoy-spec :status "open"))
+    (cl-letf (((symbol-function 'gastown-convoy-list-refresh) #'ignore))
+      (gastown-convoy-list--clear-filter))
+    (should (null gastown-current-convoy-spec))))
+
+(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-unread ()
+  "gastown-mail-inbox--apply-filter sets unread-only on buffer-local spec."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec nil)
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--apply-filter '("--unread")))
+    (should (gastown-mail-spec-p gastown-current-mail-spec))
+    (should (oref gastown-current-mail-spec unread-only))))
+
+(ert-deftest gastown-tabulated-test-mail-apply-filter-clears-unread ()
+  "gastown-mail-inbox--apply-filter without --unread stores nil unread-only."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec (make-instance 'gastown-mail-spec :unread-only t))
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--apply-filter '()))
+    (should (null (oref gastown-current-mail-spec unread-only)))))
+
+(ert-deftest gastown-tabulated-test-mail-clear-filter-resets-spec ()
+  "gastown-mail-inbox--clear-filter sets buffer-local spec to nil."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec (make-instance 'gastown-mail-spec :unread-only t))
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox--clear-filter))
+    (should (null gastown-current-mail-spec))))
+
+;;; ============================================================
+;;; Mail inbox unread slot
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-mail-inbox-has-unread-slot ()
+  "gastown-command-mail-inbox has unread slot for --unread filter."
+  (let ((cmd (make-instance 'gastown-command-mail-inbox)))
+    (should (slot-exists-p cmd 'unread))))
+
 (provide 'gastown-tabulated-test)
 ;;; gastown-tabulated-test.el ends here

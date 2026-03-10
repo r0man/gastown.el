@@ -34,7 +34,22 @@
     :argument "--all"
     :transient-group "Options"
     :level 1
-    :order 1))
+    :order 1)
+   (unread
+    :initarg :unread
+    :type boolean
+    :initform nil
+    :documentation "Show only unread messages (-u, --unread)."
+    :long-option "unread"
+    :short-option "u"
+    :option-type :boolean
+    :key "u"
+    :transient "--unread"
+    :class transient-switch
+    :argument "--unread"
+    :transient-group "Filters"
+    :level 1
+    :order 2))
   :documentation "Represents gt mail inbox command.
 Lists messages with read/unread indicators.")
 
