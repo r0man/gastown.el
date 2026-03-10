@@ -50,6 +50,8 @@
                               '(:package sesman :version "0.3.2"))
 (eldev-add-extra-dependencies 'runtime
                               '(:package magit-section :version "3.3.0"))
+(eldev-add-extra-dependencies 'runtime
+                              '(:package vui :archive melpa))
 
 ;; Development dependencies
 (eldev-add-extra-dependencies 'test

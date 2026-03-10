@@ -15,7 +15,7 @@
 ;;   - Global agents (mayor, deacon) appear at the top
 ;;   - Each rig gets a collapsible section with witness/refinery first,
 ;;     then crew block, then polecats block
-;;   - Provides context-aware RET: rig → rig list, agent → peek, polecat → tmux
+;;   - Provides context-aware RET: rig → rig list, agent → peek, polecat → detail view
 ;;   - Clickable elements: polecat/crew names -> Dired,
 ;;     agent sessions -> tmux window, unread mail -> inbox,
 ;;     Dolt data_dir -> Dired
@@ -31,6 +31,7 @@
 
 ;; Forward declarations for optional interactive features
 (declare-function gastown-mail-inbox "gastown-command-mail")
+(declare-function gastown-polecat-detail-show "gastown-polecat-detail")
 
 ;;; ============================================================
 ;;; Faces
@@ -475,12 +476,16 @@ RIG-NAME is used to build the polecat section metadata."
               (shell-command (format "tmux select-window -t gt:%s" session))
             (message "Agent %s is not running" (alist-get 'name agent)))))
        ((object-of-class-p section 'gastown-polecat-section)
-        (let* ((polecat (oref section polecat))
-               (session (alist-get 'session polecat))
-               (running (alist-get 'running polecat)))
-          (if (and session running)
-              (shell-command (format "tmux select-window -t gt:%s" session))
-            (message "Polecat %s is not running" (alist-get 'name polecat)))))
+        (let* ((polecat  (oref section polecat))
+               (rig-name (oref section rig-name)))
+          (if (fboundp 'gastown-polecat-detail-show)
+              (gastown-polecat-detail-show polecat rig-name)
+            (let ((session (alist-get 'session polecat))
+                  (running (alist-get 'running polecat)))
+              (if (and session running)
+                  (shell-command (format "tmux select-window -t gt:%s" session))
+                (message "Polecat %s is not running"
+                         (alist-get 'name polecat)))))))
        (t
         (magit-section-toggle section)))
     (user-error "No section at point")))
