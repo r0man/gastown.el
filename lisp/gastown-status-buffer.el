@@ -223,6 +223,18 @@ Defaults to `gastown-status-refresh-interval' when nil.")
     (concat prefix (make-string fill ?─))))
 
 ;;; ============================================================
+;;; Tmux Helpers
+;;; ============================================================
+
+(defun gastown-status--tmux-command (session &optional socket)
+  "Build a tmux `select-window' command string for SESSION.
+SOCKET is the tmux -L argument.  When SOCKET is nil or \"default\",
+no -L flag is used (the default server is addressed directly)."
+  (if (and socket (not (string= socket "default")))
+      (format "tmux -L %s select-window -t %s" socket session)
+    (format "tmux select-window -t %s" session)))
+
+;;; ============================================================
 ;;; Async Data Fetch
 ;;; ============================================================
 
@@ -333,9 +345,10 @@ REJECT is called with an error message string on failure."
                                       (if (eql tmux-count 1) "" "s")
                                       (or tmux-path "")))))))))
 
-(defun gastown-status--agent-line-vnode (agent &optional rig-section)
+(defun gastown-status--agent-line-vnode (agent &optional rig-section tmux-socket)
   "Build a single AGENT (`gastown-agent') row vnode.
-Optionally RIG-SECTION is the parent `gastown-rig-section' for context."
+Optionally RIG-SECTION is the parent `gastown-rig-section' for context.
+TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
   (let* ((name      (or (oref agent name) ""))
          (role      (or (oref agent role) ""))
          (running   (oref agent running))
@@ -366,14 +379,15 @@ Optionally RIG-SECTION is the parent `gastown-rig-section' for context."
         (vui-button label
           :no-decoration t
           :help-echo (format "Switch to tmux session: %s" session)
-          :on-click (let ((s session))
+          :on-click (let ((s session) (sock tmux-socket))
                       (lambda ()
-                        (shell-command (format "tmux -L gt select-window -t %s" s)))))
+                        (shell-command (gastown-status--tmux-command s sock)))))
       (vui-text label))))
 
-(defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section)
+(defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section tmux-socket)
   "Build a crew/polecat AGENT (`gastown-agent') row vnode.
-RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
+RIG-NAME is the rig's name string.  RIG-SECTION is the parent section.
+TMUX-SOCKET is the tmux -L socket name for the fallback switch-to-session action."
   (let* ((name      (or (oref agent name) ""))
          (running   (oref agent running))
          (session   (oref agent session))
@@ -397,20 +411,22 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
         (vui-button label
           :no-decoration t
           :help-echo (format "Open polecat detail: %s/%s" rig-name name)
-          :on-click (let ((a agent) (r rig-name))
+          :on-click (let ((a agent) (r rig-name) (sess session) (sock tmux-socket))
                       (lambda ()
                         (if (fboundp 'gastown-polecat-detail-show)
                             (gastown-polecat-detail-show a r)
                           (shell-command
-                           (format "tmux -L gt select-window -t %s" session))))))
+                           (gastown-status--tmux-command sess sock))))))
       (vui-text label))))
 
 ;;; ============================================================
 ;;; Rig Component (collapsible, local state)
 ;;; ============================================================
 
-(vui-defcomponent gastown-status-rig-widget (rig)
-  "Collapsible rig section component."
+(vui-defcomponent gastown-status-rig-widget (rig tmux-socket)
+  "Collapsible rig section component.
+RIG is a `gastown-rig-data' object.  TMUX-SOCKET is the tmux -L socket name
+passed through to agent row actions."
   :state ((collapsed nil))
   :render
   (let* ((rig-name    (or (oref rig name) "unknown"))
@@ -440,23 +456,23 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
      (unless collapsed
        (vui-vstack
         ;; Witness + refinery agents
-        (mapcar (lambda (a) (gastown-status--agent-line-vnode a rig-sec))
+        (mapcar (lambda (a) (gastown-status--agent-line-vnode a rig-sec tmux-socket))
                 witnesses)
-        (mapcar (lambda (a) (gastown-status--agent-line-vnode a rig-sec))
+        (mapcar (lambda (a) (gastown-status--agent-line-vnode a rig-sec tmux-socket))
                 refineries)
         ;; Crew block
         (when crews
           (vui-vstack
            (vui-text (format "👷 Crew (%d)" (length crews)))
            (mapcar (lambda (a)
-                     (gastown-status--polecat-line-vnode a rig-name rig-sec))
+                     (gastown-status--polecat-line-vnode a rig-name rig-sec tmux-socket))
                    crews)))
         ;; Polecats block
         (when polecats
           (vui-vstack
            (vui-text (format "😺 Polecats (%d)" (length polecats)))
            (mapcar (lambda (a)
-                     (gastown-status--polecat-line-vnode a rig-name rig-sec))
+                     (gastown-status--polecat-line-vnode a rig-name rig-sec tmux-socket))
                    polecats))))))))
 
 ;;; ============================================================
@@ -467,15 +483,16 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
   "Build the complete status view vnode tree from DATA (`gastown-gt-status').
 TIMESTAMP is an optional `format-time-string' compatible time value for the
 last-refreshed line."
-  (let* ((name     (or (oref data name) "unknown"))
-         (location (or (oref data location) ""))
-         (overseer (oref data overseer))
-         (dnd      (oref data dnd))
-         (daemon   (oref data daemon))
-         (dolt     (oref data dolt))
-         (tmux     (oref data tmux))
-         (agents   (oref data agents))
-         (rigs     (oref data rigs)))
+  (let* ((name        (or (oref data name) "unknown"))
+         (location    (or (oref data location) ""))
+         (overseer    (oref data overseer))
+         (dnd         (oref data dnd))
+         (daemon      (oref data daemon))
+         (dolt        (oref data dolt))
+         (tmux        (oref data tmux))
+         (tmux-socket (and tmux (oref tmux socket)))
+         (agents      (oref data agents))
+         (rigs        (oref data rigs)))
     (vui-vstack
      ;; Town name and location
      (vui-text (format "Town: %s" name))
@@ -496,12 +513,13 @@ last-refreshed line."
      (gastown-status--services-vnode daemon dolt tmux)
      (vui-newline)
      ;; Global agents (mayor, deacon, etc.)
-     (mapcar #'gastown-status--agent-line-vnode agents)
+     (mapcar (lambda (a) (gastown-status--agent-line-vnode a nil tmux-socket)) agents)
      ;; Rig sections (each rig widget prepends its own blank line)
      (when rigs
        (mapcar (lambda (rig)
                  (vui-component 'gastown-status-rig-widget
                    :rig rig
+                   :tmux-socket tmux-socket
                    :key (oref rig name)))
                rigs)))))
 

@@ -359,6 +359,52 @@
     (should (string= "○" result))
     (should (eq 'gastown-status-stopped (get-text-property 0 'face result)))))
 
+;;; Tmux Command Helper Tests
+
+(ert-deftest gastown-status-buffer-test-tmux-command-default-socket ()
+  "tmux-command uses plain tmux for \"default\" socket."
+  (should (string= "tmux select-window -t hq-mayor"
+                   (gastown-status--tmux-command "hq-mayor" "default"))))
+
+(ert-deftest gastown-status-buffer-test-tmux-command-nil-socket ()
+  "tmux-command uses plain tmux when socket is nil."
+  (should (string= "tmux select-window -t ge-nux"
+                   (gastown-status--tmux-command "ge-nux" nil))))
+
+(ert-deftest gastown-status-buffer-test-tmux-command-named-socket ()
+  "tmux-command includes -L flag for a named socket."
+  (should (string= "tmux -L gt select-window -t hq-mayor"
+                   (gastown-status--tmux-command "hq-mayor" "gt"))))
+
+;;; Agent Button Action Tests
+
+(defun gastown-status-buffer-test--find-button-echo (pattern)
+  "Search current buffer for a widget button whose help-echo matches PATTERN.
+Returns t when found, nil otherwise.  Call after `gastown-status--render'."
+  (let ((found nil))
+    (goto-char (point-min))
+    (while (and (not found) (< (point) (point-max)))
+      (let* ((w (widget-at (point)))
+             (echo (when w (widget-get w :help-echo))))
+        (when (and echo (string-match-p pattern echo))
+          (setq found t)))
+      (forward-char 1))
+    found))
+
+(ert-deftest gastown-status-buffer-test-agent-button-help-echo ()
+  "Running agent row renders a button whose help-echo names the tmux session."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should (gastown-status-buffer-test--find-button-echo "hq-mayor"))))
+
+(ert-deftest gastown-status-buffer-test-polecat-button-help-echo ()
+  "Running polecat row renders a button whose help-echo references the polecat."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should (gastown-status-buffer-test--find-button-echo "jasper"))))
+
 ;;; Context Detection Tests
 
 (ert-deftest gastown-status-buffer-test-current-section-nil-outside-buffer ()
