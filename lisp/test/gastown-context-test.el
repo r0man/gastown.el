@@ -79,8 +79,9 @@
     (should (null (gastown-agent-at-point)))))
 
 (ert-deftest gastown-context-test-agent-at-point-nil-when-no-section ()
-  "Test that gastown-agent-at-point returns nil when magit-current-section is nil."
-  (cl-letf (((symbol-function 'magit-current-section)
+  "Test that gastown-agent-at-point returns nil when no section at point."
+  (require 'gastown-status-buffer)
+  (cl-letf (((symbol-function 'gastown-status-current-section)
              (lambda () nil)))
     (should (null (gastown-agent-at-point)))))
 
@@ -91,7 +92,7 @@
          (section (make-instance 'gastown-polecat-section
                                  :polecat agent
                                  :rig-name "gastown_el")))
-    (cl-letf (((symbol-function 'magit-current-section)
+    (cl-letf (((symbol-function 'gastown-status-current-section)
                (lambda () section)))
       (let ((result (gastown-agent-at-point)))
         (should (stringp result))
@@ -104,7 +105,7 @@
          (section (make-instance 'gastown-polecat-section
                                  :polecat agent
                                  :rig-name nil)))
-    (cl-letf (((symbol-function 'magit-current-section)
+    (cl-letf (((symbol-function 'gastown-status-current-section)
                (lambda () section)))
       (should (null (gastown-agent-at-point))))))
 
@@ -114,7 +115,7 @@
   (let* ((agent (gastown-agent :name "mayor" :role "coordinator" :running t))
          (section (make-instance 'gastown-agent-section
                                  :agent agent)))
-    (cl-letf (((symbol-function 'magit-current-section)
+    (cl-letf (((symbol-function 'gastown-status-current-section)
                (lambda () section)))
       (let ((result (gastown-agent-at-point)))
         (should (stringp result))
@@ -126,10 +127,9 @@
   (let* ((rig (gastown-rig-data :name "gastown_el"))
          (parent-section (make-instance 'gastown-rig-section :rig rig))
          (agent (gastown-agent :name "witness" :role "witness" :running t))
-         ;; magit-section inherits `parent' but without :initarg, so use oset
          (section (make-instance 'gastown-agent-section :agent agent)))
     (oset section parent parent-section)
-    (cl-letf (((symbol-function 'magit-current-section)
+    (cl-letf (((symbol-function 'gastown-status-current-section)
                (lambda () section)))
       (let ((result (gastown-agent-at-point)))
         (should (stringp result))

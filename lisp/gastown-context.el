@@ -24,7 +24,9 @@
 ;; ## Agent context (gastown-agent-at-point)
 ;;
 ;; `gastown-agent-at-point' reads the target string from the current
-;; section in a `gastown-status-mode' buffer:
+;; section at point in a `gastown-status-mode' buffer via
+;; `gastown-status-current-section' (reads `gastown-status-section'
+;; text property):
 ;;
 ;; - `gastown-polecat-section' → \"rig-name/polecat-name\"
 ;; - `gastown-agent-section' with rig parent → \"rig-name/agent-name\"
@@ -53,7 +55,7 @@
 (declare-function beads-issue-at-point "beads-section" ())
 
 ;; Forward declarations for gastown-status-buffer section types
-(declare-function magit-current-section "magit-section" ())
+(declare-function gastown-status-current-section "gastown-status-buffer" ())
 (defvar gastown-polecat-section)
 (defvar gastown-agent-section)
 (defvar gastown-rig-section)
@@ -103,8 +105,8 @@ constructs the target string used by `gt peek', `gt nudge', etc.:
 
 Returns nil when not in a gastown buffer or no agent section is at point."
   (when (and (featurep 'gastown-status-buffer)
-             (fboundp 'magit-current-section))
-    (when-let* ((section (magit-current-section)))
+             (fboundp 'gastown-status-current-section))
+    (when-let* ((section (gastown-status-current-section)))
       (cond
        ;; Polecat section: rig-name and polecat (gastown-agent) both present
        ((object-of-class-p section 'gastown-polecat-section)

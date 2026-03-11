@@ -4,7 +4,7 @@
 
 ;;; Commentary:
 
-;; ERT tests for the gastown-status-buffer module.
+;; ERT tests for the gastown-status-buffer module (vui.el based).
 
 ;;; Code:
 
@@ -66,24 +66,12 @@
   "Test that gastown-status-mode is defined."
   (should (fboundp 'gastown-status-mode)))
 
-(ert-deftest gastown-status-buffer-test-mode-derives-from-magit-section ()
-  "gastown-status-mode must derive from magit-section-mode."
+(ert-deftest gastown-status-buffer-test-mode-derives-from-vui ()
+  "gastown-status-mode must derive from vui-mode."
   (should (get 'gastown-status-mode 'derived-mode-parent))
   (with-temp-buffer
     (gastown-status-mode)
-    (should (derived-mode-p 'magit-section-mode))))
-
-;;; Section Hook Tests
-
-(ert-deftest gastown-status-buffer-test-sections-hook-defined ()
-  "gastown-status-sections-hook defcustom must be defined."
-  (should (boundp 'gastown-status-sections-hook)))
-
-(ert-deftest gastown-status-buffer-test-sections-hook-default-functions ()
-  "gastown-status-sections-hook default must include the three insert functions."
-  (should (memq #'gastown-insert-services gastown-status-sections-hook))
-  (should (memq #'gastown-insert-global-agents gastown-status-sections-hook))
-  (should (memq #'gastown-insert-rigs gastown-status-sections-hook)))
+    (should (derived-mode-p 'vui-mode))))
 
 ;;; Section Class Tests
 
@@ -107,21 +95,16 @@
   "gastown-agent-section must have an :agent slot."
   (should (slot-exists-p 'gastown-agent-section 'agent)))
 
-;;; Visit Function Tests
+(ert-deftest gastown-status-buffer-test-agent-section-has-parent-slot ()
+  "gastown-agent-section must have a :parent slot."
+  (should (slot-exists-p 'gastown-agent-section 'parent)))
 
-(ert-deftest gastown-status-buffer-test-visit-section-defined ()
-  "gastown-status-visit-section interactive function must be defined."
-  (should (fboundp 'gastown-status-visit-section)))
-
-(ert-deftest gastown-status-buffer-test-keymap-ret-visit ()
-  "RET must be bound to gastown-status-visit-section."
-  (should (eq #'gastown-status-visit-section
-              (lookup-key gastown-status-mode-map (kbd "RET")))))
-
-(ert-deftest gastown-status-buffer-test-buffer-name-constant ()
-  "Test that buffer name constant is defined and correct."
-  (should (boundp 'gastown-status-buffer-name))
-  (should (equal "*gastown-status*" gastown-status-buffer-name)))
+(ert-deftest gastown-status-buffer-test-polecat-section-class-defined ()
+  "gastown-polecat-section EIEIO class must exist with required slots."
+  (should (class-p 'gastown-polecat-section))
+  (should (slot-exists-p 'gastown-polecat-section 'polecat))
+  (should (slot-exists-p 'gastown-polecat-section 'rig-name))
+  (should (slot-exists-p 'gastown-polecat-section 'parent)))
 
 ;;; Keymap Tests
 
@@ -139,6 +122,11 @@
   "Test that 'w' is bound to gastown-status-toggle-watch."
   (should (eq #'gastown-status-toggle-watch
               (lookup-key gastown-status-mode-map "w"))))
+
+(ert-deftest gastown-status-buffer-test-buffer-name-constant ()
+  "Test that buffer name constant is defined and correct."
+  (should (boundp 'gastown-status-buffer-name))
+  (should (equal "*gastown-status*" gastown-status-buffer-name)))
 
 ;;; Rendering Tests — Town
 
@@ -332,6 +320,21 @@
   (let ((result (gastown-status--running-indicator nil)))
     (should (string= "○" result))
     (should (eq 'gastown-status-stopped (get-text-property 0 'face result)))))
+
+;;; Context Detection Tests
+
+(ert-deftest gastown-status-buffer-test-current-section-nil-outside-buffer ()
+  "gastown-status-current-section returns nil when no text property at point."
+  (with-temp-buffer
+    (should (null (gastown-status-current-section)))))
+
+(ert-deftest gastown-status-buffer-test-current-section-reads-text-property ()
+  "gastown-status-current-section reads gastown-status-section text property."
+  (with-temp-buffer
+    (let ((sec (gastown-agent-section :agent (gastown-agent :name "test"))))
+      (insert (propertize "line" 'gastown-status-section sec))
+      (goto-char (point-min))
+      (should (eq sec (gastown-status-current-section))))))
 
 ;;; Method Override Test
 
