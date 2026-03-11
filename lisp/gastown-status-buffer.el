@@ -10,12 +10,14 @@
 ;; the `gt status' command.  It replaces the magit-section-mode implementation
 ;; with a vui.el declarative component that:
 ;;
-;;   - Immediately shows a loading indicator on invocation
-;;   - Fetches `gt status --json' via async process (make-process)
-;;   - Once data arrives, renders the full status view declaratively
+;;   - Immediately shows fast status (gt status --fast --json) on invocation
+;;   - Fetches full `gt status --json' async right after fast render
+;;   - Auto-refreshes every `gastown-status-refresh-interval' seconds while
+;;     the buffer is visible in a window
+;;   - Cancels the timer when the buffer is killed
 ;;   - Provides context-aware actions: agent → tmux session, polecat → detail
 ;;   - Rig sections are collapsible (click header or press RET on header)
-;;   - g → refresh, q → quit, w → watch mode toggle
+;;   - g → manual refresh, q → quit, w → watch mode toggle
 ;;   - `gastown-status-current-section' returns context at point for transient readers
 ;;
 ;; Entry point: `gastown-status-show-buffer' or via M-x gastown-status.
@@ -34,13 +36,24 @@
 (declare-function gastown-polecat-detail-show "gastown-polecat-detail")
 
 ;;; ============================================================
-;;; Faces
+;;; Customization
 ;;; ============================================================
 
 (defgroup gastown-status-buffer nil
-  "Faces for the Gas Town status buffer."
+  "Faces and settings for the Gas Town status buffer."
   :group 'gastown
   :prefix "gastown-status-")
+
+(defcustom gastown-status-refresh-interval 30
+  "Seconds between auto-refreshes while the status buffer is visible.
+Set to nil to disable auto-refresh."
+  :type '(choice (integer :tag "Seconds")
+                 (const :tag "Disabled" nil))
+  :group 'gastown-status-buffer)
+
+;;; ============================================================
+;;; Faces
+;;; ============================================================
 
 (defface gastown-status-running
   '((t :inherit success))
@@ -65,6 +78,11 @@
 (defface gastown-status-link
   '((t :inherit link))
   "Face for clickable links."
+  :group 'gastown-status-buffer)
+
+(defface gastown-status-timestamp
+  '((t :inherit shadow))
+  "Face for the last-refreshed timestamp."
   :group 'gastown-status-buffer)
 
 ;;; ============================================================
@@ -153,7 +171,7 @@ context-aware transient command auto-fill."
   "Major mode for the Gas Town status buffer (vui.el based).
 
 Displays an interactive overview of the Gas Town workspace with
-async loading, collapsible rig sections, and clickable elements.
+progressive async loading, collapsible rig sections, and clickable elements.
 
 Key bindings:
 \\{gastown-status-mode-map}"
@@ -171,8 +189,9 @@ Key bindings:
 (defvar-local gastown-status--watch-timer nil
   "Auto-refresh timer, or nil when watch mode is off.")
 
-(defvar-local gastown-status--watch-interval 10
-  "Seconds between auto-refreshes in watch mode.")
+(defvar-local gastown-status--watch-interval nil
+  "Effective refresh interval (seconds) for this buffer's watch timer.
+Defaults to `gastown-status-refresh-interval' when nil.")
 
 ;;; ============================================================
 ;;; Rendering Helpers (pure functions)
@@ -197,19 +216,29 @@ Key bindings:
           path))
     (or path "")))
 
+(defun gastown-status--rig-separator (rig-name)
+  "Build a separator string for RIG-NAME, filling to 60 columns."
+  (let* ((prefix (format "─── %s/ " rig-name))
+         (fill (max 4 (- 60 (string-width prefix)))))
+    (concat prefix (make-string fill ?─))))
+
 ;;; ============================================================
 ;;; Async Data Fetch
 ;;; ============================================================
 
-(defun gastown-status--async-fetch (resolve reject)
+(defun gastown-status--async-fetch (resolve reject &optional fast)
   "Start async `gt status --json' fetch.
+If FAST is non-nil, passes --fast flag (skips mail lookups).
 RESOLVE is called with a `gastown-gt-status' object on success.
 REJECT is called with an error message string on failure."
   (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (args (if fast
+                   (list exe "status" "--fast" "--json")
+                 (list exe "status" "--json")))
          (output ""))
     (make-process
-     :name "gastown-status-fetch"
-     :command (list exe "status" "--json")
+     :name (if fast "gastown-status-fetch-fast" "gastown-status-fetch")
+     :command args
      :filter (lambda (_proc chunk)
                (setq output (concat output chunk)))
      :sentinel (lambda (_proc event)
@@ -248,6 +277,21 @@ REJECT is called with an error message string on failure."
                        (when (fboundp 'gastown-mail-inbox)
                          (call-interactively #'gastown-mail-inbox)))))))))
 
+(defun gastown-status--dnd-vnode (dnd)
+  "Build DND status vnode from DND (`gastown-dnd-status')."
+  (when dnd
+    (let* ((enabled (oref dnd enabled))
+           (level   (or (oref dnd level) ""))
+           (agent   (or (oref dnd agent) ""))
+           (status  (if enabled "on" "off")))
+      (vui-vstack
+       (vui-hstack :spacing 0
+         (vui-text (format "🔔 DND: %s" status))
+         (unless (string-empty-p agent)
+           (vui-text (format " (%s)" agent))))
+       (unless (string-empty-p level)
+         (vui-text (format "   notifications %s" level)))))))
+
 (defun gastown-status--services-vnode (daemon dolt tmux)
   "Build the services line vnode from DAEMON, DOLT, and TMUX objects."
   (let* ((d-pid      (and daemon (oref daemon pid)))
@@ -265,7 +309,7 @@ REJECT is called with an error message string on failure."
                  (list
                   (vui-text "Services:")
                   (when daemon
-                    (vui-text (format "  daemon%s"
+                    (vui-text (format " daemon%s"
                                       (if d-pid (format " (PID %d)" d-pid) ""))))
                   (when dolt
                     (list
@@ -381,9 +425,11 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
                                   agents-list))
          (rig-sec     (gastown-rig-section :rig rig))
          (header-label (gastown-status--propertize-section
-                        (format "─── %s/ ──────────────────" rig-name)
+                        (gastown-status--rig-separator rig-name)
                         rig-sec)))
     (vui-vstack
+     ;; Blank line before each rig header (between sections)
+     (vui-newline)
      ;; Rig separator header — click to toggle collapse
      (vui-button header-label
        :no-decoration t
@@ -417,11 +463,14 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
 ;;; Full Content vnode (synchronous, called from both components)
 ;;; ============================================================
 
-(defun gastown-status--full-content-vnode (data)
-  "Build the complete status view vnode tree from DATA (`gastown-gt-status')."
+(defun gastown-status--full-content-vnode (data &optional timestamp)
+  "Build the complete status view vnode tree from DATA (`gastown-gt-status').
+TIMESTAMP is an optional `format-time-string' compatible time value for the
+last-refreshed line."
   (let* ((name     (or (oref data name) "unknown"))
          (location (or (oref data location) ""))
          (overseer (oref data overseer))
+         (dnd      (oref data dnd))
          (daemon   (oref data daemon))
          (dolt     (oref data dolt))
          (tmux     (oref data tmux))
@@ -431,16 +480,24 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
      ;; Town name and location
      (vui-text (format "Town: %s" name))
      (vui-text location)
+     (when timestamp
+       (vui-text (propertize
+                  (format "Last updated: %s"
+                          (format-time-string "%H:%M:%S" timestamp))
+                  'face 'gastown-status-timestamp)))
      (vui-newline)
      ;; Overseer
      (gastown-status--overseer-vnode overseer)
      (vui-newline)
+     ;; DND
+     (gastown-status--dnd-vnode dnd)
+     (when dnd (vui-newline))
      ;; Services line
      (gastown-status--services-vnode daemon dolt tmux)
      (vui-newline)
      ;; Global agents (mayor, deacon, etc.)
      (mapcar #'gastown-status--agent-line-vnode agents)
-     ;; Rig sections
+     ;; Rig sections (each rig widget prepends its own blank line)
      (when rigs
        (mapcar (lambda (rig)
                  (vui-component 'gastown-status-rig-widget
@@ -459,35 +516,55 @@ Used by `gastown-status--render' for synchronous rendering in tests."
   (gastown-status--full-content-vnode data))
 
 ;;; ============================================================
-;;; Async App Component (for interactive use)
+;;; Async App Component (progressive loading)
 ;;; ============================================================
 
 (vui-defcomponent gastown-status-app ()
   "Root async component for the Gas Town status buffer.
-Fetches `gt status --json' asynchronously and renders on arrival."
+
+Phase 1 (INSTANT): Fetches `gt status --fast --json' — renders immediately.
+Phase 2 (FULL): Fetches `gt status --json' in parallel — replaces fast data
+when it arrives.
+Phase 3 (AUTO-REFRESH): Timer-driven re-mount via `gastown-status-show-buffer'
+while buffer is visible (see `gastown-status-refresh-interval')."
   :state ((refresh-tick 0))
   :render
-  (let* ((result
-          (vui-use-async (list 'status refresh-tick)
+  (let* ((fast-result
+          (vui-use-async (list 'fast refresh-tick)
             (lambda (resolve reject)
-              (gastown-status--async-fetch resolve reject))))
-         (status (plist-get result :status))
-         (data   (plist-get result :data))
-         (err    (plist-get result :error)))
-    (pcase status
-      ('pending
-       (vui-text (propertize "⏳ Loading Gas Town status…"
-                             'face 'gastown-status-stopped)))
-      ('error
-       (vui-vstack
-        (vui-text (propertize "Error loading status:" 'face 'error))
-        (vui-text (propertize (or err "unknown error") 'face 'error))
-        (vui-newline)
-        (vui-button "[Retry]"
-          :on-click (lambda ()
-                      (vui-set-state :refresh-tick (1+ refresh-tick))))))
-      ('ready
-       (gastown-status--full-content-vnode data)))))
+              (gastown-status--async-fetch resolve reject t))))
+         (full-result
+          (vui-use-async (list 'full refresh-tick)
+            (lambda (resolve reject)
+              (gastown-status--async-fetch resolve reject nil))))
+         (fast-status (plist-get fast-result :status))
+         (full-status (plist-get full-result :status))
+         ;; Prefer full data when ready; fall back to fast data
+         (data (or (and (eq full-status 'ready) (plist-get full-result :data))
+                   (and (eq fast-status 'ready) (plist-get fast-result :data))))
+         (err  (and (not data)
+                    (or (plist-get full-result :error)
+                        (plist-get fast-result :error)))))
+    (cond
+     ;; Both fetches still pending
+     ((and (eq fast-status 'pending) (eq full-status 'pending))
+      (vui-text (propertize "⏳ Loading Gas Town status…"
+                            'face 'gastown-status-stopped)))
+     ;; Error with no data
+     (err
+      (vui-vstack
+       (vui-text (propertize "Error loading status:" 'face 'error))
+       (vui-text (propertize (or err "unknown error") 'face 'error))
+       (vui-newline)
+       (vui-button "[Retry]"
+         :on-click (lambda ()
+                     (vui-set-state :refresh-tick (1+ refresh-tick))))))
+     ;; Data available (fast or full)
+     (data
+      (gastown-status--full-content-vnode
+       data
+       ;; Show timestamp only when full data has arrived
+       (when (eq full-status 'ready) (current-time)))))))
 
 ;;; ============================================================
 ;;; Main Render (synchronous, for testing)
@@ -526,6 +603,21 @@ For the interactive async entry point, see `gastown-status-show-buffer'."
     (cancel-timer gastown-status--watch-timer)
     (setq gastown-status--watch-timer nil)))
 
+(defun gastown-status--start-watch (buf interval)
+  "Start auto-refresh timer for BUF with INTERVAL seconds.
+The timer only triggers a remount when BUF is visible in a window."
+  (gastown-status--cancel-watch)
+  (with-current-buffer buf
+    (setq gastown-status--watch-timer
+          (run-with-timer
+           interval interval
+           (lambda ()
+             (when (and (buffer-live-p buf)
+                        (get-buffer-window buf))
+               (vui-mount
+                (vui-component 'gastown-status-app)
+                gastown-status-buffer-name)))))))
+
 ;;;###autoload
 (defun gastown-status-toggle-watch ()
   "Toggle auto-refresh watch mode for the status buffer."
@@ -534,17 +626,12 @@ For the interactive async entry point, see `gastown-status-show-buffer'."
       (progn
         (gastown-status--cancel-watch)
         (message "Watch mode disabled"))
-    (let ((buf (current-buffer)))
-      (setq gastown-status--watch-timer
-            (run-with-timer
-             gastown-status--watch-interval
-             gastown-status--watch-interval
-             (lambda ()
-               (when (buffer-live-p buf)
-                 (with-current-buffer buf
-                   (gastown-status-show-buffer)))))))
-    (message "Watch mode enabled (refresh every %ds)"
-             gastown-status--watch-interval)))
+    (let* ((buf (current-buffer))
+           (interval (or gastown-status--watch-interval
+                         gastown-status-refresh-interval
+                         30)))
+      (gastown-status--start-watch buf interval)
+      (message "Watch mode enabled (refresh every %ds)" interval))))
 
 ;;; ============================================================
 ;;; Buffer Entry Point
@@ -552,12 +639,23 @@ For the interactive async entry point, see `gastown-status-show-buffer'."
 
 ;;;###autoload
 (defun gastown-status-show-buffer ()
-  "Show the *gastown-status* buffer with Gas Town status (async)."
+  "Show the *gastown-status* buffer with Gas Town status (async).
+
+Mounts a progressive-loading component:
+  Phase 1 — fast data (gt status --fast --json) renders immediately.
+  Phase 2 — full data (gt status --json) replaces it on arrival.
+
+An auto-refresh timer fires every `gastown-status-refresh-interval' seconds
+while the buffer is visible."
   (interactive)
   (let ((buf (get-buffer-create gastown-status-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-status-mode)
-        (gastown-status-mode)))
+        (gastown-status-mode))
+      ;; Start auto-refresh timer if enabled and not already running
+      (when (and gastown-status-refresh-interval
+                 (not gastown-status--watch-timer))
+        (gastown-status--start-watch buf gastown-status-refresh-interval)))
     (vui-mount
      (vui-component 'gastown-status-app)
      gastown-status-buffer-name)

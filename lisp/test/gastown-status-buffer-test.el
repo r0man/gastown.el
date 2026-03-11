@@ -22,6 +22,10 @@
               :name "Test User"
               :email "test@example.com"
               :unread-mail 2)
+   :dnd (gastown-dnd-status
+         :enabled nil
+         :level "normal"
+         :agent "hq-mayor")
    :daemon (gastown-daemon :pid 12345)
    :dolt (gastown-dolt-service
           :pid 23456
@@ -163,6 +167,40 @@
     (gastown-status--render gastown-status-buffer-test--sample-data)
     (goto-char (point-min))
     (should (search-forward "test@example.com" nil t))))
+
+;;; Rendering Tests — DND
+
+(ert-deftest gastown-status-buffer-test-render-dnd-status ()
+  "Render includes DND status line."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "DND:" nil t))))
+
+(ert-deftest gastown-status-buffer-test-render-dnd-off ()
+  "Render shows DND as 'off' when disabled."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "DND: off" nil t))))
+
+(ert-deftest gastown-status-buffer-test-render-dnd-agent ()
+  "Render includes DND agent name."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "hq-mayor" nil t))))
+
+(ert-deftest gastown-status-buffer-test-render-dnd-level ()
+  "Render includes DND notification level."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "notifications normal" nil t))))
 
 ;;; Rendering Tests — Services
 

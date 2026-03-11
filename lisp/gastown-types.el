@@ -166,6 +166,42 @@ Handles both vectors (from `json-array-type' vector) and lists."
     (socket_path . ,(oref obj socket-path))))
 
 ;;; ============================================================
+;;; DND (Do Not Disturb)
+;;; ============================================================
+
+(defclass gastown-dnd-status ()
+  ((enabled
+    :initarg :enabled
+    :type boolean
+    :initform nil
+    :documentation "Whether DND mode is enabled.")
+   (level
+    :initarg :level
+    :type (or null string)
+    :initform nil
+    :documentation "Notification level (e.g., \"normal\", \"quiet\").")
+   (agent
+    :initarg :agent
+    :type (or null string)
+    :initform nil
+    :documentation "Agent managing the DND setting."))
+  "Represents the Do Not Disturb status.")
+
+(defun gastown-dnd-status-from-json (json)
+  "Create a `gastown-dnd-status' object from JSON alist."
+  (when json
+    (gastown-dnd-status
+     :enabled (gastown-types--json-bool (alist-get 'enabled json))
+     :level (alist-get 'level json)
+     :agent (alist-get 'agent json))))
+
+(defun gastown-dnd-status-to-alist (obj)
+  "Convert OBJ (gastown-dnd-status) to alist."
+  `((enabled . ,(oref obj enabled))
+    (level . ,(oref obj level))
+    (agent . ,(oref obj agent))))
+
+;;; ============================================================
 ;;; Overseer
 ;;; ============================================================
 
@@ -389,6 +425,11 @@ The agents array is converted to a list of `gastown-agent' objects."
     :type list
     :initform nil
     :documentation "List of gastown-rig objects.")
+   (dnd
+    :initarg :dnd
+    :type (or null gastown-dnd-status)
+    :initform nil
+    :documentation "Do Not Disturb status.")
    (agents
     :initarg :agents
     :type list
@@ -406,6 +447,7 @@ The agents array is converted to a list of `gastown-agent' objects."
      :dolt (gastown-dolt-service-from-json (alist-get 'dolt json))
      :tmux (gastown-tmux-service-from-json (alist-get 'tmux json))
      :overseer (gastown-overseer-from-json (alist-get 'overseer json))
+     :dnd (gastown-dnd-status-from-json (alist-get 'dnd json))
      :rigs (mapcar #'gastown-rig-data-from-json
                    (gastown-types--json-list (alist-get 'rigs json)))
      :agents (mapcar #'gastown-agent-from-json
