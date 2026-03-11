@@ -21,6 +21,7 @@
 
 (require 'gastown-command)
 (require 'gastown-command-work)
+(require 'gastown-types)
 (require 'beads-command-show)
 
 ;;; Faces
@@ -91,10 +92,10 @@
 ;;; Rendering
 
 (defun gastown-ready--insert-issue (issue)
-  "Insert a single ISSUE line into the current buffer."
-  (let* ((id       (or (alist-get 'id issue) ""))
-         (title    (or (alist-get 'title issue) ""))
-         (priority (alist-get 'priority issue))
+  "Insert a single ISSUE (`gastown-ready-issue') line into the current buffer."
+  (let* ((id       (or (oref issue id) ""))
+         (title    (or (oref issue title) ""))
+         (priority (oref issue priority))
          (pri-tag  (gastown-ready--format-priority-tag priority))
          (id-btn   (propertize id
                                'face 'gastown-ready-issue-id
@@ -110,34 +111,39 @@
     (insert "  " pri-tag " " id-btn " " title "\n")))
 
 (defun gastown-ready--count-issues (sources)
-  "Return (total p1-count p2-count) across all SOURCES."
+  "Return (total p1-count p2-count) across all SOURCES.
+SOURCES is a list of `gastown-ready-source' objects."
   (let ((total 0) (p1 0) (p2 0))
-    (seq-doseq (source sources)
-      (let ((issues (or (alist-get 'issues source) [])))
-        (seq-doseq (issue issues)
-          (cl-incf total)
-          (let ((pri (alist-get 'priority issue)))
-            (cond ((eql pri 1) (cl-incf p1))
-                  ((eql pri 2) (cl-incf p2)))))))
+    (dolist (source sources)
+      (dolist (issue (oref source issues))
+        (cl-incf total)
+        (let ((pri (oref issue priority)))
+          (cond ((eql pri 1) (cl-incf p1))
+                ((eql pri 2) (cl-incf p2))))))
     (list total p1 p2)))
 
+(defun gastown-ready--parse-data (data)
+  "Parse raw JSON DATA alist into a list of `gastown-ready-source' objects."
+  (mapcar #'gastown-ready-source-from-json
+          (gastown-types--json-list (alist-get 'sources data))))
+
 (defun gastown-ready--render (data)
-  "Render ready DATA into the current buffer."
+  "Render ready DATA (raw JSON alist) into the current buffer."
   (let* ((inhibit-read-only t)
-         (sources (or (alist-get 'sources data) [])))
+         (sources (gastown-ready--parse-data data)))
     (erase-buffer)
     (insert (propertize "📋 Ready work across town:\n\n"
                         'face 'gastown-ready-section-header))
-    (seq-doseq (source sources)
-      (let* ((name   (or (alist-get 'name source) "unknown"))
-             (issues (or (alist-get 'issues source) []))
+    (dolist (source sources)
+      (let* ((name   (or (oref source name) "unknown"))
+             (issues (oref source issues))
              (count  (length issues))
              (header (if (> count 0)
                          (format "%s/ (%d item%s)"
                                  name count (if (= count 1) "" "s"))
                        (format "%s/ (none)" name))))
         (insert (propertize header 'face 'gastown-ready-section-header) "\n")
-        (seq-doseq (issue issues)
+        (dolist (issue issues)
           (gastown-ready--insert-issue issue))
         (when (> count 0) (insert "\n"))))
     (cl-destructuring-bind (total p1 p2)

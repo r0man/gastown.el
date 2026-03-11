@@ -68,7 +68,7 @@
 (ert-deftest gastown-ready-test-count-issues-empty ()
   "Empty sources returns zeros."
   (cl-destructuring-bind (total p1 p2)
-      (gastown-ready--count-issues [])
+      (gastown-ready--count-issues nil)
     (should (= 0 total))
     (should (= 0 p1))
     (should (= 0 p2))))
@@ -76,11 +76,12 @@
 (ert-deftest gastown-ready-test-count-issues-mixed ()
   "Mixed priorities are counted correctly."
   (let ((sources
-         (vector
-          `((name . "town")
-            (issues . ,(vector '((id . "hq-1") (priority . 1))
-                               '((id . "hq-2") (priority . 1))
-                               '((id . "hq-3") (priority . 2))))))))
+         (list
+          (gastown-ready-source
+           :name "town"
+           :issues (list (gastown-ready-issue :id "hq-1" :priority 1)
+                         (gastown-ready-issue :id "hq-2" :priority 1)
+                         (gastown-ready-issue :id "hq-3" :priority 2))))))
     (cl-destructuring-bind (total p1 p2)
         (gastown-ready--count-issues sources)
       (should (= 3 total))

@@ -216,7 +216,7 @@
   "Rig entry has correct id and 6-column vector."
   (let* ((rig   (gastown-rig-data :name "beads_el" :status "operational"
                                   :witness "running" :refinery "running"
-                                  :polecats 5 :crew 1))
+                                  :polecat-count 5 :crew-count 1))
          (entry (gastown-rig-list--entry rig)))
     (should (equal "beads_el" (car entry)))
     (should (= 6 (length (cadr entry))))

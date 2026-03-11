@@ -205,8 +205,8 @@ ALL-ENTRIES is the complete list of tabulated-list entries."
          (status   (or (oref rig status) ""))
          (witness  (or (oref rig witness) ""))
          (refinery (or (oref rig refinery) ""))
-         (polecats (or (oref rig polecats) 0))
-         (crew     (or (oref rig crew) 0)))
+         (polecats (or (oref rig polecat-count) 0))
+         (crew     (or (oref rig crew-count) 0)))
     (list name
           (vector name
                   (propertize status 'face (gastown-rig-list--status-face status))
