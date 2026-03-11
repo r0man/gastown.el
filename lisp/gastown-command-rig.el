@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-reader)
 (require 'beads-meta)
 
 (require 'transient)
@@ -71,6 +72,7 @@ Lists all rigs in the workspace with status, polecat count, and crew count.")
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1))
@@ -92,6 +94,7 @@ Docks a rig (makes it active).")
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1))
@@ -113,6 +116,7 @@ Undocks a rig (makes it inactive).")
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1))
@@ -134,6 +138,7 @@ Parks a rig (pauses all workers).")
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1))

@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-reader)
 (require 'beads-meta)
 
 (require 'transient)
@@ -54,6 +55,7 @@ Lists polecats with name, status, hooked work, and session info.")
     :transient "Polecat name (required)"
     :class transient-option
     :prompt "Polecat name: "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1)
@@ -90,6 +92,7 @@ Terminates a polecat's session and cleans up its worktree.")
     :transient "Polecat name"
     :class transient-option
     :prompt "Polecat name: "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Options"
     :level 1
     :order 1)
