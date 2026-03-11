@@ -159,7 +159,7 @@ Returns a list of `gastown-work-item' objects, or nil on error."
            :no-decoration t
            :on-click (lambda ()
                        (shell-command
-                        (format "tmux select-window -t gt:%s" session))))
+                        (format "tmux -L gt select-window -t %s" session))))
        (vui-text (propertize (or session "none")
                              'face 'gastown-polecat-detail-stopped))))))
 

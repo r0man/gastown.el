@@ -321,10 +321,10 @@ Optionally RIG-SECTION is the parent `gastown-rig-section' for context."
     (if (and session running)
         (vui-button label
           :no-decoration t
-          :help-echo (format "Switch to tmux session: gt:%s" session)
+          :help-echo (format "Switch to tmux session: %s" session)
           :on-click (let ((s session))
                       (lambda ()
-                        (shell-command (format "tmux select-window -t gt:%s" s)))))
+                        (shell-command (format "tmux -L gt select-window -t %s" s)))))
       (vui-text label))))
 
 (defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section)
@@ -358,7 +358,7 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
                         (if (fboundp 'gastown-polecat-detail-show)
                             (gastown-polecat-detail-show a r)
                           (shell-command
-                           (format "tmux select-window -t gt:%s" session))))))
+                           (format "tmux -L gt select-window -t %s" session))))))
       (vui-text label))))
 
 ;;; ============================================================
@@ -389,7 +389,7 @@ RIG-NAME is the rig's name string.  RIG-SECTION is the parent section."
        :no-decoration t
        :face 'gastown-status-rig-separator
        :help-echo (if collapsed "Expand rig section" "Collapse rig section")
-       :on-click (lambda () (vui-set-state 'collapsed (not collapsed))))
+       :on-click (lambda () (vui-set-state :collapsed (not collapsed))))
      ;; Body — only shown when not collapsed
      (unless collapsed
        (vui-vstack
@@ -485,7 +485,7 @@ Fetches `gt status --json' asynchronously and renders on arrival."
         (vui-newline)
         (vui-button "[Retry]"
           :on-click (lambda ()
-                      (vui-set-state 'refresh-tick (1+ refresh-tick))))))
+                      (vui-set-state :refresh-tick (1+ refresh-tick))))))
       ('ready
        (gastown-status--full-content-vnode data)))))
 
