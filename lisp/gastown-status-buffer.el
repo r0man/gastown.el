@@ -329,28 +329,27 @@ REJECT is called with an error message string on failure."
          (tmux-count   (and tmux (oref tmux session-count)))
          (tmux-path    (and tmux (oref tmux socket-path))))
     (apply #'vui-hstack :spacing 0
-           (delq nil
-                 (list
-                  (vui-text "Services:")
-                  (when daemon
-                    (vui-text (format " daemon%s"
-                                      (if d-pid (format " (PID %d)" d-pid) ""))))
-                  (when dolt
-                    (list
-                     (vui-text (format "  dolt (PID %d, :%d, "
-                                       (or dolt-pid 0)
-                                       (or dolt-port 0)))
-                     (if (and dolt-dir-abs (not (string-empty-p dolt-dir-abs)))
-                         (vui-button dolt-dir
-                           :no-decoration t
-                           :face 'gastown-status-link
-                           :help-echo (format "Open Dired: %s" dolt-dir-abs)
-                           :on-click (let ((p dolt-dir-abs))
-                                       (lambda () (dired p))))
-                       (vui-text (or dolt-dir "")))
-                     (vui-text ")")))
-                  (when tmux
-                    (vui-text (format "  tmux (-L %s, PID %d, %d session%s, %s)"
+           (append
+            (list (vui-text "Services:"))
+            (when daemon
+              (list (vui-text (format " daemon%s"
+                                      (if d-pid (format " (PID %d)" d-pid) "")))))
+            (when dolt
+              (list
+               (vui-text (format "  dolt (PID %d, :%d, "
+                                 (or dolt-pid 0)
+                                 (or dolt-port 0)))
+               (if (and dolt-dir-abs (not (string-empty-p dolt-dir-abs)))
+                   (vui-button dolt-dir
+                     :no-decoration t
+                     :face 'gastown-status-link
+                     :help-echo (format "Open Dired: %s" dolt-dir-abs)
+                     :on-click (let ((p dolt-dir-abs))
+                                 (lambda () (dired p))))
+                 (vui-text (or dolt-dir "")))
+               (vui-text ")")))
+            (when tmux
+              (list (vui-text (format "  tmux (-L %s, PID %d, %d session%s, %s)"
                                       (or tmux-socket "")
                                       (or tmux-pid 0)
                                       (or tmux-count 0)

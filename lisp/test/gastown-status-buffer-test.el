@@ -454,6 +454,22 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
       (goto-char (point-min))
       (should (eq sec (gastown-status-current-section))))))
 
+;;; Regression Tests
+
+(ert-deftest gastown-status-buffer-test-services-vnode-dolt-no-nested-list ()
+  "Services vnode with dolt renders dolt port without nested-list corruption.
+Regression for ge-hc6: (when dolt (list ...)) produced a nested list inside
+the outer (list ...), corrupting the vnode tree when apply #\\='vui-hstack
+received it as a single argument."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    ;; Dolt port and PID must appear as plain text, not as a list artifact
+    (should (search-forward "3307" nil t))
+    (goto-char (point-min))
+    (should (search-forward "23456" nil t))))
+
 ;;; Method Override Test
 
 (ert-deftest gastown-status-buffer-test-method-override ()
