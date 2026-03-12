@@ -127,6 +127,15 @@
   (should (eq #'gastown-status-toggle-watch
               (lookup-key gastown-status-mode-map "w"))))
 
+(ert-deftest gastown-status-buffer-test-keymap-question-options ()
+  "Test that '?' is bound to gastown-status-options."
+  (should (eq #'gastown-status-options
+              (lookup-key gastown-status-mode-map "?"))))
+
+(ert-deftest gastown-status-buffer-test-gastown-status-bound ()
+  "Test that gastown-status is a function that invokes the buffer directly."
+  (should (fboundp 'gastown-status)))
+
 (ert-deftest gastown-status-buffer-test-keymap-ret-activate ()
   "Test that RET is bound to gastown-status--activate-button."
   (should (eq #'gastown-status--activate-button

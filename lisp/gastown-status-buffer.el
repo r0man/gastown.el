@@ -173,6 +173,8 @@ attempts to modify button text for visual feedback."
     (when widget
       (widget-apply-action widget))))
 
+(declare-function gastown-status-options "gastown-command-status")
+
 (defvar-keymap gastown-status-mode-map
   :parent vui-mode-map
   "RET" #'gastown-status--activate-button
@@ -184,7 +186,8 @@ attempts to modify button text for visual feedback."
   "d"   #'gastown-status-dired-at-point
   "g"   #'gastown-status-refresh
   "q"   #'quit-window
-  "w"   #'gastown-status-toggle-watch)
+  "w"   #'gastown-status-toggle-watch
+  "?"   #'gastown-status-options)
 
 (define-derived-mode gastown-status-mode vui-mode "GT-Status"
   "Major mode for the Gas Town status buffer (vui.el based).
@@ -966,6 +969,19 @@ while the buffer is visible."
        (vui-component 'gastown-status-app)
        gastown-status-buffer-name))
     (pop-to-buffer gastown-status-buffer-name)))
+
+;;; ============================================================
+;;; Entry Point
+;;; ============================================================
+
+;;;###autoload
+(defun gastown-status ()
+  "Show Gas Town workspace status buffer.
+Renders the status buffer immediately without showing an options menu.
+Options (fast, watch, interval) are accessible via \\[gastown-status-options]
+or by pressing \\`?' in the status buffer."
+  (interactive)
+  (gastown-status-show-buffer))
 
 ;;; ============================================================
 ;;; Method Override

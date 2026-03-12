@@ -71,11 +71,11 @@
 Shows town name, registered rigs, polecats, and witness status.")
 
 
-;;; Transient Menu
+;;; Options Transient
 
-;;;###autoload (autoload 'gastown-status "gastown-command-status" nil t)
-(beads-meta-define-transient gastown-command-status "gastown-status"
-  "Show Gas Town workspace status.")
+;;;###autoload (autoload 'gastown-status-options "gastown-command-status" nil t)
+(beads-meta-define-transient gastown-command-status "gastown-status-options"
+  "Gas Town status options (fast, watch, interval).")
 
 (provide 'gastown-command-status)
 ;;; gastown-command-status.el ends here
