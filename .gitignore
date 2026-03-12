@@ -11,5 +11,9 @@
 *.db
 
 # Gas Town (added by gt)
-.claude/
+.claude/*
+!.claude/skills/
 __pycache__/
+
+# Gas Town (added by gt)
+state.json
