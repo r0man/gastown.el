@@ -414,17 +414,20 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
     (gastown-status--render gastown-status-buffer-test--sample-data)
     (should (gastown-status-buffer-test--find-button-echo "jasper"))))
 
-(ert-deftest gastown-status-buffer-test-agent-click-uses-start-process ()
-  "Running agent click uses start-process-shell-command, not shell-command."
+(ert-deftest gastown-status-buffer-test-agent-click-uses-terminal-backend ()
+  "Running agent click uses gastown-command--run-in-terminal, not shell-command."
   (with-temp-buffer
     (gastown-status-mode)
     (gastown-status--render gastown-status-buffer-test--sample-data)
     (let ((shell-command-called nil)
-          (start-process-called nil))
+          (start-process-called nil)
+          (terminal-cmd nil))
       (cl-letf (((symbol-function 'shell-command)
                  (lambda (&rest _) (setq shell-command-called t) ""))
                 ((symbol-function 'start-process-shell-command)
-                 (lambda (&rest _) (setq start-process-called t) nil)))
+                 (lambda (&rest _) (setq start-process-called t) nil))
+                ((symbol-function 'gastown-command--run-in-terminal)
+                 (lambda (cmd &rest _) (setq terminal-cmd cmd) nil)))
         ;; Find and activate the button whose help-echo matches "hq-mayor"
         (goto-char (point-min))
         (let ((found nil))
@@ -437,7 +440,42 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
                 (setq found t)))
             (forward-char 1))))
       (should-not shell-command-called)
-      (should start-process-called))))
+      (should-not start-process-called)
+      (should terminal-cmd)
+      (should (string-match-p "attach-session" terminal-cmd))
+      (should (string-match-p "hq-mayor" terminal-cmd)))))
+
+(ert-deftest gastown-status-buffer-test-show-agent-tmux-function-defined ()
+  "gastown-status--show-agent-tmux must be defined."
+  (should (fboundp 'gastown-status--show-agent-tmux)))
+
+(ert-deftest gastown-status-buffer-test-show-agent-tmux-calls-terminal ()
+  "gastown-status--show-agent-tmux calls gastown-command--run-in-terminal."
+  (let ((captured-cmd nil))
+    (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+               (lambda (cmd &rest _) (setq captured-cmd cmd) nil)))
+      (gastown-status--show-agent-tmux "hq-mayor" nil))
+    (should captured-cmd)
+    (should (string-match-p "attach-session" captured-cmd))
+    (should (string-match-p "hq-mayor" captured-cmd))))
+
+(ert-deftest gastown-status-buffer-test-show-agent-tmux-uses-socket ()
+  "gastown-status--show-agent-tmux includes -L socket flag when socket is named."
+  (let ((captured-cmd nil))
+    (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+               (lambda (cmd &rest _) (setq captured-cmd cmd) nil)))
+      (gastown-status--show-agent-tmux "ge-nux" "gt"))
+    (should (string-match-p "-L gt" captured-cmd))
+    (should (string-match-p "ge-nux" captured-cmd))))
+
+(ert-deftest gastown-status-buffer-test-show-agent-tmux-no-socket-for-default ()
+  "gastown-status--show-agent-tmux omits -L when socket is \"default\"."
+  (let ((captured-cmd nil))
+    (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+               (lambda (cmd &rest _) (setq captured-cmd cmd) nil)))
+      (gastown-status--show-agent-tmux "hq-mayor" "default"))
+    (should-not (string-match-p "-L" captured-cmd))
+    (should (string-match-p "hq-mayor" captured-cmd))))
 
 ;;; Context Detection Tests
 

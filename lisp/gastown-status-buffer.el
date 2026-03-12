@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'vui)
+(require 'gastown-command)
 (require 'gastown-command-status)
 (require 'gastown-types)
 
@@ -246,6 +247,19 @@ no -L flag is used (the default server is addressed directly)."
       (format "tmux -L %s select-window -t %s" socket session)
     (format "tmux select-window -t %s" session)))
 
+(defun gastown-status--show-agent-tmux (session socket)
+  "Open an Emacs terminal buffer showing the agent's tmux SESSION.
+SOCKET is the tmux -L socket name; nil or \"default\" uses the default server.
+Uses `gastown-command--run-in-terminal' so the buffer respects
+`gastown-terminal-backend'."
+  (let* ((tmux-cmd (if (and socket (not (string= socket "default")))
+                       (format "tmux -L %s attach-session -t %s" socket session)
+                     (format "tmux attach-session -t %s" session)))
+         ;; Unset TMUX so nested attach works when Emacs is inside tmux.
+         (cmd (format "env -u TMUX %s" tmux-cmd))
+         (buf-name (format "*gt-agent-%s*" session)))
+    (gastown-command--run-in-terminal cmd buf-name default-directory)))
+
 ;;; ============================================================
 ;;; Async Data Fetch
 ;;; ============================================================
@@ -389,12 +403,10 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
     (if (and session running)
         (vui-button label
           :no-decoration t
-          :help-echo (format "Switch to tmux session: %s" session)
+          :help-echo (format "Show agent in tmux: %s" session)
           :on-click (let ((s session) (sock tmux-socket))
                       (lambda ()
-                        (start-process-shell-command
-                         "gt-tmux-switch" nil
-                         (gastown-status--tmux-command s sock)))))
+                        (gastown-status--show-agent-tmux s sock))))
       (vui-text label))))
 
 (defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section tmux-socket)
@@ -427,10 +439,8 @@ TMUX-SOCKET is the tmux -L socket name for the fallback switch-to-session action
           :on-click (let ((a agent) (r rig-name) (sess session) (sock tmux-socket))
                       (lambda ()
                         (if (fboundp 'gastown-polecat-detail-show)
-                            (gastown-polecat-detail-show a r sock)
-                          (start-process-shell-command
-                           "gt-tmux-switch" nil
-                           (gastown-status--tmux-command sess sock))))))
+                            (gastown-polecat-detail-show a r)
+                          (gastown-status--show-agent-tmux sess sock)))))
       (vui-text label))))
 
 ;;; ============================================================
