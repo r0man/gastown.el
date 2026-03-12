@@ -129,8 +129,9 @@ Set to nil to disable auto-refresh."
   "Data container for an individual agent row.")
 
 (defclass gastown-rig-section ()
-  ((rig    :initarg :rig    :initform nil)
-   (parent :initarg :parent :initform nil))
+  ((rig      :initarg :rig      :initform nil)
+   (instance :initarg :instance :initform nil)
+   (parent   :initarg :parent   :initform nil))
   "Data container for a rig section.")
 
 (defclass gastown-polecat-section ()
@@ -157,6 +158,67 @@ context-aware transient command auto-fill."
 (defun gastown-status--propertize-section (str section)
   "Return STR with SECTION stored as the `gastown-status-section' text property."
   (propertize str 'gastown-status-section section))
+
+;;; ============================================================
+;;; Semantic Cursor Preservation
+;;; ============================================================
+
+(defun gastown-status--section-id (section)
+  "Return a unique identifier for SECTION for cursor restoration.
+Returns a cons of (type . identity-string), or nil."
+  (cond
+   ((gastown-rig-section-p section)
+    (cons 'rig (or (and (oref section rig) (oref (oref section rig) name)) "")))
+   ((gastown-agent-section-p section)
+    (cons 'agent (or (and (oref section agent) (oref (oref section agent) name)) "")))
+   ((gastown-polecat-section-p section)
+    (cons 'polecat (format "%s/%s"
+                           (or (oref section rig-name) "")
+                           (or (and (oref section polecat)
+                                    (oref (oref section polecat) name))
+                               ""))))
+   ((gastown-service-section-p section)
+    (cons 'service ""))
+   (t nil)))
+
+(defun gastown-status--restore-cursor-to-section (section-id col)
+  "Move point to a line matching SECTION-ID, then to column COL.
+SECTION-ID is a cons as returned by `gastown-status--section-id'."
+  (goto-char (point-min))
+  (catch 'found
+    (while (not (eobp))
+      (let* ((s (gastown-status--find-section-on-line))
+             (id (and s (gastown-status--section-id s))))
+        (when (equal id section-id)
+          (move-to-column col)
+          (throw 'found t)))
+      (forward-line 1))))
+
+(defun gastown-status--around-rerender (orig instance)
+  "Advice around `vui--rerender-instance' for semantic cursor restoration.
+ORIG is the original `vui--rerender-instance' function.
+INSTANCE is the vui component instance being re-rendered.
+When the buffer uses `gastown-status-mode', saves and restores cursor
+position based on section identity rather than widget paths, which
+are unstable when buffer content changes (e.g. async data arrives)."
+  (let* ((buf (vui-instance-buffer instance))
+         (in-status-mode (and buf
+                              (buffer-live-p buf)
+                              (with-current-buffer buf
+                                (derived-mode-p 'gastown-status-mode)))))
+    (if in-status-mode
+        (let ((section-id nil)
+              (col 0))
+          (with-current-buffer buf
+            (let ((s (gastown-status--find-section-on-line)))
+              (when s
+                (setq section-id (gastown-status--section-id s))
+                (setq col (current-column)))))
+          (funcall orig instance)
+          (when section-id
+            (with-current-buffer buf
+              (gastown-status--restore-cursor-to-section section-id col))))
+      (funcall orig instance))))
 
 ;;; ============================================================
 ;;; Mode
@@ -200,6 +262,12 @@ Key bindings:
   :group 'gastown-status-buffer
   (setq truncate-lines t)
   (add-hook 'kill-buffer-hook #'gastown-status--cancel-watch nil t))
+
+;; Activate semantic cursor preservation globally for status buffers.
+;; The advice gates itself on `gastown-status-mode', so it is a no-op
+;; for all other buffers and safe to install once at load time.
+(advice-add 'vui--rerender-instance :around
+            #'gastown-status--around-rerender)
 
 ;;; ============================================================
 ;;; Buffer-Local State
@@ -539,7 +607,7 @@ passed through to agent row actions."
                                   agents-list))
          (crews       (seq-filter (lambda (a) (equal (oref a role) "crew"))
                                   agents-list))
-         (rig-sec     (gastown-rig-section :rig rig))
+         (rig-sec     (gastown-rig-section :rig rig :instance vui--current-instance))
          (header-label (gastown-status--propertize-section
                         (gastown-status--rig-separator rig-name)
                         rig-sec)))
@@ -797,9 +865,13 @@ additional fields (address, role, session, state, model, hook)."
   (interactive)
   (let ((section (gastown-status-current-section)))
     (cond
-     ;; Rig header: toggle collapse via button activation
+     ;; Rig header: toggle collapse directly via stored instance
      ((gastown-rig-section-p section)
-      (gastown-status--activate-button))
+      (let ((inst (oref section instance)))
+        (if inst
+            (let ((vui--current-instance inst))
+              (vui-set-state :collapsed (lambda (c) (not c))))
+          (gastown-status--activate-button))))
      ;; Global agent row
      ((gastown-agent-section-p section)
       (let* ((agent (oref section agent))
