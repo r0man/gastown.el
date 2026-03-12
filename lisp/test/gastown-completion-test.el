@@ -335,6 +335,60 @@
     (should (or (null annotation) (stringp annotation)))))
 
 ;;; ============================================================
+;;; Async Prefetch Tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-async-warm-rigs-defined ()
+  "Test that gastown-completion--async-warm-rigs is defined."
+  (should (fboundp 'gastown-completion--async-warm-rigs)))
+
+(ert-deftest gastown-completion-test-async-warm-polecats-defined ()
+  "Test that gastown-completion--async-warm-polecats is defined."
+  (should (fboundp 'gastown-completion--async-warm-polecats)))
+
+(ert-deftest gastown-completion-test-async-warm-convoys-defined ()
+  "Test that gastown-completion--async-warm-convoys is defined."
+  (should (fboundp 'gastown-completion--async-warm-convoys)))
+
+(ert-deftest gastown-completion-test-prefetch-defined ()
+  "Test that gastown-completion-prefetch is defined."
+  (should (fboundp 'gastown-completion-prefetch)))
+
+(ert-deftest gastown-completion-test-warm-if-stale-skips-fresh-cache ()
+  "Test that warm-if-stale does not invoke warm-fn when cache is fresh."
+  (let* ((mock-rig (gastown-completion-rig :name "cached_rig"))
+         (gastown-completion--rig-cache (cons (float-time) (list mock-rig)))
+         (warm-called nil))
+    (gastown-completion--warm-if-stale
+     'gastown-completion--rig-cache
+     5
+     (lambda () (setq warm-called t) nil)
+     1.0)
+    (should-not warm-called)))
+
+(ert-deftest gastown-completion-test-warm-if-stale-warms-nil-cache ()
+  "Test that warm-if-stale invokes warm-fn when cache is nil."
+  (let* ((gastown-completion--rig-cache nil)
+         (warm-called nil))
+    (gastown-completion--warm-if-stale
+     'gastown-completion--rig-cache
+     5
+     (lambda () (setq warm-called t) nil)
+     0.001)
+    (should warm-called)))
+
+(ert-deftest gastown-completion-test-warm-if-stale-warms-stale-cache ()
+  "Test that warm-if-stale invokes warm-fn when cache timestamp is expired."
+  (let* ((gastown-completion--rig-cache (cons (- (float-time) 100) nil))
+         (warm-called nil))
+    (gastown-completion--warm-if-stale
+     'gastown-completion--rig-cache
+     5
+     (lambda () (setq warm-called t) nil)
+     0.001)
+    (should warm-called)))
+
+;;; ============================================================
 ;;; Public read-* function signature tests
 ;;; ============================================================
 

@@ -200,6 +200,115 @@ Returns list of `gastown-completion-convoy' objects."
             (if (vectorp data) (append data nil) data))))
 
 ;;; ============================================================
+;;; Async Prefetch (non-blocking cache warming)
+;;; ============================================================
+
+(defun gastown-completion--async-warm-rigs ()
+  "Start async `gt rig list --json' fetch to warm the rig cache.
+Returns the process object.  The cache is updated in the process sentinel."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output ""))
+    (make-process
+     :name "gastown-completion-fetch-rigs"
+     :command (list exe "rig" "list" "--json")
+     :filter (lambda (_proc chunk) (setq output (concat output chunk)))
+     :sentinel (lambda (_proc event)
+                 (when (string-prefix-p "finished" event)
+                   (condition-case nil
+                       (let ((json-array-type 'list)
+                             (json-object-type 'alist))
+                         (setq gastown-completion--rig-cache
+                               (cons (float-time)
+                                     (mapcar #'gastown-completion--parse-rig
+                                             (let ((d (json-read-from-string output)))
+                                               (if (vectorp d) (append d nil) d))))))
+                     (error nil))))
+     :connection-type 'pipe)))
+
+(defun gastown-completion--async-warm-polecats ()
+  "Start async `gt polecat list --json' fetch to warm the polecat cache.
+Returns the process object.  The cache is updated in the process sentinel."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output ""))
+    (make-process
+     :name "gastown-completion-fetch-polecats"
+     :command (list exe "polecat" "list" "--json")
+     :filter (lambda (_proc chunk) (setq output (concat output chunk)))
+     :sentinel (lambda (_proc event)
+                 (when (string-prefix-p "finished" event)
+                   (condition-case nil
+                       (let ((json-array-type 'list)
+                             (json-object-type 'alist))
+                         (setq gastown-completion--polecat-cache
+                               (cons (float-time)
+                                     (mapcar #'gastown-completion--parse-polecat
+                                             (let ((d (json-read-from-string output)))
+                                               (if (vectorp d) (append d nil) d))))))
+                     (error nil))))
+     :connection-type 'pipe)))
+
+(defun gastown-completion--async-warm-convoys ()
+  "Start async `gt convoy list --json' fetch to warm the convoy cache.
+Returns the process object.  The cache is updated in the process sentinel."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output ""))
+    (make-process
+     :name "gastown-completion-fetch-convoys"
+     :command (list exe "convoy" "list" "--json")
+     :filter (lambda (_proc chunk) (setq output (concat output chunk)))
+     :sentinel (lambda (_proc event)
+                 (when (string-prefix-p "finished" event)
+                   (condition-case nil
+                       (let ((json-array-type 'list)
+                             (json-object-type 'alist))
+                         (setq gastown-completion--convoy-cache
+                               (cons (float-time)
+                                     (mapcar #'gastown-completion--parse-convoy
+                                             (let ((d (json-read-from-string output)))
+                                               (if (vectorp d) (append d nil) d))))))
+                     (error nil))))
+     :connection-type 'pipe)))
+
+(defun gastown-completion--warm-if-stale (cache-var ttl warm-fn timeout)
+  "Warm CACHE-VAR asynchronously if stale, waiting up to TIMEOUT seconds.
+TTL is the cache time-to-live in seconds.  When the cache is stale or nil,
+calls WARM-FN to start an async process, then waits up to TIMEOUT seconds
+for it to complete via `accept-process-output'.
+Returns non-nil when a warm was attempted."
+  (let* ((cache (symbol-value cache-var))
+         (now (float-time))
+         (stale (or (null cache)
+                    (> (- now (car cache)) ttl))))
+    (when stale
+      (let ((proc (funcall warm-fn)))
+        (when (processp proc)
+          (accept-process-output proc timeout)))
+      t)))
+
+(defun gastown-completion-prefetch ()
+  "Start async cache warming for all completion data types.
+
+Kicks off async `gt rig list --json', `gt polecat list --json', and
+`gt convoy list --json' processes in parallel.  Safe to call multiple
+times — skips fetch for caches that are still within their TTL.
+
+Callers invoke this before `completing-read' to avoid blocking the Emacs
+main thread during minibuffer completion."
+  (let ((now (float-time)))
+    (when (or (null gastown-completion--rig-cache)
+              (> (- now (car gastown-completion--rig-cache))
+                 gastown-completion--rig-cache-ttl))
+      (gastown-completion--async-warm-rigs))
+    (when (or (null gastown-completion--polecat-cache)
+              (> (- now (car gastown-completion--polecat-cache))
+                 gastown-completion--polecat-cache-ttl))
+      (gastown-completion--async-warm-polecats))
+    (when (or (null gastown-completion--convoy-cache)
+              (> (- now (car gastown-completion--convoy-cache))
+                 gastown-completion--convoy-cache-ttl))
+      (gastown-completion--async-warm-convoys))))
+
+;;; ============================================================
 ;;; TTL Caching
 ;;; ============================================================
 
@@ -450,12 +559,22 @@ Builds candidates from known rigs and standard roles."
 ;;; Public Read Functions
 ;;; ============================================================
 
+(defconst gastown-completion--prefetch-timeout 5.0
+  "Seconds to wait for async prefetch before falling back to synchronous fetch.")
+
 (defun gastown-completion-read-rig (prompt &optional predicate
                                            require-match initial-input
                                            history default)
   "Read a rig name with rich completion.
+Pre-warms the rig cache asynchronously before opening the minibuffer
+to avoid blocking the Emacs main thread during completion.
 PROMPT, PREDICATE, REQUIRE-MATCH, INITIAL-INPUT, HISTORY, and DEFAULT
 are passed to `completing-read'."
+  (gastown-completion--warm-if-stale
+   'gastown-completion--rig-cache
+   gastown-completion--rig-cache-ttl
+   #'gastown-completion--async-warm-rigs
+   gastown-completion--prefetch-timeout)
   (completing-read prompt (gastown-completion-rig-table)
                    predicate require-match initial-input history default))
 
@@ -463,8 +582,15 @@ are passed to `completing-read'."
                                                require-match initial-input
                                                history default)
   "Read a polecat address (rig/name) with rich completion.
+Pre-warms the polecat cache asynchronously before opening the minibuffer
+to avoid blocking the Emacs main thread during completion.
 PROMPT, PREDICATE, REQUIRE-MATCH, INITIAL-INPUT, HISTORY, and DEFAULT
 are passed to `completing-read'."
+  (gastown-completion--warm-if-stale
+   'gastown-completion--polecat-cache
+   gastown-completion--polecat-cache-ttl
+   #'gastown-completion--async-warm-polecats
+   gastown-completion--prefetch-timeout)
   (completing-read prompt (gastown-completion-polecat-table)
                    predicate require-match initial-input history default))
 
@@ -473,9 +599,21 @@ are passed to `completing-read'."
                                                     initial-input history
                                                     default)
   "Read a mail address in rig/role format with completion.
+Pre-warms rig and polecat caches asynchronously before opening the
+minibuffer to avoid blocking the Emacs main thread during completion.
 Builds candidate list from known rigs and standard roles.
 PROMPT, PREDICATE, REQUIRE-MATCH, INITIAL-INPUT, HISTORY, and DEFAULT
 are passed to `completing-read'."
+  (gastown-completion--warm-if-stale
+   'gastown-completion--rig-cache
+   gastown-completion--rig-cache-ttl
+   #'gastown-completion--async-warm-rigs
+   gastown-completion--prefetch-timeout)
+  (gastown-completion--warm-if-stale
+   'gastown-completion--polecat-cache
+   gastown-completion--polecat-cache-ttl
+   #'gastown-completion--async-warm-polecats
+   gastown-completion--prefetch-timeout)
   (completing-read prompt (gastown-completion-mail-address-table)
                    predicate require-match initial-input history default))
 
