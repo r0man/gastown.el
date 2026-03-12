@@ -288,7 +288,7 @@ Key bindings:
 (defun gastown-rig-list-refresh ()
   "Refresh the *gastown-rig-list* buffer, applying the current filter spec."
   (interactive)
-  (let* ((spec   (or gastown-current-rig-spec gastown-default-rig-spec))
+  (let* ((spec   (gastown-effective-rig-spec))
          (status (oref spec status))
          (order  (unless (eq (oref spec order) 'name)
                    (symbol-name (oref spec order))))
@@ -427,7 +427,7 @@ Key bindings:
 (defun gastown-session-list-refresh ()
   "Refresh the *gastown-session-list* buffer, applying the current filter spec."
   (interactive)
-  (let* ((spec    (or gastown-current-agent-spec gastown-default-agent-spec))
+  (let* ((spec    (gastown-effective-agent-spec))
          (rig     (oref spec rig))
          (role    (oref spec role))
          (running (oref spec running))
@@ -558,7 +558,7 @@ Key bindings:
 (defun gastown-convoy-list-refresh ()
   "Refresh the *gastown-convoy-list* buffer, applying the current filter spec."
   (interactive)
-  (let* ((spec   (or gastown-current-convoy-spec gastown-default-convoy-spec))
+  (let* ((spec   (gastown-effective-convoy-spec))
          (status (oref spec status))
          (order  (unless (eq (oref spec order) 'newest)
                    (symbol-name (oref spec order))))
@@ -708,7 +708,7 @@ Key bindings:
 (defun gastown-mail-inbox-refresh ()
   "Refresh the *gastown-mail-inbox* buffer, applying the current filter spec."
   (interactive)
-  (let* ((spec     (or gastown-current-mail-spec gastown-default-mail-spec))
+  (let* ((spec     (gastown-effective-mail-spec))
          (unread   (oref spec unread-only))
          (from     (oref spec from))
          (priority (oref spec priority))

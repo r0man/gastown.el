@@ -236,5 +236,79 @@
     (should (local-variable-if-set-p 'gastown-current-mail-spec))
     (should (null gastown-current-mail-spec))))
 
+;;; ============================================================
+;;; Effective Spec Accessor Tests (ge-3y8 regression)
+;;; ============================================================
+
+(ert-deftest gastown-spec-test-effective-agent-spec-returns-spec ()
+  "gastown-effective-agent-spec returns a gastown-agent-spec."
+  (with-temp-buffer
+    (should (gastown-agent-spec-p (gastown-effective-agent-spec)))))
+
+(ert-deftest gastown-spec-test-effective-rig-spec-returns-spec ()
+  "gastown-effective-rig-spec returns a gastown-rig-spec."
+  (with-temp-buffer
+    (should (gastown-rig-spec-p (gastown-effective-rig-spec)))))
+
+(ert-deftest gastown-spec-test-effective-convoy-spec-returns-spec ()
+  "gastown-effective-convoy-spec returns a gastown-convoy-spec."
+  (with-temp-buffer
+    (should (gastown-convoy-spec-p (gastown-effective-convoy-spec)))))
+
+(ert-deftest gastown-spec-test-effective-mail-spec-returns-spec ()
+  "gastown-effective-mail-spec returns a gastown-mail-spec."
+  (with-temp-buffer
+    (should (gastown-mail-spec-p (gastown-effective-mail-spec)))))
+
+(ert-deftest gastown-spec-test-effective-agent-spec-returns-buffer-local ()
+  "gastown-effective-agent-spec returns buffer-local spec when set."
+  (with-temp-buffer
+    (let ((local-spec (gastown-agent-spec :rig "my-rig")))
+      (setq gastown-current-agent-spec local-spec)
+      (should (eq local-spec (gastown-effective-agent-spec))))))
+
+(ert-deftest gastown-spec-test-effective-rig-spec-returns-buffer-local ()
+  "gastown-effective-rig-spec returns buffer-local spec when set."
+  (with-temp-buffer
+    (let ((local-spec (gastown-rig-spec :status "active")))
+      (setq gastown-current-rig-spec local-spec)
+      (should (eq local-spec (gastown-effective-rig-spec))))))
+
+(ert-deftest gastown-spec-test-effective-agent-spec-clones-default ()
+  "gastown-effective-agent-spec returns a fresh clone when no buffer-local spec.
+Regression for ge-3y8: direct access to gastown-default-agent-spec exposed
+the shared mutable object, so oset mutations would be permanent and global."
+  (with-temp-buffer
+    (let ((a (gastown-effective-agent-spec))
+          (b (gastown-effective-agent-spec)))
+      ;; Two calls return different objects (not the same shared instance)
+      (should (not (eq a b)))
+      ;; Mutating one does not affect the other
+      (oset a :rig "mutated")
+      (should (not (equal (oref a :rig) (oref b :rig))))
+      ;; The global default is unchanged
+      (should (not (equal "mutated" (oref gastown-default-agent-spec :rig)))))))
+
+(ert-deftest gastown-spec-test-effective-rig-spec-clones-default ()
+  "gastown-effective-rig-spec returns a fresh clone when no buffer-local spec."
+  (with-temp-buffer
+    (let ((a (gastown-effective-rig-spec))
+          (b (gastown-effective-rig-spec)))
+      (should (not (eq a b))))))
+
+(ert-deftest gastown-spec-test-effective-convoy-spec-clones-default ()
+  "gastown-effective-convoy-spec returns a fresh clone when no buffer-local spec."
+  (with-temp-buffer
+    (let ((a (gastown-effective-convoy-spec))
+          (b (gastown-effective-convoy-spec)))
+      (should (not (eq a b))))))
+
+(ert-deftest gastown-spec-test-effective-mail-spec-clones-default ()
+  "gastown-effective-mail-spec returns a fresh clone when no buffer-local spec."
+  (with-temp-buffer
+    (let ((a (gastown-effective-mail-spec))
+          (b (gastown-effective-mail-spec)))
+      (should (not (eq a b))))))
+
 (provide 'gastown-spec-test)
 ;;; gastown-spec-test.el ends here

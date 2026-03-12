@@ -236,5 +236,44 @@ When nil, `gastown-default-convoy-spec' is used instead.")
   "Buffer-local filter spec for the mail inbox.
 When nil, `gastown-default-mail-spec' is used instead.")
 
+;;; ============================================================
+;;; Effective Spec Accessors
+;;; ============================================================
+;;
+;; `gastown-default-*-spec' defcustom variables hold shared EIEIO
+;; objects created at load time.  Direct callers must never `oset'
+;; on them, as the mutation would be permanent and global.  These
+;; accessor functions return the buffer-local spec when set, or a
+;; fresh clone of the global default otherwise, so callers are
+;; always working on an independent copy.
+
+(defun gastown-effective-agent-spec ()
+  "Return the effective agent spec for the current buffer.
+Returns `gastown-current-agent-spec' if set, otherwise a fresh
+clone of `gastown-default-agent-spec'."
+  (or gastown-current-agent-spec
+      (clone gastown-default-agent-spec)))
+
+(defun gastown-effective-rig-spec ()
+  "Return the effective rig spec for the current buffer.
+Returns `gastown-current-rig-spec' if set, otherwise a fresh
+clone of `gastown-default-rig-spec'."
+  (or gastown-current-rig-spec
+      (clone gastown-default-rig-spec)))
+
+(defun gastown-effective-convoy-spec ()
+  "Return the effective convoy spec for the current buffer.
+Returns `gastown-current-convoy-spec' if set, otherwise a fresh
+clone of `gastown-default-convoy-spec'."
+  (or gastown-current-convoy-spec
+      (clone gastown-default-convoy-spec)))
+
+(defun gastown-effective-mail-spec ()
+  "Return the effective mail spec for the current buffer.
+Returns `gastown-current-mail-spec' if set, otherwise a fresh
+clone of `gastown-default-mail-spec'."
+  (or gastown-current-mail-spec
+      (clone gastown-default-mail-spec)))
+
 (provide 'gastown-spec)
 ;;; gastown-spec.el ends here
