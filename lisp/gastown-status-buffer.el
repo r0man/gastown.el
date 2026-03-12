@@ -129,9 +129,8 @@ Set to nil to disable auto-refresh."
   "Data container for an individual agent row.")
 
 (defclass gastown-rig-section ()
-  ((rig      :initarg :rig      :initform nil)
-   (instance :initarg :instance :initform nil)
-   (parent   :initarg :parent   :initform nil))
+  ((rig    :initarg :rig    :initform nil)
+   (parent :initarg :parent :initform nil))
   "Data container for a rig section.")
 
 (defclass gastown-polecat-section ()
@@ -158,6 +157,23 @@ context-aware transient command auto-fill."
 (defun gastown-status--propertize-section (str section)
   "Return STR with SECTION stored as the `gastown-status-section' text property."
   (propertize str 'gastown-status-section section))
+
+;;; ============================================================
+;;; Component Instance Lookup
+;;; ============================================================
+
+(defun gastown-status--find-instance (root type key)
+  "Find a vui component instance of TYPE with KEY in the tree rooted at ROOT.
+TYPE is the component name symbol (e.g. `gastown-status-rig-widget').
+KEY is the component's key string (e.g. the rig name).
+Returns the instance, or nil if not found."
+  (when root
+    (if (and (eq type (vui-component-def-name (vui-instance-def root)))
+             (equal key (vui-vnode-key (vui-instance-vnode root))))
+        root
+      (cl-some (lambda (child)
+                 (gastown-status--find-instance child type key))
+               (vui-instance-children root)))))
 
 ;;; ============================================================
 ;;; Semantic Cursor Preservation
@@ -607,7 +623,7 @@ passed through to agent row actions."
                                   agents-list))
          (crews       (seq-filter (lambda (a) (equal (oref a role) "crew"))
                                   agents-list))
-         (rig-sec     (gastown-rig-section :rig rig :instance vui--current-instance))
+         (rig-sec     (gastown-rig-section :rig rig))
          (header-label (gastown-status--propertize-section
                         (gastown-status--rig-separator rig-name)
                         rig-sec)))
@@ -865,9 +881,15 @@ additional fields (address, role, session, state, model, hook)."
   (interactive)
   (let ((section (gastown-status-current-section)))
     (cond
-     ;; Rig header: toggle collapse directly via stored instance
+     ;; Rig header: toggle collapse via live component instance lookup
      ((gastown-rig-section-p section)
-      (let ((inst (oref section instance)))
+      (let* ((rig-name (or (and (oref section rig)
+                                (oref (oref section rig) name))
+                           ""))
+             (inst (gastown-status--find-instance
+                    vui--root-instance
+                    'gastown-status-rig-widget
+                    rig-name)))
         (if inst
             (let ((vui--current-instance inst))
               (vui-set-state :collapsed (lambda (c) (not c))))
