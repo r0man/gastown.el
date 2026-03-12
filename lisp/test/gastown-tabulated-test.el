@@ -300,6 +300,15 @@
     (should (eq #'gastown-paged-prev-page (lookup-key map (kbd "["))))
     (should (eq #'gastown-paged-goto-page (lookup-key map (kbd "G"))))))
 
+(ert-deftest gastown-tabulated-test-navigation-keys-bound ()
+  "Each mode's keymap has N/P section navigation bindings."
+  (dolist (map (list gastown-rig-list-mode-map
+                     gastown-session-list-mode-map
+                     gastown-convoy-list-mode-map
+                     gastown-mail-inbox-mode-map))
+    (should (eq #'gastown-paged-next-page (lookup-key map (kbd "N"))))
+    (should (eq #'gastown-paged-prev-page (lookup-key map (kbd "P"))))))
+
 (ert-deftest gastown-tabulated-test-execute-interactive-overrides ()
   "gastown-command-execute-interactive is overridden for all four command classes."
   (should (fboundp 'gastown-rig-list-show-buffer))

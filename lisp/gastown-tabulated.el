@@ -165,16 +165,23 @@ ALL-ENTRIES is the complete list of tabulated-list entries."
   (gastown-paged--refresh-display))
 
 ;;; ============================================================
-;;; Shared Keymap (pagination bindings)
+;;; Shared Base Keymap
 ;;; ============================================================
 
-(defvar gastown-tabulated-paged-map
+(defvar gastown-tabulated-base-map
   (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map tabulated-list-mode-map)
+    ;; Pagination
     (define-key map (kbd "]") #'gastown-paged-next-page)
     (define-key map (kbd "[") #'gastown-paged-prev-page)
     (define-key map (kbd "G") #'gastown-paged-goto-page)
+    ;; Section navigation (N/P = next/prev page in tabulated context)
+    (define-key map (kbd "N") #'gastown-paged-next-page)
+    (define-key map (kbd "P") #'gastown-paged-prev-page)
     map)
-  "Keymap providing pagination bindings for tabulated-list views.")
+  "Shared base keymap for Gas Town tabulated-list buffers.
+Provides pagination (]/[/G) and section navigation (N/P) bindings
+on top of `tabulated-list-mode-map'.")
 
 ;;; ============================================================
 ;;; Rig List
@@ -250,13 +257,10 @@ ALL-ENTRIES is the complete list of tabulated-list entries."
 
 (defvar gastown-rig-list-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
+    (set-keymap-parent map gastown-tabulated-base-map)
     (define-key map (kbd "g") #'gastown-rig-list-refresh)
     (define-key map (kbd "/") #'gastown-rig-list-filter)
     (define-key map (kbd "RET") #'gastown-rig-list-show-rig)
-    (define-key map (kbd "]") #'gastown-paged-next-page)
-    (define-key map (kbd "[") #'gastown-paged-prev-page)
-    (define-key map (kbd "G") #'gastown-paged-goto-page)
     map)
   "Keymap for `gastown-rig-list-mode'.")
 
@@ -391,13 +395,10 @@ Key bindings:
 
 (defvar gastown-session-list-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
+    (set-keymap-parent map gastown-tabulated-base-map)
     (define-key map (kbd "g")   #'gastown-session-list-refresh)
     (define-key map (kbd "/")   #'gastown-session-list-filter)
     (define-key map (kbd "RET") #'gastown-session-list-jump)
-    (define-key map (kbd "]")   #'gastown-paged-next-page)
-    (define-key map (kbd "[")   #'gastown-paged-prev-page)
-    (define-key map (kbd "G")   #'gastown-paged-goto-page)
     map)
   "Keymap for `gastown-session-list-mode'.")
 
@@ -522,13 +523,10 @@ Key bindings:
 
 (defvar gastown-convoy-list-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
+    (set-keymap-parent map gastown-tabulated-base-map)
     (define-key map (kbd "g")   #'gastown-convoy-list-refresh)
     (define-key map (kbd "/")   #'gastown-convoy-list-filter)
     (define-key map (kbd "RET") #'gastown-convoy-list-show-status)
-    (define-key map (kbd "]")   #'gastown-paged-next-page)
-    (define-key map (kbd "[")   #'gastown-paged-prev-page)
-    (define-key map (kbd "G")   #'gastown-paged-goto-page)
     map)
   "Keymap for `gastown-convoy-list-mode'.")
 
@@ -672,13 +670,10 @@ Key bindings:
 
 (defvar gastown-mail-inbox-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
+    (set-keymap-parent map gastown-tabulated-base-map)
     (define-key map (kbd "g")   #'gastown-mail-inbox-refresh)
     (define-key map (kbd "/")   #'gastown-mail-inbox-filter)
     (define-key map (kbd "RET") #'gastown-mail-inbox-read)
-    (define-key map (kbd "]")   #'gastown-paged-next-page)
-    (define-key map (kbd "[")   #'gastown-paged-prev-page)
-    (define-key map (kbd "G")   #'gastown-paged-goto-page)
     map)
   "Keymap for `gastown-mail-inbox-mode'.")
 

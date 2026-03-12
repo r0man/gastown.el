@@ -32,10 +32,22 @@
 
 ;;; Major mode
 
+(defvar-keymap gastown-whats-new-mode-map
+  :parent vui-mode-map
+  "g" #'gastown-whats-new
+  "n" #'next-line
+  "p" #'previous-line
+  "N" #'scroll-up-command
+  "P" #'scroll-down-command
+  "q" #'quit-window)
+
 (define-derived-mode gastown-whats-new-mode vui-mode "GT-WhatsNew"
-  "Major mode for the Gas Town What's New buffer."
+  "Major mode for the Gas Town What's New buffer.
+
+Key bindings:
+\\{gastown-whats-new-mode-map}"
   (setq-local header-line-format
-              " Gas Town — What's New  (g=refresh  q=quit)"))
+              " Gas Town — What's New  (g=refresh  n/p=nav  q=quit)"))
 
 ;;; Faces
 
@@ -161,9 +173,7 @@ spinner while loading, then renders the result line-by-line."
   (let ((buf (get-buffer-create gastown-whats-new-buffer-name)))
     (with-current-buffer buf
       (unless (derived-mode-p 'gastown-whats-new-mode)
-        (gastown-whats-new-mode))
-      (local-set-key (kbd "g") #'gastown-whats-new)
-      (local-set-key (kbd "q") #'quit-window))
+        (gastown-whats-new-mode)))
     (vui-mount
      (vui-component 'gastown-whats-new-app)
      gastown-whats-new-buffer-name)

@@ -244,6 +244,24 @@ not via the shell, to prevent injection."
       history-status history-data history-error))))
 
 ;;; ============================================================
+;;; Major Mode
+;;; ============================================================
+
+(defvar-keymap gastown-polecat-detail-mode-map
+  :parent vui-mode-map
+  "n" #'next-line
+  "p" #'previous-line
+  "N" #'scroll-up-command
+  "P" #'scroll-down-command
+  "q" #'quit-window)
+
+(define-derived-mode gastown-polecat-detail-mode vui-mode "GT-Polecat"
+  "Major mode for the Gas Town polecat detail buffer.
+
+Key bindings:
+\\{gastown-polecat-detail-mode-map}")
+
+;;; ============================================================
 ;;; Entry Point
 ;;; ============================================================
 
@@ -267,15 +285,16 @@ session, mail, and recent work history."
        :tmux-socket tmux-socket)
      buf-name)
     (with-current-buffer buf-name
+      (unless (derived-mode-p 'gastown-polecat-detail-mode)
+        (gastown-polecat-detail-mode))
       (setq-local header-line-format
-                  (format " Gas Town — %s/%s  (g=refresh  q=quit)"
+                  (format " Gas Town — %s/%s  (g=refresh  n/p=nav  q=quit)"
                           rig-name polecat-name))
       (local-set-key
        (kbd "g")
        (lambda ()
          (interactive)
-         (gastown-polecat-detail-show polecat rig-name tmux-socket)))
-      (local-set-key (kbd "q") #'quit-window))))
+         (gastown-polecat-detail-show polecat rig-name tmux-socket))))))
 
 (provide 'gastown-polecat-detail)
 ;;; gastown-polecat-detail.el ends here

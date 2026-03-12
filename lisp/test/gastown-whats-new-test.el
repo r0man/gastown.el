@@ -101,6 +101,14 @@
     (gastown-whats-new-mode)
     (should (derived-mode-p 'vui-mode))))
 
+(ert-deftest gastown-whats-new-test-navigation-keys-bound ()
+  "gastown-whats-new-mode-map has n/p/N/P/q navigation bindings."
+  (should (eq #'next-line              (lookup-key gastown-whats-new-mode-map (kbd "n"))))
+  (should (eq #'previous-line         (lookup-key gastown-whats-new-mode-map (kbd "p"))))
+  (should (eq #'scroll-up-command     (lookup-key gastown-whats-new-mode-map (kbd "N"))))
+  (should (eq #'scroll-down-command   (lookup-key gastown-whats-new-mode-map (kbd "P"))))
+  (should (eq #'quit-window           (lookup-key gastown-whats-new-mode-map (kbd "q")))))
+
 ;;; execute-interactive override test
 
 (ert-deftest gastown-whats-new-test-execute-interactive-override ()

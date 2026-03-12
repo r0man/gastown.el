@@ -239,5 +239,27 @@ enabling shell injection via a crafted session name."
                    "nonexistent_rig" "nobody")))
       (should (null result)))))
 
+;;; ============================================================
+;;; Mode Tests
+;;; ============================================================
+
+(ert-deftest gastown-polecat-detail-test-mode-defined ()
+  "gastown-polecat-detail-mode is defined."
+  (should (fboundp 'gastown-polecat-detail-mode)))
+
+(ert-deftest gastown-polecat-detail-test-mode-derived-from-vui ()
+  "gastown-polecat-detail-mode is derived from vui-mode."
+  (with-temp-buffer
+    (gastown-polecat-detail-mode)
+    (should (derived-mode-p 'vui-mode))))
+
+(ert-deftest gastown-polecat-detail-test-navigation-keys-bound ()
+  "gastown-polecat-detail-mode-map has n/p/N/P/q navigation bindings."
+  (should (eq #'next-line            (lookup-key gastown-polecat-detail-mode-map (kbd "n"))))
+  (should (eq #'previous-line       (lookup-key gastown-polecat-detail-mode-map (kbd "p"))))
+  (should (eq #'scroll-up-command   (lookup-key gastown-polecat-detail-mode-map (kbd "N"))))
+  (should (eq #'scroll-down-command (lookup-key gastown-polecat-detail-mode-map (kbd "P"))))
+  (should (eq #'quit-window         (lookup-key gastown-polecat-detail-mode-map (kbd "q")))))
+
 (provide 'gastown-polecat-detail-test)
 ;;; gastown-polecat-detail-test.el ends here
