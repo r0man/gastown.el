@@ -214,5 +214,18 @@ be caught and re-signaled as gastown-command-error with a readable message."
     ;; The error data list should contain a string describing the problem
     (should (cl-some #'stringp (cdr err)))))
 
+;;; execute-interactive tilde expansion tests
+
+(ert-deftest gastown-command-test-execute-interactive-expands-tilde ()
+  "execute-interactive expands tilde in default-directory before passing to terminal."
+  (let ((captured-dir nil))
+    (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+               (lambda (_cmd-string _buffer-name dir)
+                 (setq captured-dir dir))))
+      (let ((default-directory "~/gt/some/path/"))
+        (gastown-command-execute-interactive (gastown-command--test-simple))))
+    (should (not (string-prefix-p "~" captured-dir)))
+    (should (string-prefix-p "/" captured-dir))))
+
 (provide 'gastown-command-test)
 ;;; gastown-command-test.el ends here

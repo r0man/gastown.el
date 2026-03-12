@@ -385,7 +385,7 @@ in `gastown-defcommand')."
   (let* ((cmd-line (gastown-command-line command))
          (cmd-string (mapconcat #'shell-quote-argument cmd-line " "))
          (buffer-name (format "*gt %s*" (or (nth 1 cmd-line) "command")))
-         (default-dir default-directory))
+         (default-dir (expand-file-name default-directory)))
     (gastown-command--run-in-terminal cmd-string buffer-name default-dir)))
 
 (cl-defmethod gastown-command-preview ((command gastown-command))
