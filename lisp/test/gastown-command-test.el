@@ -214,6 +214,57 @@ be caught and re-signaled as gastown-command-error with a readable message."
     ;; The error data list should contain a string describing the problem
     (should (cl-some #'stringp (cdr err)))))
 
+;;; Terminal backend no-query-on-exit tests
+
+(ert-deftest gastown-command-test-run-term-clears-process-query-flag ()
+  "run-term sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
+  (let ((flag-cleared nil)
+        (fake-proc 'fake-process))
+    (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) t))
+              ((symbol-function 'process-live-p) (lambda (_) nil))
+              ((symbol-function 'get-buffer-process) (lambda (_) fake-proc))
+              ((symbol-function 'erase-buffer) #'ignore)
+              ((symbol-function 'term-exec) #'ignore)
+              ((symbol-function 'term-char-mode) #'ignore)
+              ((symbol-function 'pop-to-buffer) #'ignore)
+              ((symbol-function 'set-process-query-on-exit-flag)
+               (lambda (proc val)
+                 (when (and (eq proc fake-proc) (not val))
+                   (setq flag-cleared t)))))
+      (gastown-command--run-term "cmd" "*test-buf*" "/tmp"))
+    (should flag-cleared)))
+
+(ert-deftest gastown-command-test-run-vterm-clears-process-query-flag ()
+  "run-vterm sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
+  (skip-unless (gastown-command--vterm-available-p))
+  (let ((flag-cleared nil)
+        (fake-proc 'fake-process))
+    (cl-letf (((symbol-function 'vterm) (lambda (_name) (current-buffer)))
+              ((symbol-function 'get-buffer-process) (lambda (_) fake-proc))
+              ((symbol-function 'set-process-query-on-exit-flag)
+               (lambda (proc val)
+                 (when (and (eq proc fake-proc) (not val))
+                   (setq flag-cleared t)))))
+      (gastown-command--run-vterm "cmd" "*test-buf*" "/tmp"))
+    (should flag-cleared)))
+
+(ert-deftest gastown-command-test-run-eat-clears-process-query-flag ()
+  "run-eat sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
+  (skip-unless (gastown-command--eat-available-p))
+  (let ((flag-cleared nil)
+        (fake-proc 'fake-process))
+    (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) t))
+              ((symbol-function 'process-live-p) (lambda (_) nil))
+              ((symbol-function 'get-buffer-process) (lambda (_) fake-proc))
+              ((symbol-function 'eat-exec) #'ignore)
+              ((symbol-function 'pop-to-buffer) #'ignore)
+              ((symbol-function 'set-process-query-on-exit-flag)
+               (lambda (proc val)
+                 (when (and (eq proc fake-proc) (not val))
+                   (setq flag-cleared t)))))
+      (gastown-command--run-eat "cmd" "*test-buf*" "/tmp"))
+    (should flag-cleared)))
+
 ;;; execute-interactive tilde expansion tests
 
 (ert-deftest gastown-command-test-execute-interactive-expands-tilde ()

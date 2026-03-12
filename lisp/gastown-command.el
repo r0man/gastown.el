@@ -171,7 +171,9 @@ Available backends:
       (term-exec buf buffer-name shell-file-name nil
                  (list "-c" (concat "cd " (shell-quote-argument default-dir)
                                     " && " cmd-string "; exit")))
-      (term-char-mode))
+      (term-char-mode)
+      (when-let ((proc (get-buffer-process buf)))
+        (set-process-query-on-exit-flag proc nil)))
     (pop-to-buffer buf)))
 
 (defun gastown-command--vterm-available-p ()
@@ -192,7 +194,9 @@ Available backends:
          (vterm-buffer-name buffer-name)
          (buf (vterm buffer-name)))
     (with-current-buffer buf
-      (setq-local vterm-kill-buffer-on-exit nil))
+      (setq-local vterm-kill-buffer-on-exit nil)
+      (when-let ((proc (get-buffer-process buf)))
+        (set-process-query-on-exit-flag proc nil)))
     buf))
 
 (defun gastown-command--eat-available-p ()
@@ -214,7 +218,9 @@ Available backends:
           (delete-process proc)))
       (eat-exec buf buffer-name shell-file-name nil
                 (list "-c" (concat "cd " (shell-quote-argument default-dir)
-                                   " && " cmd-string "; exit"))))
+                                   " && " cmd-string "; exit")))
+      (when-let ((proc (get-buffer-process buf)))
+        (set-process-query-on-exit-flag proc nil)))
     (pop-to-buffer buf)))
 
 (defun gastown-command--detect-best-backend ()
