@@ -572,6 +572,14 @@
 ;;; Session List Jump — shell injection fix
 ;;; ============================================================
 
+(defmacro gastown-tabulated-test--with-id-at-point (id &rest body)
+  "Execute BODY in a temp buffer with tabulated-list-id text property ID at point."
+  (declare (indent 1))
+  `(with-temp-buffer
+     (insert (propertize "entry" 'tabulated-list-id ,id))
+     (goto-char (point-min))
+     ,@body))
+
 (ert-deftest gastown-tabulated-test-session-list-jump-defined ()
   "gastown-session-list-jump must be defined."
   (should (fboundp 'gastown-session-list-jump)))
@@ -582,13 +590,12 @@ Verifies the shell-injection fix: unquoted session IDs cannot execute
 arbitrary shell commands when args are passed as a list to call-process."
   (let ((call-process-args nil)
         (shell-command-called nil))
-    (cl-letf (((symbol-function 'tabulated-list-get-id)
-               (lambda () "hq-mayor"))
-              ((symbol-function 'shell-command)
-               (lambda (&rest _) (setq shell-command-called t)))
-              ((symbol-function 'call-process)
-               (lambda (&rest args) (setq call-process-args args) 0)))
-      (gastown-session-list-jump))
+    (gastown-tabulated-test--with-id-at-point "hq-mayor"
+      (cl-letf (((symbol-function 'shell-command)
+                 (lambda (&rest _) (setq shell-command-called t)))
+                ((symbol-function 'call-process)
+                 (lambda (&rest args) (setq call-process-args args) 0)))
+        (gastown-session-list-jump)))
     (should-not shell-command-called)
     (should call-process-args)))
 
@@ -596,11 +603,10 @@ arbitrary shell commands when args are passed as a list to call-process."
   "gastown-session-list-jump must pass session ID as a separate argument.
 This prevents metacharacters in session names from being interpreted by the shell."
   (let ((call-process-args nil))
-    (cl-letf (((symbol-function 'tabulated-list-get-id)
-               (lambda () "hq-mayor"))
-              ((symbol-function 'call-process)
-               (lambda (&rest args) (setq call-process-args args) 0)))
-      (gastown-session-list-jump))
+    (gastown-tabulated-test--with-id-at-point "hq-mayor"
+      (cl-letf (((symbol-function 'call-process)
+                 (lambda (&rest args) (setq call-process-args args) 0)))
+        (gastown-session-list-jump)))
     ;; The target "gt:hq-mayor" must appear as a discrete arg, not shell-interpolated
     (should (member "gt:hq-mayor" call-process-args))))
 
@@ -609,13 +615,12 @@ This prevents metacharacters in session names from being interpreted by the shel
 A session name like 'foo;rm -rf /' must not execute arbitrary commands."
   (let ((shell-command-called nil)
         (call-process-args nil))
-    (cl-letf (((symbol-function 'tabulated-list-get-id)
-               (lambda () "foo;rm -rf /"))
-              ((symbol-function 'shell-command)
-               (lambda (&rest _) (setq shell-command-called t)))
-              ((symbol-function 'call-process)
-               (lambda (&rest args) (setq call-process-args args) 0)))
-      (gastown-session-list-jump))
+    (gastown-tabulated-test--with-id-at-point "foo;rm -rf /"
+      (cl-letf (((symbol-function 'shell-command)
+                 (lambda (&rest _) (setq shell-command-called t)))
+                ((symbol-function 'call-process)
+                 (lambda (&rest args) (setq call-process-args args) 0)))
+        (gastown-session-list-jump)))
     (should-not shell-command-called)
     ;; The malicious ID is passed as literal data, not executed
     (should (member "gt:foo;rm -rf /" call-process-args))))

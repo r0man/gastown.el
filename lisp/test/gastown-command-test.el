@@ -186,5 +186,33 @@
          (line (gastown-command-line cmd)))
     (should (member "some-hyphenated-command" line))))
 
+;;; gastown-command-execute — missing executable error handling
+
+(ert-deftest gastown-command-test-execute-signals-error-on-missing-executable ()
+  "gastown-command-execute signals gastown-command-error when executable missing.
+When process-file throws file-error (executable not in PATH), the error must
+be caught and re-signaled as gastown-command-error with a readable message."
+  (let ((cmd (gastown-command--test-simple)))
+    (cl-letf (((symbol-function 'process-file)
+               (lambda (&rest _)
+                 (signal 'file-error
+                         (list "Searching for program" "no-such-gt-binary")))))
+      (should-error (gastown-command-execute cmd)
+                    :type 'gastown-command-error))))
+
+(ert-deftest gastown-command-test-execute-error-message-names-executable ()
+  "gastown-command-error from missing executable includes the program name."
+  (let* ((cmd (gastown-command--test-simple))
+         (err (should-error
+               (cl-letf (((symbol-function 'process-file)
+                          (lambda (&rest _)
+                            (signal 'file-error
+                                    (list "Searching for program"
+                                          "no-such-gt-binary")))))
+                 (gastown-command-execute cmd))
+               :type 'gastown-command-error)))
+    ;; The error data list should contain a string describing the problem
+    (should (cl-some #'stringp (cdr err)))))
+
 (provide 'gastown-command-test)
 ;;; gastown-command-test.el ends here

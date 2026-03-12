@@ -437,10 +437,21 @@ When :json is nil (default), returns stdout string."
 
     (unwind-protect
         (with-temp-buffer
-          (let* ((proc-exit-code (apply #'process-file
-                                        (car cmd) nil
-                                        (list (current-buffer) stderr-file)
-                                        nil (cdr cmd)))
+          (let* ((proc-exit-code
+                  (condition-case err
+                      (apply #'process-file
+                             (car cmd) nil
+                             (list (current-buffer) stderr-file)
+                             nil (cdr cmd))
+                    (file-error
+                     (signal 'gastown-command-error
+                             (list (format "Executable not found: %s (%s)"
+                                           (car cmd)
+                                           (error-message-string err))
+                                   :command cmd-string
+                                   :exit-code nil
+                                   :stdout ""
+                                   :stderr "")))))
                  (proc-stdout (buffer-string))
                  (proc-stderr (with-temp-buffer
                                 (insert-file-contents stderr-file)
