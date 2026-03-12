@@ -148,8 +148,11 @@ Returns a list of `gastown-work-item' objects, or nil on error."
          (vui-text (propertize "has work" 'face 'success))
        (vui-text (propertize "no work" 'face 'gastown-polecat-detail-stopped))))))
 
-(defun gastown-polecat-detail--session-row (polecat)
-  "Render the tmux session row for POLECAT (`gastown-agent')."
+(defun gastown-polecat-detail--session-row (polecat &optional tmux-socket)
+  "Render the tmux session row for POLECAT (`gastown-agent').
+TMUX-SOCKET is the tmux -L socket name; nil or \"default\" uses the
+default server.  The session name is passed as a process argument,
+not via the shell, to prevent injection."
   (let* ((session (oref polecat session))
          (running (oref polecat running)))
     (vui-hstack
@@ -157,9 +160,15 @@ Returns a list of `gastown-work-item' objects, or nil on error."
      (if (and session running)
          (vui-button session
            :no-decoration t
-           :on-click (lambda ()
-                       (shell-command
-                        (format "tmux -L gt select-window -t %s" session))))
+           :on-click (let ((s session) (sock tmux-socket))
+                       (lambda ()
+                         (let ((args (append
+                                      (when (and sock
+                                                 (not (string= sock "default")))
+                                        (list "-L" sock))
+                                      (list "select-window" "-t" s))))
+                           (apply #'start-process
+                                  "gt-tmux-switch" nil "tmux" args)))))
        (vui-text (propertize (or session "none")
                              'face 'gastown-polecat-detail-stopped))))))
 
@@ -210,7 +219,7 @@ Returns a list of `gastown-work-item' objects, or nil on error."
 ;;; ============================================================
 
 (vui-defcomponent gastown-polecat-detail-app
-    (polecat rig-name polecat-name)
+    (polecat rig-name polecat-name &optional tmux-socket)
   "Root component for the polecat detail view."
   :render
   (let* ((history-result
@@ -228,7 +237,7 @@ Returns a list of `gastown-work-item' objects, or nil on error."
      (gastown-polecat-detail--header polecat rig-name)
      (vui-newline)
      (gastown-polecat-detail--hook-row polecat)
-     (gastown-polecat-detail--session-row polecat)
+     (gastown-polecat-detail--session-row polecat tmux-socket)
      (gastown-polecat-detail--mail-row polecat)
      (vui-newline)
      (gastown-polecat-detail--work-history-section
@@ -239,8 +248,12 @@ Returns a list of `gastown-work-item' objects, or nil on error."
 ;;; ============================================================
 
 ;;;###autoload
-(defun gastown-polecat-detail-show (polecat rig-name)
+(defun gastown-polecat-detail-show (polecat rig-name &optional tmux-socket)
   "Show the detail view for POLECAT (`gastown-agent') in rig RIG-NAME.
+
+TMUX-SOCKET is the tmux -L socket name passed to the session-jump
+action so it uses the correct tmux server.  Nil or \"default\" uses
+the default server.
 
 Opens a dedicated vui.el buffer showing polecat status, hook,
 session, mail, and recent work history."
@@ -250,7 +263,8 @@ session, mail, and recent work history."
      (vui-component 'gastown-polecat-detail-app
        :polecat polecat
        :rig-name rig-name
-       :polecat-name polecat-name)
+       :polecat-name polecat-name
+       :tmux-socket tmux-socket)
      buf-name)
     (with-current-buffer buf-name
       (setq-local header-line-format
@@ -260,7 +274,7 @@ session, mail, and recent work history."
        (kbd "g")
        (lambda ()
          (interactive)
-         (gastown-polecat-detail-show polecat rig-name)))
+         (gastown-polecat-detail-show polecat rig-name tmux-socket)))
       (local-set-key (kbd "q") #'quit-window))))
 
 (provide 'gastown-polecat-detail)

@@ -152,6 +152,66 @@
     (should result)))
 
 ;;; ============================================================
+;;; Session Row Security Tests (ge-dwm regression)
+;;; ============================================================
+
+(ert-deftest gastown-polecat-detail-test-session-row-uses-start-process ()
+  "Session row click calls start-process, not shell-command (ge-dwm).
+Regression: original code used shell-command with unquoted session name,
+enabling shell injection via a crafted session name."
+  (with-temp-buffer
+    (vui-mode)
+    (let* ((polecat gastown-polecat-detail-test--running-polecat)
+           (shell-command-called nil)
+           (start-process-called nil))
+      (cl-letf (((symbol-function 'shell-command)
+                 (lambda (&rest _) (setq shell-command-called t)))
+                ((symbol-function 'start-process)
+                 (lambda (&rest _) (setq start-process-called t) nil)))
+        (vui-mount (vui-component 'gastown-polecat-detail-app
+                     :polecat polecat
+                     :rig-name "gastown_el"
+                     :polecat-name "furiosa")
+                   (current-buffer))
+        ;; Find and click the session button
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when w
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      (should-not shell-command-called)
+      (should start-process-called))))
+
+(ert-deftest gastown-polecat-detail-test-session-row-passes-socket ()
+  "Session row click passes tmux-socket as -L argument to start-process."
+  (with-temp-buffer
+    (vui-mode)
+    (let* ((polecat gastown-polecat-detail-test--running-polecat)
+           (captured-args nil))
+      (cl-letf (((symbol-function 'start-process)
+                 (lambda (&rest args) (setq captured-args args) nil)))
+        (vui-mount (vui-component 'gastown-polecat-detail-app
+                     :polecat polecat
+                     :rig-name "gastown_el"
+                     :polecat-name "furiosa"
+                     :tmux-socket "gt")
+                   (current-buffer))
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when w
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      ;; args: (name buf "tmux" "-L" "gt" "select-window" "-t" session)
+      (should (member "-L" captured-args))
+      (should (member "gt" captured-args)))))
+
+;;; ============================================================
 ;;; BD Executable Tests
 ;;; ============================================================
 
