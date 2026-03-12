@@ -54,6 +54,7 @@
 (require 'gastown-status-buffer)
 (require 'gastown-command-work)
 (require 'gastown-command-ready)
+(require 'gastown-whats-new)
 (require 'gastown-command-workspace)
 (require 'gastown-tabulated)
 (require 'gastown-polecat-detail)
