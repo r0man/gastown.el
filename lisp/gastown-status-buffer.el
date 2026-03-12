@@ -176,6 +176,12 @@ attempts to modify button text for visual feedback."
 (defvar-keymap gastown-status-mode-map
   :parent vui-mode-map
   "RET" #'gastown-status--activate-button
+  "TAB" #'gastown-status-tab-action
+  "n"   #'gastown-status-next-item
+  "p"   #'gastown-status-prev-item
+  "N"   #'gastown-status-next-section
+  "P"   #'gastown-status-prev-section
+  "d"   #'gastown-status-dired-at-point
   "g"   #'gastown-status-refresh
   "q"   #'quit-window
   "w"   #'gastown-status-toggle-watch)
@@ -206,6 +212,11 @@ Key bindings:
   "Effective refresh interval (seconds) for this buffer's watch timer.
 Defaults to `gastown-status-refresh-interval' when nil.")
 
+(defvar-local gastown-status--expanded-items nil
+  "Hash table mapping item keys to t for expanded items.
+Keys are strings: \"agent:NAME\" or \"polecat:RIG/NAME\".
+Created lazily on first expansion.")
+
 ;;; ============================================================
 ;;; Rendering Helpers (pure functions)
 ;;; ============================================================
@@ -234,6 +245,58 @@ Defaults to `gastown-status-refresh-interval' when nil.")
   (let* ((prefix (format "─── %s/ " rig-name))
          (fill (max 4 (- 60 (string-width prefix)))))
     (concat prefix (make-string fill ?─))))
+
+(defun gastown-status--item-expanded-p (key)
+  "Return t if the item with KEY is expanded in the current buffer."
+  (and gastown-status--expanded-items
+       (gethash key gastown-status--expanded-items)))
+
+(defun gastown-status--toggle-expanded (key)
+  "Toggle expanded state for item with KEY in the current buffer."
+  (unless gastown-status--expanded-items
+    (setq gastown-status--expanded-items (make-hash-table :test 'equal)))
+  (if (gethash key gastown-status--expanded-items)
+      (remhash key gastown-status--expanded-items)
+    (puthash key t gastown-status--expanded-items)))
+
+(defun gastown-status--agent-detail-vnode (agent)
+  "Build an expanded detail vnode for AGENT (`gastown-agent').
+Shows additional fields not visible in the brief row view."
+  (let* ((role       (or (oref agent role) ""))
+         (session    (or (oref agent session) ""))
+         (address    (or (oref agent address) ""))
+         (state      (or (oref agent state) ""))
+         (alias      (or (oref agent agent-alias) ""))
+         (has-work   (oref agent has-work))
+         (work-title (or (oref agent work-title) ""))
+         (hook-bead  (or (oref agent hook-bead) "")))
+    (apply #'vui-vstack
+           (delq nil
+                 (list
+                  (unless (string-empty-p address)
+                    (vui-text (format "  ↳ address: %s" address)))
+                  (unless (string-empty-p role)
+                    (vui-text (format "  ↳ role:    %s" role)))
+                  (unless (string-empty-p session)
+                    (vui-text (format "  ↳ session: %s" session)))
+                  (unless (string-empty-p state)
+                    (vui-text (format "  ↳ state:   %s" state)))
+                  (unless (string-empty-p alias)
+                    (vui-text (format "  ↳ model:   %s" alias)))
+                  (when has-work
+                    (vui-text (format "  ↳ hook:    %s%s"
+                                      hook-bead
+                                      (if (string-empty-p work-title) ""
+                                        (format ": %s" work-title))))))))))
+
+(defun gastown-status--find-section-on-line ()
+  "Return `gastown-status-section' property value on the current line, or nil.
+Checks from `line-beginning-position' to `line-end-position'."
+  (let ((beg (line-beginning-position))
+        (end (line-end-position)))
+    (or (get-text-property beg 'gastown-status-section)
+        (let ((pos (next-single-property-change beg 'gastown-status-section nil end)))
+          (and pos (get-text-property pos 'gastown-status-section))))))
 
 ;;; ============================================================
 ;;; Tmux Helpers
@@ -399,20 +462,25 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
                       (when (> unread 0)
                         (propertize (format " 📬%d" unread)
                                     'face 'gastown-status-mail-indicator)))
-                     section)))
-    (if (and session running)
-        (vui-button label
-          :no-decoration t
-          :help-echo (format "Show agent in tmux: %s" session)
-          :on-click (let ((s session) (sock tmux-socket))
-                      (lambda ()
-                        (gastown-status--show-agent-tmux s sock))))
-      (vui-text label))))
+                     section))
+         (key      (format "agent:%s" name))
+         (expanded (gastown-status--item-expanded-p key))
+         (row      (if (and session running)
+                       (vui-button label
+                         :no-decoration t
+                         :help-echo (format "Show agent in tmux: %s" session)
+                         :on-click (let ((s session) (sock tmux-socket))
+                                     (lambda ()
+                                       (gastown-status--show-agent-tmux s sock))))
+                     (vui-text label))))
+    (if expanded
+        (vui-vstack row (gastown-status--agent-detail-vnode agent))
+      row)))
 
 (defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section tmux-socket)
   "Build a crew/polecat AGENT (`gastown-agent') row vnode.
 RIG-NAME is the rig's name string.  RIG-SECTION is the parent section.
-TMUX-SOCKET is the tmux -L socket name for the fallback switch-to-session action."
+TMUX-SOCKET is the tmux -L socket name for the fallback action."
   (let* ((name      (or (oref agent name) ""))
          (running   (oref agent running))
          (session   (oref agent session))
@@ -431,17 +499,22 @@ TMUX-SOCKET is the tmux -L socket name for the fallback switch-to-session action
                       (when (> unread 0)
                         (propertize (format " 📬%d" unread)
                                     'face 'gastown-status-mail-indicator)))
-                     section)))
-    (if (and session running)
-        (vui-button label
-          :no-decoration t
-          :help-echo (format "Open polecat detail: %s/%s" rig-name name)
-          :on-click (let ((a agent) (r rig-name) (sess session) (sock tmux-socket))
-                      (lambda ()
-                        (if (fboundp 'gastown-polecat-detail-show)
-                            (gastown-polecat-detail-show a r)
-                          (gastown-status--show-agent-tmux sess sock)))))
-      (vui-text label))))
+                     section))
+         (key      (format "polecat:%s/%s" rig-name name))
+         (expanded (gastown-status--item-expanded-p key))
+         (row      (if (and session running)
+                       (vui-button label
+                         :no-decoration t
+                         :help-echo (format "Open polecat detail: %s/%s" rig-name name)
+                         :on-click (let ((a agent) (r rig-name) (sess session) (sock tmux-socket))
+                                     (lambda ()
+                                       (if (fboundp 'gastown-polecat-detail-show)
+                                           (gastown-polecat-detail-show a r)
+                                         (gastown-status--show-agent-tmux sess sock)))))
+                     (vui-text label))))
+    (if expanded
+        (vui-vstack row (gastown-status--agent-detail-vnode agent))
+      row)))
 
 ;;; ============================================================
 ;;; Rig Component (collapsible, local state)
@@ -575,7 +648,7 @@ while buffer is visible (see `gastown-status-refresh-interval').
 
 On refresh, previously-loaded data is shown immediately while new data loads,
 eliminating the blank loading flash."
-  :state ((refresh-tick 0))
+  :state ((refresh-tick 0) (expand-tick 0))
   :render
   ;; Refs persist across re-renders without triggering extra renders.
   ;; last-data-ref holds the most recent full fetch result so we can
@@ -598,6 +671,10 @@ eliminating the blank loading flash."
          (err  (and (not data)
                     (or (plist-get full-result :error)
                         (plist-get fast-result :error)))))
+    ;; expand-tick is referenced here so that when gastown-status--rerender-expand
+    ;; bumps it, this component re-renders (showing updated expansion state)
+    ;; without triggering new data fetches (vui-use-async keys are unchanged).
+    (ignore expand-tick)
     ;; When full data arrives, save it to refs for use during next refresh.
     ;; Using refs (not state) avoids an extra re-render on update.
     (vui-use-effect ((plist-get full-result :data))
@@ -644,6 +721,149 @@ For the interactive async entry point, see `gastown-status-show-buffer'."
   (vui-mount
    (vui-component 'gastown-status-sync-app :data data)
    (buffer-name)))
+
+;;; ============================================================
+;;; Navigation Commands
+;;; ============================================================
+
+(defun gastown-status-next-item ()
+  "Move to the next item line in the Gas Town status buffer.
+
+An item is any line that has a `gastown-status-section' text property,
+including agents, polecats, rig headers, and service lines."
+  (interactive)
+  (forward-line 1)
+  (while (and (not (eobp)) (not (gastown-status--find-section-on-line)))
+    (forward-line 1))
+  (when (eobp)
+    (message "No more items")))
+
+(defun gastown-status-prev-item ()
+  "Move to the previous item line in the Gas Town status buffer."
+  (interactive)
+  (forward-line -1)
+  (while (and (not (bobp)) (not (gastown-status--find-section-on-line)))
+    (forward-line -1))
+  (when (bobp)
+    (message "No previous items")))
+
+(defun gastown-status-next-section ()
+  "Move to the next rig section header in the Gas Town status buffer."
+  (interactive)
+  (forward-line 1)
+  (while (and (not (eobp))
+              (not (gastown-rig-section-p
+                    (gastown-status--find-section-on-line))))
+    (forward-line 1))
+  (when (eobp)
+    (message "No more sections")))
+
+(defun gastown-status-prev-section ()
+  "Move to the previous rig section header in the Gas Town status buffer."
+  (interactive)
+  (forward-line -1)
+  (while (and (not (bobp))
+              (not (gastown-rig-section-p
+                    (gastown-status--find-section-on-line))))
+    (forward-line -1))
+  (when (bobp)
+    (message "No previous sections")))
+
+;;; ============================================================
+;;; Progressive Disclosure (TAB)
+;;; ============================================================
+
+(defun gastown-status--rerender-expand ()
+  "Trigger re-render of the status buffer to reflect expansion state change.
+Bump the root component's :expand-tick without triggering new data fetches."
+  (when (buffer-live-p (current-buffer))
+    (when vui--root-instance
+      (let* ((inst  vui--root-instance)
+             (state (vui-instance-state inst))
+             (tick  (or (plist-get state :expand-tick) 0)))
+        (setf (vui-instance-state inst)
+              (plist-put state :expand-tick (1+ tick))))
+      (vui-flush-sync))))
+
+(defun gastown-status-tab-action ()
+  "Toggle progressive disclosure for the item at point.
+
+On a rig section header: collapse or expand the rig (same as clicking).
+On an agent or polecat row: toggle an inline detail block showing
+additional fields (address, role, session, state, model, hook)."
+  (interactive)
+  (let ((section (gastown-status-current-section)))
+    (cond
+     ;; Rig header: toggle collapse via button activation
+     ((gastown-rig-section-p section)
+      (gastown-status--activate-button))
+     ;; Global agent row
+     ((gastown-agent-section-p section)
+      (let* ((agent (oref section agent))
+             (name  (or (oref agent name) ""))
+             (key   (format "agent:%s" name)))
+        (gastown-status--toggle-expanded key)
+        (gastown-status--rerender-expand)))
+     ;; Polecat / crew row
+     ((gastown-polecat-section-p section)
+      (let* ((polecat  (oref section polecat))
+             (rig-name (oref section rig-name))
+             (name     (or (oref polecat name) ""))
+             (key      (format "polecat:%s/%s" rig-name name)))
+        (gastown-status--toggle-expanded key)
+        (gastown-status--rerender-expand)))
+     (t
+      ;; Fall back to button activation for any unrecognised section
+      (gastown-status--activate-button)))))
+
+;;; ============================================================
+;;; Dired Integration
+;;; ============================================================
+
+(defun gastown-status--location ()
+  "Return the Gas Town workspace location from the current buffer's data.
+Returns nil if no data has been loaded yet."
+  (and gastown-status--data
+       (oref gastown-status--data location)))
+
+(defun gastown-status-dired-at-point ()
+  "Open Dired on the directory for the item at point.
+
+On a rig section header: opens the rig's root directory.
+On a polecat or crew row: opens the agent's git worktree directory.
+On a global agent row: opens the agent's directory under the town root."
+  (interactive)
+  (let* ((section  (gastown-status-current-section))
+         (location (gastown-status--location)))
+    (unless location
+      (user-error "No location data available — status not yet loaded"))
+    (cond
+     ((gastown-rig-section-p section)
+      (let* ((rig      (oref section rig))
+             (rig-name (oref rig name))
+             (path     (expand-file-name rig-name location)))
+        (if (file-directory-p path)
+            (dired path)
+          (user-error "Directory not found: %s" path))))
+     ((gastown-polecat-section-p section)
+      (let* ((polecat  (oref section polecat))
+             (name     (or (oref polecat name) ""))
+             (rig-name (oref section rig-name))
+             (path     (expand-file-name
+                        (format "%s/polecats/%s/%s" rig-name name rig-name)
+                        location)))
+        (if (file-directory-p path)
+            (dired path)
+          (user-error "Directory not found: %s" path))))
+     ((gastown-agent-section-p section)
+      (let* ((agent  (oref section agent))
+             (name   (or (oref agent name) ""))
+             (path   (expand-file-name name location)))
+        (if (file-directory-p path)
+            (dired path)
+          (user-error "Directory not found: %s" path))))
+     (t
+      (user-error "No item at point")))))
 
 ;;; ============================================================
 ;;; Interactive Commands

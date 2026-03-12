@@ -553,5 +553,201 @@ received it as a single argument."
            '()
            '(gastown-command-status))))
 
+;;; Navigation Keymap Tests
+
+(ert-deftest gastown-status-buffer-test-keymap-n-next-item ()
+  "Test that 'n' is bound to gastown-status-next-item."
+  (should (eq #'gastown-status-next-item
+              (lookup-key gastown-status-mode-map "n"))))
+
+(ert-deftest gastown-status-buffer-test-keymap-p-prev-item ()
+  "Test that 'p' is bound to gastown-status-prev-item."
+  (should (eq #'gastown-status-prev-item
+              (lookup-key gastown-status-mode-map "p"))))
+
+(ert-deftest gastown-status-buffer-test-keymap-N-next-section ()
+  "Test that 'N' is bound to gastown-status-next-section."
+  (should (eq #'gastown-status-next-section
+              (lookup-key gastown-status-mode-map "N"))))
+
+(ert-deftest gastown-status-buffer-test-keymap-P-prev-section ()
+  "Test that 'P' is bound to gastown-status-prev-section."
+  (should (eq #'gastown-status-prev-section
+              (lookup-key gastown-status-mode-map "P"))))
+
+(ert-deftest gastown-status-buffer-test-keymap-tab-action ()
+  "Test that TAB is bound to gastown-status-tab-action."
+  (should (eq #'gastown-status-tab-action
+              (lookup-key gastown-status-mode-map (kbd "TAB")))))
+
+(ert-deftest gastown-status-buffer-test-keymap-d-dired ()
+  "Test that 'd' is bound to gastown-status-dired-at-point."
+  (should (eq #'gastown-status-dired-at-point
+              (lookup-key gastown-status-mode-map "d"))))
+
+;;; Navigation Functional Tests
+
+(ert-deftest gastown-status-buffer-test-next-item-moves-to-item ()
+  "gastown-status-next-item moves point to the next item with a section property."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (gastown-status-next-item)
+    ;; Point should now be on a line with a gastown-status-section property
+    (should (gastown-status--find-section-on-line))))
+
+(ert-deftest gastown-status-buffer-test-prev-item-moves-to-item ()
+  "gastown-status-prev-item moves point to a previous item line."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-max))
+    (gastown-status-prev-item)
+    (should (gastown-status--find-section-on-line))))
+
+(ert-deftest gastown-status-buffer-test-next-item-advances ()
+  "Successive gastown-status-next-item calls visit distinct lines."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (gastown-status-next-item)
+    (let ((first-line (line-number-at-pos)))
+      (gastown-status-next-item)
+      (should (> (line-number-at-pos) first-line)))))
+
+(ert-deftest gastown-status-buffer-test-next-section-reaches-rig ()
+  "gastown-status-next-section stops at a rig section header."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (gastown-status-next-section)
+    (should (gastown-rig-section-p (gastown-status--find-section-on-line)))))
+
+;;; Progressive Disclosure Tests
+
+(ert-deftest gastown-status-buffer-test-expanded-items-initially-nil ()
+  "gastown-status--expanded-items is nil in a fresh buffer."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (should (null gastown-status--expanded-items))))
+
+(ert-deftest gastown-status-buffer-test-toggle-expanded-adds-key ()
+  "gastown-status--toggle-expanded adds key to hash on first call."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--toggle-expanded "agent:mayor")
+    (should (gastown-status--item-expanded-p "agent:mayor"))))
+
+(ert-deftest gastown-status-buffer-test-toggle-expanded-removes-key ()
+  "gastown-status--toggle-expanded removes key on second call."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--toggle-expanded "agent:mayor")
+    (gastown-status--toggle-expanded "agent:mayor")
+    (should-not (gastown-status--item-expanded-p "agent:mayor"))))
+
+(ert-deftest gastown-status-buffer-test-expanded-item-shows-detail ()
+  "Expanded agent shows detail block (role, session) in rendered buffer."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (setq gastown-status--expanded-items (make-hash-table :test 'equal))
+    (puthash "polecat:beads_el/jasper" t gastown-status--expanded-items)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    ;; The expanded polecat should show its role in the detail block
+    (should (search-forward "polecat" nil t))))
+
+(ert-deftest gastown-status-buffer-test-collapsed-item-no-detail ()
+  "Non-expanded agent row does not show detail block."
+  (with-temp-buffer
+    (gastown-status-mode)
+    ;; No items expanded
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    ;; Detail prefix "↳" should not appear
+    (should-not (search-forward "↳" nil t))))
+
+(ert-deftest gastown-status-buffer-test-agent-detail-vnode-defined ()
+  "gastown-status--agent-detail-vnode is defined."
+  (should (fboundp 'gastown-status--agent-detail-vnode)))
+
+(ert-deftest gastown-status-buffer-test-agent-detail-shows-role ()
+  "Expanded agent row shows role field in detail block."
+  (with-temp-buffer
+    (gastown-status-mode)
+    ;; Expand mayor (role = coordinator)
+    (setq gastown-status--expanded-items (make-hash-table :test 'equal))
+    (puthash "agent:mayor" t gastown-status--expanded-items)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "↳ role:" nil t))))
+
+(ert-deftest gastown-status-buffer-test-agent-detail-shows-hook ()
+  "Expanded polecat row shows hook bead when agent has work."
+  (let* ((polecat-with-hook
+          (gastown-agent :name "worker" :role "polecat"
+                         :session "test-worker" :running t
+                         :has-work t :work-title "Fix bug" :hook-bead "ge-abc"
+                         :agent-info "claude" :unread-mail 0))
+         (test-data
+          (gastown-gt-status
+           :name "gt" :location "/tmp"
+           :rigs (list (gastown-rig-data
+                        :name "test_rig"
+                        :agents (list polecat-with-hook))))))
+    (with-temp-buffer
+      (gastown-status-mode)
+      (setq gastown-status--expanded-items (make-hash-table :test 'equal))
+      (puthash "polecat:test_rig/worker" t gastown-status--expanded-items)
+      (gastown-status--render test-data)
+      (goto-char (point-min))
+      (should (search-forward "ge-abc" nil t)))))
+
+;;; Dired Integration Tests
+
+(ert-deftest gastown-status-buffer-test-dired-at-point-defined ()
+  "gastown-status-dired-at-point is defined."
+  (should (fboundp 'gastown-status-dired-at-point)))
+
+(ert-deftest gastown-status-buffer-test-dired-rig-opens-rig-dir ()
+  "gastown-status-dired-at-point opens dired on rig root dir for rig section."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    ;; Navigate to the rig section header
+    (goto-char (point-min))
+    (gastown-status-next-section)
+    (let ((dired-path nil))
+      (cl-letf (((symbol-function 'dired)
+                 (lambda (path) (setq dired-path path) nil))
+                ((symbol-function 'file-directory-p)
+                 (lambda (_) t)))
+        (gastown-status-dired-at-point))
+      (should dired-path)
+      (should (string-match-p "beads_el" dired-path)))))
+
+;;; find-section-on-line Tests
+
+(ert-deftest gastown-status-buffer-test-find-section-on-line-nil-on-blank ()
+  "gastown-status--find-section-on-line returns nil on a blank line."
+  (with-temp-buffer
+    (insert "\n\n")
+    (goto-char (point-min))
+    (should (null (gastown-status--find-section-on-line)))))
+
+(ert-deftest gastown-status-buffer-test-find-section-on-line-finds-prop ()
+  "gastown-status--find-section-on-line finds property anywhere on the line."
+  (with-temp-buffer
+    (let ((sec (gastown-agent-section :agent (gastown-agent :name "test"))))
+      ;; Property starts in the middle of the line
+      (insert "  ")
+      (insert (propertize "agent-text" 'gastown-status-section sec))
+      (insert "\n")
+      (goto-char (point-min))
+      (should (eq sec (gastown-status--find-section-on-line))))))
+
 (provide 'gastown-status-buffer-test)
 ;;; gastown-status-buffer-test.el ends here
