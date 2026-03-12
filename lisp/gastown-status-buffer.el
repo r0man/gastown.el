@@ -546,11 +546,19 @@ Used by `gastown-status--render' for synchronous rendering in tests."
 Phase 1 (INSTANT): Fetches `gt status --fast --json' — renders immediately.
 Phase 2 (FULL): Fetches `gt status --json' in parallel — replaces fast data
 when it arrives.
-Phase 3 (AUTO-REFRESH): Timer-driven re-mount via `gastown-status-show-buffer'
-while buffer is visible (see `gastown-status-refresh-interval')."
+Phase 3 (AUTO-REFRESH): Timer-driven refresh via `gastown-status-do-refresh'
+while buffer is visible (see `gastown-status-refresh-interval').
+
+On refresh, previously-loaded data is shown immediately while new data loads,
+eliminating the blank loading flash."
   :state ((refresh-tick 0))
   :render
-  (let* ((fast-result
+  ;; Refs persist across re-renders without triggering extra renders.
+  ;; last-data-ref holds the most recent full fetch result so we can
+  ;; show it while a subsequent refresh is loading.
+  (let* ((last-data-ref (vui-use-ref nil))
+         (last-ts-ref   (vui-use-ref nil))
+         (fast-result
           (vui-use-async (list 'fast refresh-tick)
             (lambda (resolve reject)
               (gastown-status--async-fetch resolve reject t))))
@@ -566,11 +574,20 @@ while buffer is visible (see `gastown-status-refresh-interval')."
          (err  (and (not data)
                     (or (plist-get full-result :error)
                         (plist-get fast-result :error)))))
+    ;; When full data arrives, save it to refs for use during next refresh.
+    ;; Using refs (not state) avoids an extra re-render on update.
+    (vui-use-effect ((plist-get full-result :data))
+      (let ((d (plist-get full-result :data)))
+        (when d
+          (setcar last-data-ref d)
+          (setcar last-ts-ref (current-time)))))
     (cond
-     ;; Both fetches still pending
+     ;; Both fetches still pending — show stale data if available (no flicker)
      ((and (eq fast-status 'pending) (eq full-status 'pending))
-      (vui-text (propertize "⏳ Loading Gas Town status…"
-                            'face 'gastown-status-stopped)))
+      (if (car last-data-ref)
+          (gastown-status--full-content-vnode (car last-data-ref) (car last-ts-ref))
+        (vui-text (propertize "⏳ Loading Gas Town status…"
+                              'face 'gastown-status-stopped))))
      ;; Error with no data
      (err
       (vui-vstack
@@ -618,6 +635,26 @@ For the interactive async entry point, see `gastown-status-show-buffer'."
   "Revert function for `revert-buffer-function'."
   (gastown-status-refresh))
 
+(defun gastown-status-do-refresh (buf)
+  "Refresh the status component in BUF without a full remount.
+
+Increments `:refresh-tick' state on the existing `gastown-status-app'
+root instance, which triggers new async fetches while keeping the
+previous render visible until new data arrives (no flicker).
+
+Returns t when an existing instance was refreshed, nil when BUF has
+no live vui root instance (caller should fall back to `vui-mount')."
+  (when (buffer-live-p buf)
+    (with-current-buffer buf
+      (when vui--root-instance
+        (let* ((inst  vui--root-instance)
+               (state (vui-instance-state inst))
+               (tick  (or (plist-get state :refresh-tick) 0)))
+          (setf (vui-instance-state inst)
+                (plist-put state :refresh-tick (1+ tick))))
+        (vui-flush-sync)
+        t))))
+
 (defun gastown-status--cancel-watch ()
   "Cancel the watch timer if active."
   (when gastown-status--watch-timer
@@ -626,7 +663,7 @@ For the interactive async entry point, see `gastown-status-show-buffer'."
 
 (defun gastown-status--start-watch (buf interval)
   "Start auto-refresh timer for BUF with INTERVAL seconds.
-The timer only triggers a remount when BUF is visible in a window."
+The timer only triggers a refresh when BUF is visible in a window."
   (gastown-status--cancel-watch)
   (with-current-buffer buf
     (setq gastown-status--watch-timer
@@ -635,9 +672,7 @@ The timer only triggers a remount when BUF is visible in a window."
            (lambda ()
              (when (and (buffer-live-p buf)
                         (get-buffer-window buf))
-               (vui-mount
-                (vui-component 'gastown-status-app)
-                gastown-status-buffer-name)))))))
+               (gastown-status-do-refresh buf)))))))
 
 ;;;###autoload
 (defun gastown-status-toggle-watch ()
@@ -662,9 +697,13 @@ The timer only triggers a remount when BUF is visible in a window."
 (defun gastown-status-show-buffer ()
   "Show the *gastown-status* buffer with Gas Town status (async).
 
-Mounts a progressive-loading component:
+On first open, mounts a progressive-loading component:
   Phase 1 — fast data (gt status --fast --json) renders immediately.
   Phase 2 — full data (gt status --json) replaces it on arrival.
+
+On subsequent calls (refresh), the existing component instance is updated
+in-place: previous data remains visible while new data loads, eliminating
+the blank loading flash.
 
 An auto-refresh timer fires every `gastown-status-refresh-interval' seconds
 while the buffer is visible."
@@ -677,9 +716,11 @@ while the buffer is visible."
       (when (and gastown-status-refresh-interval
                  (not gastown-status--watch-timer))
         (gastown-status--start-watch buf gastown-status-refresh-interval)))
-    (vui-mount
-     (vui-component 'gastown-status-app)
-     gastown-status-buffer-name)
+    ;; Refresh in-place when a live instance exists; full remount otherwise.
+    (unless (gastown-status-do-refresh buf)
+      (vui-mount
+       (vui-component 'gastown-status-app)
+       gastown-status-buffer-name))
     (pop-to-buffer gastown-status-buffer-name)))
 
 ;;; ============================================================
