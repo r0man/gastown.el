@@ -337,7 +337,10 @@ renders issues grouped by source on success."
                      (lambda ()
                        (vui-set-state :refresh-tick (1+ tick)))))))
      (sources
-      (gastown-ready--full-content-vnode sources)))))
+      (gastown-ready--full-content-vnode sources))
+     (t
+      (vui-text (propertize "No ready work found."
+                            'face 'gastown-ready-status-icon))))))
 
 ;;; ============================================================
 ;;; Synchronous Render (for testing)
