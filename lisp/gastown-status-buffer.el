@@ -77,7 +77,7 @@ Set to nil to disable auto-refresh."
   :group 'gastown-status-buffer)
 
 (defface gastown-status-link
-  '((t :inherit link))
+  '((t :inherit link :underline nil))
   "Face for clickable links."
   :group 'gastown-status-buffer)
 

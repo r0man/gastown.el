@@ -533,6 +533,16 @@ received it as a single argument."
         (should (< apple-pos mango-pos))
         (should (< mango-pos zebra-pos))))))
 
+;;; Face Attribute Tests
+
+(ert-deftest gastown-status-buffer-test-link-face-no-underline ()
+  "gastown-status-link face must explicitly suppress underline from link inherit."
+  ;; The face-attribute with t (resolve-aliases=t, inherit=t) gives the effective value.
+  ;; We want :underline nil to be set directly on the face so the link underline is suppressed.
+  (let ((underline (face-attribute 'gastown-status-link :underline)))
+    ;; Direct attribute on face should be nil (explicitly suppressed), not 'unspecified
+    (should (null underline))))
+
 ;;; Method Override Test
 
 (ert-deftest gastown-status-buffer-test-method-override ()
