@@ -508,6 +508,31 @@ received it as a single argument."
     (goto-char (point-min))
     (should (search-forward "23456" nil t))))
 
+;;; Rig Sort Tests
+
+(ert-deftest gastown-status-buffer-test-rigs-sorted-alphabetically ()
+  "Rigs appear in alphabetical order by name regardless of data order."
+  (let ((data (gastown-gt-status
+               :name "gt"
+               :location "/tmp"
+               :rigs (list (gastown-rig-data :name "zebra_el" :agents nil)
+                           (gastown-rig-data :name "apple_el" :agents nil)
+                           (gastown-rig-data :name "mango_el" :agents nil)))))
+    (with-temp-buffer
+      (gastown-status-mode)
+      (gastown-status--render data)
+      (let ((apple-pos  (progn (goto-char (point-min))
+                               (search-forward "apple_el/" nil t)
+                               (point)))
+            (mango-pos  (progn (goto-char (point-min))
+                               (search-forward "mango_el/" nil t)
+                               (point)))
+            (zebra-pos  (progn (goto-char (point-min))
+                               (search-forward "zebra_el/" nil t)
+                               (point))))
+        (should (< apple-pos mango-pos))
+        (should (< mango-pos zebra-pos))))))
+
 ;;; Method Override Test
 
 (ert-deftest gastown-status-buffer-test-method-override ()

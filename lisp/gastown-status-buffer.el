@@ -545,7 +545,10 @@ last-refreshed line."
                    :rig rig
                    :tmux-socket tmux-socket
                    :key (oref rig name)))
-               rigs)))))
+               (sort (copy-sequence rigs)
+                     (lambda (a b)
+                       (string< (or (oref a name) "")
+                                (or (oref b name) "")))))))))
 
 ;;; ============================================================
 ;;; Synchronous App Component (for gastown-status--render / tests)
