@@ -161,8 +161,20 @@ context-aware transient command auto-fill."
 ;;; Mode
 ;;; ============================================================
 
+(defun gastown-status--activate-button ()
+  "Activate the vui button at point via `widget-apply-action'.
+
+Uses `widget-apply-action' rather than `widget-button-press' to
+avoid the read-only error that occurs when `widget-button-press'
+attempts to modify button text for visual feedback."
+  (interactive)
+  (let ((widget (widget-at (point))))
+    (when widget
+      (widget-apply-action widget))))
+
 (defvar-keymap gastown-status-mode-map
   :parent vui-mode-map
+  "RET" #'gastown-status--activate-button
   "g"   #'gastown-status-refresh
   "q"   #'quit-window
   "w"   #'gastown-status-toggle-watch)

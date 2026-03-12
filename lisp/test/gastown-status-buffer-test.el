@@ -127,6 +127,15 @@
   (should (eq #'gastown-status-toggle-watch
               (lookup-key gastown-status-mode-map "w"))))
 
+(ert-deftest gastown-status-buffer-test-keymap-ret-activate ()
+  "Test that RET is bound to gastown-status--activate-button."
+  (should (eq #'gastown-status--activate-button
+              (lookup-key gastown-status-mode-map (kbd "RET")))))
+
+(ert-deftest gastown-status-buffer-test-activate-button-defined ()
+  "Test that gastown-status--activate-button is defined."
+  (should (fboundp 'gastown-status--activate-button)))
+
 (ert-deftest gastown-status-buffer-test-buffer-name-constant ()
   "Test that buffer name constant is defined and correct."
   (should (boundp 'gastown-status-buffer-name))
