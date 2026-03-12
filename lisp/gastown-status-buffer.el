@@ -381,7 +381,9 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
           :help-echo (format "Switch to tmux session: %s" session)
           :on-click (let ((s session) (sock tmux-socket))
                       (lambda ()
-                        (shell-command (gastown-status--tmux-command s sock)))))
+                        (start-process-shell-command
+                         "gt-tmux-switch" nil
+                         (gastown-status--tmux-command s sock)))))
       (vui-text label))))
 
 (defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section tmux-socket)
@@ -415,7 +417,8 @@ TMUX-SOCKET is the tmux -L socket name for the fallback switch-to-session action
                       (lambda ()
                         (if (fboundp 'gastown-polecat-detail-show)
                             (gastown-polecat-detail-show a r)
-                          (shell-command
+                          (start-process-shell-command
+                           "gt-tmux-switch" nil
                            (gastown-status--tmux-command sess sock))))))
       (vui-text label))))
 

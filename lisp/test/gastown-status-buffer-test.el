@@ -405,6 +405,31 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
     (gastown-status--render gastown-status-buffer-test--sample-data)
     (should (gastown-status-buffer-test--find-button-echo "jasper"))))
 
+(ert-deftest gastown-status-buffer-test-agent-click-uses-start-process ()
+  "Running agent click uses start-process-shell-command, not shell-command."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (let ((shell-command-called nil)
+          (start-process-called nil))
+      (cl-letf (((symbol-function 'shell-command)
+                 (lambda (&rest _) (setq shell-command-called t) ""))
+                ((symbol-function 'start-process-shell-command)
+                 (lambda (&rest _) (setq start-process-called t) nil)))
+        ;; Find and activate the button whose help-echo matches "hq-mayor"
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when (and w
+                         (let ((echo (widget-get w :help-echo)))
+                           (and (stringp echo) (string-match-p "hq-mayor" echo))))
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      (should-not shell-command-called)
+      (should start-process-called))))
+
 ;;; Context Detection Tests
 
 (ert-deftest gastown-status-buffer-test-current-section-nil-outside-buffer ()
