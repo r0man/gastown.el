@@ -41,12 +41,12 @@
     :initarg :lines
     :type (or null integer)
     :initform nil
-    :documentation "Number of lines to show (-n, --lines)."
+    :documentation "Number of lines to show"
     :long-option "lines"
     :short-option "n"
     :option-type :integer
     :key "n"
-    :transient "--lines"
+    :transient "Number of lines to show"
     :class transient-option
     :argument "--lines="
     :prompt "Lines: "

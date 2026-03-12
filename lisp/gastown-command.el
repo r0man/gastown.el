@@ -259,7 +259,7 @@ Execution results are returned in `gastown-command-execution' objects.")
     :initarg :verbose
     :type boolean
     :initform nil
-    :documentation "Enable verbose output (-v, --verbose)."
+    :documentation "Enable verbose output"
     :long-option "verbose"
     :short-option "v"
     :option-type :boolean)
@@ -267,7 +267,7 @@ Execution results are returned in `gastown-command-execution' objects.")
     :initarg :json
     :type boolean
     :initform nil
-    :documentation "Output in JSON format (--json)."
+    :documentation "Output in JSON format"
     :long-option "json"
     :option-type :boolean))
   :documentation "Global gt CLI options; all concrete commands inherit from this.

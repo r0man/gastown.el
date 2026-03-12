@@ -33,11 +33,11 @@ Shows unified health dashboard.")
     :initarg :fix
     :type boolean
     :initform nil
-    :documentation "Attempt to fix issues (--fix)."
+    :documentation "Attempt to fix issues"
     :long-option "fix"
     :option-type :boolean
     :key "f"
-    :transient "--fix"
+    :transient "Attempt to fix issues"
     :class transient-switch
     :argument "--fix"
     :transient-group "Options"
@@ -54,11 +54,11 @@ Diagnose and optionally fix Gas Town issues.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -69,12 +69,12 @@ Diagnose and optionally fix Gas Town issues.")
     :initarg :lines
     :type (or null integer)
     :initform nil
-    :documentation "Number of log lines (-n, --lines)."
+    :documentation "Number of log lines"
     :long-option "lines"
     :short-option "n"
     :option-type :integer
     :key "n"
-    :transient "--lines"
+    :transient "Number of log lines"
     :class transient-option
     :argument "--lines="
     :prompt "Lines: "
@@ -85,12 +85,12 @@ Diagnose and optionally fix Gas Town issues.")
     :initarg :follow
     :type boolean
     :initform nil
-    :documentation "Follow log output (-f, --follow)."
+    :documentation "Follow log output"
     :long-option "follow"
     :short-option "f"
     :option-type :boolean
     :key "f"
-    :transient "--follow"
+    :transient "Follow log output"
     :class transient-switch
     :argument "--follow"
     :transient-group "Options"
@@ -107,11 +107,11 @@ Show Gas Town logs.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -145,11 +145,11 @@ Show current identity for mail commands.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -167,11 +167,11 @@ Show cost metrics.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "

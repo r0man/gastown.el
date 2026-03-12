@@ -70,11 +70,11 @@ Display formula details (steps, variables, composition)."
     :initarg :args
     :type (or null string)
     :initform nil
-    :documentation "Formula arguments (--args)."
+    :documentation "Formula arguments"
     :long-option "args"
     :option-type :string
     :key "a"
-    :transient "--args"
+    :transient "Formula arguments"
     :class transient-option
     :argument "--args="
     :prompt "Args (key=value,...): "
@@ -85,11 +85,11 @@ Display formula details (steps, variables, composition)."
     :initarg :merge
     :type boolean
     :initform nil
-    :documentation "Merge branches when work completes (--merge)."
+    :documentation "Merge branches when work completes"
     :long-option "merge"
     :option-type :boolean
     :key "m"
-    :transient "--merge"
+    :transient "Merge branches when work completes"
     :class transient-switch
     :argument "--merge"
     :transient-group "Options"

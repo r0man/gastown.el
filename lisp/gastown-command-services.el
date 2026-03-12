@@ -42,11 +42,11 @@ Stops all Gas Town services.")
     :initarg :force
     :type boolean
     :initform nil
-    :documentation "Force shutdown without cleanup (--force)."
+    :documentation "Force shutdown without cleanup"
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient "Force shutdown without cleanup"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"

@@ -26,11 +26,11 @@
     :initarg :fast
     :type boolean
     :initform nil
-    :documentation "Skip mail lookups for faster execution (--fast)."
+    :documentation "Skip mail lookups for faster execution"
     :long-option "fast"
     :option-type :boolean
     :key "f"
-    :transient "--fast"
+    :transient "Skip mail lookups for faster execution"
     :class transient-switch
     :argument "--fast"
     :transient-group "Options"
@@ -40,12 +40,12 @@
     :initarg :watch
     :type boolean
     :initform nil
-    :documentation "Watch mode: refresh status continuously (-w, --watch)."
+    :documentation "Watch mode: refresh status continuously"
     :long-option "watch"
     :short-option "w"
     :option-type :boolean
     :key "w"
-    :transient "--watch"
+    :transient "Watch mode: refresh status continuously"
     :class transient-switch
     :argument "--watch"
     :transient-group "Options"
@@ -55,12 +55,12 @@
     :initarg :interval
     :type (or null integer)
     :initform nil
-    :documentation "Refresh interval in seconds (-n, --interval)."
+    :documentation "Refresh interval in seconds"
     :long-option "interval"
     :short-option "n"
     :option-type :integer
     :key "n"
-    :transient "--interval"
+    :transient "Refresh interval in seconds"
     :class transient-option
     :argument "--interval="
     :prompt "Interval (seconds): "

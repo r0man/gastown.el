@@ -26,11 +26,11 @@
     :initarg :status
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig status (--status)."
+    :documentation "Filter by rig status"
     :long-option "status"
     :option-type :string
     :key "s"
-    :transient "--status"
+    :transient "Filter by rig status"
     :class transient-option
     :argument "--status="
     :prompt "Status: "
@@ -42,11 +42,11 @@
     :initarg :order
     :type (or null string)
     :initform nil
-    :documentation "Sort order (--order)."
+    :documentation "Sort order"
     :long-option "order"
     :option-type :string
     :key "o"
-    :transient "--order"
+    :transient "Sort order"
     :class transient-option
     :argument "--order="
     :prompt "Order: "

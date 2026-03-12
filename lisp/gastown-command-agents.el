@@ -25,11 +25,11 @@
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -47,11 +47,11 @@ Lists all Gas Town agent sessions.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Rig to check witness status for (--rig)."
+    :documentation "Rig to check witness status for"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Rig to check witness status for"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -69,11 +69,11 @@ Shows witness health and monitoring status.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Rig to check refinery status for (--rig)."
+    :documentation "Rig to check refinery status for"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Rig to check refinery status for"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -91,11 +91,11 @@ Shows merge queue processor status.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -106,11 +106,11 @@ Shows merge queue processor status.")
     :initarg :role
     :type (or null string)
     :initform nil
-    :documentation "Filter by role (--role)."
+    :documentation "Filter by role"
     :long-option "role"
     :option-type :string
     :key "R"
-    :transient "--role"
+    :transient "Filter by role"
     :class transient-option
     :argument "--role="
     :prompt "Role: "
@@ -122,11 +122,11 @@ Shows merge queue processor status.")
     :initarg :running
     :type boolean
     :initform nil
-    :documentation "Show only running sessions (--running)."
+    :documentation "Show only running sessions"
     :long-option "running"
     :option-type :boolean
     :key "u"
-    :transient "--running"
+    :transient "Show only running sessions"
     :class transient-switch
     :argument "--running"
     :transient-group "Filters"
@@ -136,11 +136,11 @@ Shows merge queue processor status.")
     :initarg :order
     :type (or null string)
     :initform nil
-    :documentation "Sort order (--order)."
+    :documentation "Sort order"
     :long-option "order"
     :option-type :string
     :key "o"
-    :transient "--order"
+    :transient "Sort order"
     :class transient-option
     :argument "--order="
     :prompt "Order: "

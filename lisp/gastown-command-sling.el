@@ -41,11 +41,11 @@
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Target rig (--rig)."
+    :documentation "Target rig"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Target rig"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -56,11 +56,11 @@
     :initarg :polecat
     :type (or null string)
     :initform nil
-    :documentation "Target polecat name (--polecat)."
+    :documentation "Target polecat name"
     :long-option "polecat"
     :option-type :string
     :key "p"
-    :transient "--polecat"
+    :transient "Target polecat name"
     :class transient-option
     :argument "--polecat="
     :prompt "Polecat: "
@@ -71,11 +71,11 @@
     :initarg :force
     :type boolean
     :initform nil
-    :documentation "Force assign even if polecat is busy (--force)."
+    :documentation "Force assign even if polecat is busy"
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient "Force assign even if polecat is busy"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"

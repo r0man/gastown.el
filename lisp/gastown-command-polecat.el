@@ -26,11 +26,11 @@
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -63,11 +63,11 @@ Lists polecats with name, status, hooked work, and session info.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Rig containing the polecat (--rig)."
+    :documentation "Rig containing the polecat"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Rig containing the polecat"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -100,11 +100,11 @@ Terminates a polecat's session and cleans up its worktree.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Rig containing the polecat (--rig)."
+    :documentation "Rig containing the polecat"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Rig containing the polecat"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "

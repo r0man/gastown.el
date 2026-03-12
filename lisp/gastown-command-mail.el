@@ -25,11 +25,11 @@
     :initarg :all
     :type boolean
     :initform nil
-    :documentation "Show all messages including read (--all)."
+    :documentation "Show all messages including read"
     :long-option "all"
     :option-type :boolean
     :key "a"
-    :transient "--all"
+    :transient "Show all messages including read"
     :class transient-switch
     :argument "--all"
     :transient-group "Options"
@@ -39,12 +39,12 @@
     :initarg :unread
     :type boolean
     :initform nil
-    :documentation "Show only unread messages (-u, --unread)."
+    :documentation "Show only unread messages"
     :long-option "unread"
     :short-option "u"
     :option-type :boolean
     :key "u"
-    :transient "--unread"
+    :transient "Show only unread messages"
     :class transient-switch
     :argument "--unread"
     :transient-group "Filters"
@@ -54,11 +54,11 @@
     :initarg :from
     :type (or null string)
     :initform nil
-    :documentation "Filter to messages from this sender (--from)."
+    :documentation "Filter to messages from this sender"
     :long-option "from"
     :option-type :string
     :key "f"
-    :transient "--from"
+    :transient "Filter to messages from this sender"
     :class transient-option
     :argument "--from="
     :prompt "From: "
@@ -69,11 +69,11 @@
     :initarg :priority
     :type (or null string)
     :initform nil
-    :documentation "Filter by priority tag (--priority)."
+    :documentation "Filter by priority tag"
     :long-option "priority"
     :option-type :string
     :key "p"
-    :transient "--priority"
+    :transient "Filter by priority tag"
     :class transient-option
     :argument "--priority="
     :prompt "Priority: "
@@ -85,11 +85,11 @@
     :initarg :order
     :type (or null string)
     :initform nil
-    :documentation "Sort order (--order)."
+    :documentation "Sort order"
     :long-option "order"
     :option-type :string
     :key "o"
-    :transient "--order"
+    :transient "Sort order"
     :class transient-option
     :argument "--order="
     :prompt "Order: "
@@ -101,11 +101,11 @@
     :initarg :limit
     :type (or null integer)
     :initform nil
-    :documentation "Maximum number of messages to show (--limit)."
+    :documentation "Maximum number of messages to show"
     :long-option "limit"
     :option-type :string
     :key "l"
-    :transient "--limit"
+    :transient "Maximum number of messages to show"
     :class transient-option
     :argument "--limit="
     :prompt "Limit: "
@@ -158,12 +158,12 @@ Reads a specific mail message.")
     :initarg :subject
     :type (or null string)
     :initform nil
-    :documentation "Mail subject (-s, --subject)."
+    :documentation "Mail subject"
     :long-option "subject"
     :short-option "s"
     :option-type :string
     :key "s"
-    :transient "--subject"
+    :transient "Mail subject"
     :class transient-option
     :argument "--subject="
     :prompt "Subject: "
@@ -174,7 +174,7 @@ Reads a specific mail message.")
     :initarg :message-body
     :type (or null string)
     :initform nil
-    :documentation "Message body (-m)."
+    :documentation "Message body"
     :long-option "m"
     :option-type :string
     :key "m"

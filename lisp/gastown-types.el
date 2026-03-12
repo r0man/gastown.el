@@ -151,7 +151,7 @@ Handles both vectors (from `json-array-type' vector) and lists."
     :initarg :socket
     :type (or null string)
     :initform nil
-    :documentation "Tmux socket name (-L argument).")
+    :documentation "Tmux socket name")
    (running
     :initarg :running
     :type boolean

@@ -25,11 +25,11 @@
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -40,11 +40,11 @@
     :initarg :status
     :type (or null string)
     :initform nil
-    :documentation "Filter by status (--status)."
+    :documentation "Filter by status"
     :long-option "status"
     :option-type :string
     :key "s"
-    :transient "--status"
+    :transient "Filter by status"
     :class transient-option
     :argument "--status="
     :prompt "Status: "
@@ -56,11 +56,11 @@
     :initarg :order
     :type (or null string)
     :initform nil
-    :documentation "Sort order (--order)."
+    :documentation "Sort order"
     :long-option "order"
     :option-type :string
     :key "o"
-    :transient "--order"
+    :transient "Sort order"
     :class transient-option
     :argument "--order="
     :prompt "Order: "
@@ -72,11 +72,11 @@
     :initarg :limit
     :type (or null integer)
     :initform nil
-    :documentation "Maximum number of convoys to show (--limit)."
+    :documentation "Maximum number of convoys to show"
     :long-option "limit"
     :option-type :string
     :key "l"
-    :transient "--limit"
+    :transient "Maximum number of convoys to show"
     :class transient-option
     :argument "--limit="
     :prompt "Limit: "
@@ -115,11 +115,11 @@ Shows detailed status for a specific convoy.")
     :initarg :title
     :type (or null string)
     :initform nil
-    :documentation "Convoy title (--title)."
+    :documentation "Convoy title"
     :long-option "title"
     :option-type :string
     :key "t"
-    :transient "--title"
+    :transient "Convoy title"
     :class transient-option
     :argument "--title="
     :prompt "Title: "

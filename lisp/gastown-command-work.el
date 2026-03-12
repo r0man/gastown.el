@@ -27,11 +27,11 @@
     :initarg :cleanup-status
     :type (or null string)
     :initform nil
-    :documentation "Override cleanup status (--cleanup-status)."
+    :documentation "Override cleanup status"
     :long-option "cleanup-status"
     :option-type :string
     :key "c"
-    :transient "--cleanup-status"
+    :transient "Override cleanup status"
     :class transient-option
     :argument "--cleanup-status="
     :prompt "Cleanup status: "
@@ -43,11 +43,11 @@
     :initarg :status
     :type (or null string)
     :initform nil
-    :documentation "Override completion status (--status)."
+    :documentation "Override completion status"
     :long-option "status"
     :option-type :string
     :key "s"
-    :transient "--status"
+    :transient "Override completion status"
     :class transient-option
     :argument "--status="
     :prompt "Status: "
@@ -59,11 +59,11 @@
     :initarg :issue
     :type (or null string)
     :initform nil
-    :documentation "Source issue ID (--issue)."
+    :documentation "Source issue ID"
     :long-option "issue"
     :option-type :string
     :key "i"
-    :transient "--issue"
+    :transient "Source issue ID"
     :class transient-option
     :argument "--issue="
     :prompt "Issue ID: "
@@ -126,12 +126,12 @@ Show work ready across town.")
     :initarg :severity
     :type (or null string)
     :initform nil
-    :documentation "Severity level (-s, --severity)."
+    :documentation "Severity level"
     :long-option "severity"
     :short-option "s"
     :option-type :string
     :key "s"
-    :transient "--severity"
+    :transient "Severity level"
     :class transient-option
     :argument "--severity="
     :prompt "Severity: "
@@ -143,7 +143,7 @@ Show work ready across town.")
     :initarg :message-body
     :type (or null string)
     :initform nil
-    :documentation "Detailed message (-m)."
+    :documentation "Detailed message"
     :long-option "m"
     :option-type :string
     :key "m"
@@ -186,7 +186,7 @@ Send a nudge message to all workers.")
     :initarg :subject
     :type (or null string)
     :initform nil
-    :documentation "Handoff subject (-s)."
+    :documentation "Handoff subject"
     :long-option "s"
     :option-type :string
     :key "s"
@@ -201,7 +201,7 @@ Send a nudge message to all workers.")
     :initarg :message-body
     :type (or null string)
     :initform nil
-    :documentation "Handoff message (-m)."
+    :documentation "Handoff message"
     :long-option "m"
     :option-type :string
     :key "m"
@@ -244,11 +244,11 @@ Remove work from an agent's hook.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter by rig name (--rig)."
+    :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "--rig"
+    :transient "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "

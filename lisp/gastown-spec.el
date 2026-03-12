@@ -47,18 +47,18 @@ The returned list is suitable for appending to a `gt' subcommand invocation.")
     :initarg :rig
     :type (or null string)
     :initform nil
-    :documentation "Filter to agents in this rig (--rig=RIG), or nil for all.")
+    :documentation "Filter to agents in this rig, or nil for all")
    (role
     :initarg :role
     :type (or null string)
     :initform nil
     :documentation "Filter by role string: \"polecat\", \"witness\", \"refinery\", \"crew\".
-Nil means no role filter (--role=ROLE).")
+Nil means no role filter")
    (running
     :initarg :running
     :type (or null boolean)
     :initform nil
-    :documentation "When non-nil, filter to running agents only (--running).")
+    :documentation "When non-nil, filter to running agents only")
    (order
     :initarg :order
     :type symbol
@@ -90,7 +90,7 @@ Default \\='name is omitted from CLI args."))
     :type (or null string)
     :initform nil
     :documentation "Filter to rigs with this status: \"operational\", \"degraded\",
-\"docked\", or \"parked\".  Nil means no status filter (--status=STATUS).")
+\"docked\", or \"parked\".  Nil means no status filter")
    (order
     :initarg :order
     :type symbol
@@ -117,7 +117,7 @@ Default \\='name is omitted from CLI args."))
     :initarg :status
     :type (or null string)
     :initform nil
-    :documentation "Filter to convoys with this status, or nil for all (--status=STATUS).")
+    :documentation "Filter to convoys with this status, or nil for all")
    (order
     :initarg :order
     :type symbol
@@ -128,7 +128,7 @@ Default \\='newest is omitted from CLI args.")
     :initarg :limit
     :type integer
     :initform 50
-    :documentation "Maximum number of convoys to show (--limit=N)."))
+    :documentation "Maximum number of convoys to show"))
   :documentation "Filter spec for the Gas Town convoy list view.")
 
 (cl-defmethod gastown-spec--to-args ((spec gastown-convoy-spec))
@@ -150,17 +150,17 @@ Default \\='newest is omitted from CLI args.")
     :initarg :unread-only
     :type (or null boolean)
     :initform nil
-    :documentation "When non-nil, show only unread messages (--unread).")
+    :documentation "When non-nil, show only unread messages")
    (from
     :initarg :from
     :type (or null string)
     :initform nil
-    :documentation "Filter to messages from this sender, or nil for all (--from=SENDER).")
+    :documentation "Filter to messages from this sender, or nil for all")
    (priority
     :initarg :priority
     :type (or null string)
     :initform nil
-    :documentation "Filter by priority tag, or nil for all (--priority=PRIORITY).")
+    :documentation "Filter by priority tag, or nil for all")
    (order
     :initarg :order
     :type symbol
@@ -171,7 +171,7 @@ Default \\='newest is omitted from CLI args.")
     :initarg :limit
     :type integer
     :initform 100
-    :documentation "Maximum number of messages to show (--limit=N)."))
+    :documentation "Maximum number of messages to show"))
   :documentation "Filter spec for the Gas Town mail inbox view.")
 
 (cl-defmethod gastown-spec--to-args ((spec gastown-mail-spec))
