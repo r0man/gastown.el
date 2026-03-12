@@ -446,7 +446,8 @@ Key bindings:
   (interactive)
   (let ((id (tabulated-list-get-id)))
     (if id
-        (shell-command (format "tmux select-window -t gt:%s" id))
+        (call-process "tmux" nil nil nil "select-window" "-t"
+                      (format "gt:%s" id))
       (user-error "No session at point"))))
 
 ;;;###autoload
