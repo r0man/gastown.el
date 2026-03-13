@@ -417,11 +417,36 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
     (should (gastown-status-buffer-test--find-button-echo "hq-mayor"))))
 
 (ert-deftest gastown-status-buffer-test-polecat-button-help-echo ()
-  "Running polecat row renders a button whose help-echo references the polecat."
+  "Running polecat row renders a button whose help-echo names the tmux session."
   (with-temp-buffer
     (gastown-status-mode)
     (gastown-status--render gastown-status-buffer-test--sample-data)
-    (should (gastown-status-buffer-test--find-button-echo "jasper"))))
+    (should (gastown-status-buffer-test--find-button-echo "be-jasper"))))
+
+(ert-deftest gastown-status-buffer-test-polecat-click-opens-tmux-not-detail ()
+  "Clicking a running polecat row opens tmux session, not polecat detail view."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (let ((detail-called nil)
+          (terminal-cmd nil))
+      (cl-letf (((symbol-function 'gastown-polecat-detail-show)
+                 (lambda (&rest _) (setq detail-called t)))
+                ((symbol-function 'gastown-command--run-in-terminal)
+                 (lambda (cmd &rest _) (setq terminal-cmd cmd) nil)))
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when (and w
+                         (let ((echo (widget-get w :help-echo)))
+                           (and (stringp echo) (string-match-p "be-jasper" echo))))
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      (should-not detail-called)
+      (should terminal-cmd)
+      (should (string-match-p "be-jasper" terminal-cmd)))))
 
 (ert-deftest gastown-status-buffer-test-agent-click-uses-terminal-backend ()
   "Running agent click uses gastown-command--run-in-terminal, not shell-command."
