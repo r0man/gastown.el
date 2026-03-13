@@ -567,7 +567,7 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
 (defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section tmux-socket)
   "Build a crew/polecat AGENT (`gastown-agent') row vnode.
 RIG-NAME is the rig's name string.  RIG-SECTION is the parent section.
-TMUX-SOCKET is the tmux -L socket name for the fallback action."
+TMUX-SOCKET is the tmux -L socket name for the switch-to-session action."
   (let* ((name      (or (oref agent name) ""))
          (running   (oref agent running))
          (session   (oref agent session))
@@ -592,12 +592,10 @@ TMUX-SOCKET is the tmux -L socket name for the fallback action."
          (row      (if (and session running)
                        (vui-button label
                          :no-decoration t
-                         :help-echo (format "Open polecat detail: %s/%s" rig-name name)
-                         :on-click (let ((a agent) (r rig-name) (sess session) (sock tmux-socket))
+                         :help-echo (format "Show polecat in tmux: %s" session)
+                         :on-click (let ((sess session) (sock tmux-socket))
                                      (lambda ()
-                                       (if (fboundp 'gastown-polecat-detail-show)
-                                           (gastown-polecat-detail-show a r)
-                                         (gastown-status--show-agent-tmux sess sock)))))
+                                       (gastown-status--show-agent-tmux sess sock))))
                      (vui-text label))))
     (if expanded
         (vui-vstack row (gastown-status--agent-detail-vnode agent))
