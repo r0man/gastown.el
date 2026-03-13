@@ -14,6 +14,7 @@
 
 (require 'gastown-command)
 (require 'gastown-context)
+(require 'gastown-reader)
 (require 'beads-meta)
 
 (require 'transient)
@@ -252,6 +253,7 @@ Remove work from an agent's hook.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1))

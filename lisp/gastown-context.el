@@ -134,13 +134,25 @@ Returns nil when not in a gastown buffer or no agent section is at point."
 ;;; Composite readers
 ;;; ============================================================
 
+;; Forward declarations for optional beads completion
+(declare-function beads-completion-read-issue "beads-completion"
+                  (prompt &optional predicate require-match
+                          initial-input history))
+
 (defun gastown--read-bead-or-prompt (prompt)
   "Return the beads issue ID at point, or read one with PROMPT.
 
-Uses `gastown--beads-issue-at-point' to detect context.  Falls back
-to `read-string' with PROMPT when no issue is at point."
+Uses `gastown--beads-issue-at-point' to detect context.  When no
+issue is at point, falls back to `beads-completion-read-issue' if
+beads-completion is loaded, otherwise to `read-string'."
   (or (gastown--beads-issue-at-point)
-      (read-string prompt)))
+      (if (fboundp 'beads-completion-read-issue)
+          (beads-completion-read-issue prompt nil nil nil
+                                       'gastown--bead-id-history)
+        (read-string prompt))))
+
+(defvar gastown--bead-id-history nil
+  "History list for bead ID completion.")
 
 (defun gastown--read-agent-or-prompt (prompt)
   "Return the Gas Town agent target at point, or read one with PROMPT.

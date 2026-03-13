@@ -146,9 +146,13 @@
     (should (string= (gastown--read-bead-or-prompt "ID: ") "ge-123"))))
 
 (ert-deftest gastown-context-test-read-bead-prompts-when-no-context ()
-  "Test gastown--read-bead-or-prompt prompts when no bead at point."
+  "Test gastown--read-bead-or-prompt prompts when no bead at point.
+Mocks both beads-completion-read-issue and read-string since the
+fallback path prefers completing-read when beads-completion is loaded."
   (cl-letf (((symbol-function 'gastown--beads-issue-at-point)
              (lambda () nil))
+            ((symbol-function 'beads-completion-read-issue)
+             (lambda (prompt &rest _) (concat "user-input-" prompt)))
             ((symbol-function 'read-string)
              (lambda (prompt &rest _) (concat "user-input-" prompt))))
     (let ((result (gastown--read-bead-or-prompt "Bead ID: ")))
@@ -185,9 +189,13 @@
       (should (string= result "ge-abc")))))
 
 (ert-deftest gastown-context-test-reader-bead-id-prompts-without-context ()
-  "Test gastown-reader-bead-id prompts when no context."
+  "Test gastown-reader-bead-id prompts when no context.
+Mocks both beads-completion-read-issue and read-string since the
+fallback path prefers completing-read when beads-completion is loaded."
   (cl-letf (((symbol-function 'gastown--beads-issue-at-point)
              (lambda () nil))
+            ((symbol-function 'beads-completion-read-issue)
+             (lambda (_prompt &rest _) "typed-id"))
             ((symbol-function 'read-string)
              (lambda (_prompt &rest _) "typed-id")))
     (let ((result (gastown-reader-bead-id "Bead ID: " nil nil)))

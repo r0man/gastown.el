@@ -129,6 +129,50 @@
     :documentation "Total number of tasks."))
   :documentation "A Gas Town convoy summary.")
 
+(defclass gastown-completion-formula ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Formula name.")
+   (type
+    :initarg :type
+    :type (or null string)
+    :initform nil
+    :documentation "Formula type (workflow, convoy, etc.).")
+   (description
+    :initarg :description
+    :type (or null string)
+    :initform nil
+    :documentation "Formula description.")
+   (vars
+    :initarg :vars
+    :type (or null integer)
+    :initform nil
+    :documentation "Number of variables in the formula."))
+  :documentation "A Gas Town formula summary.")
+
+(defclass gastown-completion-crew ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Crew worker name.")
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig this crew worker belongs to.")
+   (branch
+    :initarg :branch
+    :type (or null string)
+    :initform nil
+    :documentation "Current git branch.")
+   (has-session
+    :initarg :has-session
+    :type boolean
+    :initform nil
+    :documentation "Whether the crew worker has an active session."))
+  :documentation "A Gas Town crew worker summary.")
+
 ;;; ============================================================
 ;;; Parse Functions
 ;;; ============================================================
@@ -165,6 +209,25 @@
    :completed (cdr (assq 'completed alist))
    :total (cdr (assq 'total alist))))
 
+(defun gastown-completion--parse-formula (alist)
+  "Parse a formula ALIST into a `gastown-completion-formula' object."
+  (gastown-completion-formula
+   :name (or (cdr (assq 'name alist)) "")
+   :type (cdr (assq 'type alist))
+   :description (cdr (assq 'description alist))
+   :vars (cdr (assq 'vars alist))))
+
+(defun gastown-completion--parse-crew (alist)
+  "Parse a crew ALIST into a `gastown-completion-crew' object."
+  (let ((session-raw (cdr (assq 'has_session alist))))
+    (gastown-completion-crew
+     :name (or (cdr (assq 'name alist)) "")
+     :rig (cdr (assq 'rig alist))
+     :branch (cdr (assq 'branch alist))
+     :has-session (and session-raw
+                       (not (eq session-raw :json-false))
+                       t))))
+
 ;;; ============================================================
 ;;; Data Fetching
 ;;; ============================================================
@@ -198,6 +261,36 @@ Returns list of `gastown-completion-convoy' objects."
          (data (oref execution result)))
     (mapcar #'gastown-completion--parse-convoy
             (if (vectorp data) (append data nil) data))))
+
+(defun gastown-completion--fetch-formulas ()
+  "Fetch formula list via gt formula list --json.
+Returns list of `gastown-completion-formula' objects."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output (with-output-to-string
+                   (call-process exe nil standard-output nil "formula" "list" "--json")))
+         (json-array-type 'list)
+         (json-object-type 'alist)
+         (data (condition-case nil
+                   (json-read-from-string output)
+                 (error nil))))
+    (when data
+      (mapcar #'gastown-completion--parse-formula
+              (if (vectorp data) (append data nil) data)))))
+
+(defun gastown-completion--fetch-crew ()
+  "Fetch crew list via gt crew list --json.
+Returns list of `gastown-completion-crew' objects."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output (with-output-to-string
+                   (call-process exe nil standard-output nil "crew" "list" "--json")))
+         (json-array-type 'list)
+         (json-object-type 'alist)
+         (data (condition-case nil
+                   (json-read-from-string output)
+                 (error nil))))
+    (when data
+      (mapcar #'gastown-completion--parse-crew
+              (if (vectorp data) (append data nil) data)))))
 
 ;;; ============================================================
 ;;; Async Prefetch (non-blocking cache warming)
@@ -269,6 +362,50 @@ Returns the process object.  The cache is updated in the process sentinel."
                      (error nil))))
      :connection-type 'pipe)))
 
+(defun gastown-completion--async-warm-formulas ()
+  "Start async `gt formula list --json' fetch to warm the formula cache.
+Returns the process object.  The cache is updated in the process sentinel."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output ""))
+    (make-process
+     :name "gastown-completion-fetch-formulas"
+     :command (list exe "formula" "list" "--json")
+     :filter (lambda (_proc chunk) (setq output (concat output chunk)))
+     :sentinel (lambda (_proc event)
+                 (when (string-prefix-p "finished" event)
+                   (condition-case nil
+                       (let ((json-array-type 'list)
+                             (json-object-type 'alist))
+                         (setq gastown-completion--formula-cache
+                               (cons (float-time)
+                                     (mapcar #'gastown-completion--parse-formula
+                                             (let ((d (json-read-from-string output)))
+                                               (if (vectorp d) (append d nil) d))))))
+                     (error nil))))
+     :connection-type 'pipe)))
+
+(defun gastown-completion--async-warm-crew ()
+  "Start async `gt crew list --json' fetch to warm the crew cache.
+Returns the process object.  The cache is updated in the process sentinel."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output ""))
+    (make-process
+     :name "gastown-completion-fetch-crew"
+     :command (list exe "crew" "list" "--json")
+     :filter (lambda (_proc chunk) (setq output (concat output chunk)))
+     :sentinel (lambda (_proc event)
+                 (when (string-prefix-p "finished" event)
+                   (condition-case nil
+                       (let ((json-array-type 'list)
+                             (json-object-type 'alist))
+                         (setq gastown-completion--crew-cache
+                               (cons (float-time)
+                                     (mapcar #'gastown-completion--parse-crew
+                                             (let ((d (json-read-from-string output)))
+                                               (if (vectorp d) (append d nil) d))))))
+                     (error nil))))
+     :connection-type 'pipe)))
+
 (defun gastown-completion--warm-if-stale (cache-var ttl warm-fn timeout)
   "Warm CACHE-VAR asynchronously if stale, waiting up to TIMEOUT seconds.
 TTL is the cache time-to-live in seconds.  When the cache is stale or nil,
@@ -288,8 +425,9 @@ Returns non-nil when a warm was attempted."
 (defun gastown-completion-prefetch ()
   "Start async cache warming for all completion data types.
 
-Kicks off async `gt rig list --json', `gt polecat list --json', and
-`gt convoy list --json' processes in parallel.  Safe to call multiple
+Kicks off async `gt rig list --json', `gt polecat list --json',
+`gt convoy list --json', `gt formula list --json', and
+`gt crew list --json' processes in parallel.  Safe to call multiple
 times — skips fetch for caches that are still within their TTL.
 
 Callers invoke this before `completing-read' to avoid blocking the Emacs
@@ -306,7 +444,15 @@ main thread during minibuffer completion."
     (when (or (null gastown-completion--convoy-cache)
               (> (- now (car gastown-completion--convoy-cache))
                  gastown-completion--convoy-cache-ttl))
-      (gastown-completion--async-warm-convoys))))
+      (gastown-completion--async-warm-convoys))
+    (when (or (null gastown-completion--formula-cache)
+              (> (- now (car gastown-completion--formula-cache))
+                 gastown-completion--formula-cache-ttl))
+      (gastown-completion--async-warm-formulas))
+    (when (or (null gastown-completion--crew-cache)
+              (> (- now (car gastown-completion--crew-cache))
+                 gastown-completion--crew-cache-ttl))
+      (gastown-completion--async-warm-crew))))
 
 ;;; ============================================================
 ;;; TTL Caching
@@ -329,6 +475,19 @@ main thread during minibuffer completion."
 
 (defvar gastown-completion--convoy-cache-ttl 5
   "TTL for convoy completion cache in seconds.")
+
+(defvar gastown-completion--formula-cache nil
+  "Cache for formula list.  Format: (TIMESTAMP . FORMULAS-LIST).")
+
+(defvar gastown-completion--formula-cache-ttl 30
+  "TTL for formula completion cache in seconds.
+Formulas change infrequently so we use a longer TTL.")
+
+(defvar gastown-completion--crew-cache nil
+  "Cache for crew list.  Format: (TIMESTAMP . CREW-LIST).")
+
+(defvar gastown-completion--crew-cache-ttl 10
+  "TTL for crew completion cache in seconds.")
 
 (defun gastown-completion--get-cached-rigs ()
   "Get cached rig list, refreshing if stale.
@@ -391,6 +550,48 @@ On fetch failure, returns previous cached data (if any) with a warning."
 (defun gastown-completion-invalidate-convoy-cache ()
   "Invalidate the convoy completion cache."
   (setq gastown-completion--convoy-cache nil))
+
+(defun gastown-completion--get-cached-formulas ()
+  "Get cached formula list, refreshing if stale.
+On fetch failure, returns previous cached data (if any) with a warning."
+  (let ((now (float-time)))
+    (when (or (null gastown-completion--formula-cache)
+              (> (- now (car gastown-completion--formula-cache))
+                 gastown-completion--formula-cache-ttl))
+      (condition-case err
+          (setq gastown-completion--formula-cache
+                (cons now (gastown-completion--fetch-formulas)))
+        (error
+         (when gastown-completion--formula-cache
+           (message
+            "Warning: Failed to refresh formulas: %s (using cached data)"
+            (error-message-string err))))))
+    (cdr gastown-completion--formula-cache)))
+
+(defun gastown-completion--get-cached-crew ()
+  "Get cached crew list, refreshing if stale.
+On fetch failure, returns previous cached data (if any) with a warning."
+  (let ((now (float-time)))
+    (when (or (null gastown-completion--crew-cache)
+              (> (- now (car gastown-completion--crew-cache))
+                 gastown-completion--crew-cache-ttl))
+      (condition-case err
+          (setq gastown-completion--crew-cache
+                (cons now (gastown-completion--fetch-crew)))
+        (error
+         (when gastown-completion--crew-cache
+           (message
+            "Warning: Failed to refresh crew: %s (using cached data)"
+            (error-message-string err))))))
+    (cdr gastown-completion--crew-cache)))
+
+(defun gastown-completion-invalidate-formula-cache ()
+  "Invalidate the formula completion cache."
+  (setq gastown-completion--formula-cache nil))
+
+(defun gastown-completion-invalidate-crew-cache ()
+  "Invalidate the crew completion cache."
+  (setq gastown-completion--crew-cache nil))
 
 ;;; ============================================================
 ;;; Annotation Functions
@@ -460,6 +661,44 @@ On fetch failure, returns previous cached data (if any) with a warning."
                     (if title (format " - %s" title) "")))))
     (error "")))
 
+(defun gastown-completion--formula-annotate (candidate)
+  "Annotate formula CANDIDATE with type and description."
+  (condition-case nil
+      (let ((formula (get-text-property 0 'gastown-formula candidate)))
+        (if formula
+            (let ((type (oref formula type))
+                  (description (oref formula description))
+                  (vars (oref formula vars)))
+              (format " %s%s%s"
+                      (propertize (or type "")
+                                  'face 'shadow)
+                      (if (and vars (> vars 0))
+                          (format " [%d vars]" vars)
+                        "")
+                      (if description
+                          (format " - %s"
+                                  (truncate-string-to-width description 50 nil nil "…"))
+                        "")))
+          ""))
+    (error "")))
+
+(defun gastown-completion--crew-annotate (candidate)
+  "Annotate crew CANDIDATE with rig and session status."
+  (condition-case nil
+      (let ((crew (get-text-property 0 'gastown-crew candidate)))
+        (if crew
+            (let ((rig (oref crew rig))
+                  (branch (oref crew branch))
+                  (has-session (oref crew has-session)))
+              (format " %s%s%s"
+                      (if rig (propertize rig 'face 'shadow) "")
+                      (if branch (format " [%s]" branch) "")
+                      (if has-session
+                          (propertize " (active)" 'face 'success)
+                        "")))
+          ""))
+    (error "")))
+
 ;;; ============================================================
 ;;; Completion Tables
 ;;; ============================================================
@@ -516,6 +755,36 @@ When RIG-FILTER is non-nil, filter to polecats in that rig."
          (mapcar (lambda (c)
                    (propertize (oref c id) 'gastown-convoy c))
                  convoys)
+         string pred)))))
+
+(defun gastown-completion-formula-table ()
+  "Return completion table for formula names with description annotations."
+  (lambda (string pred action)
+    (if (eq action 'metadata)
+        '(metadata
+          (category . gastown-formula)
+          (annotation-function . gastown-completion--formula-annotate))
+      (let ((formulas (gastown-completion--get-cached-formulas)))
+        (complete-with-action
+         action
+         (mapcar (lambda (f)
+                   (propertize (oref f name) 'gastown-formula f))
+                 formulas)
+         string pred)))))
+
+(defun gastown-completion-crew-table ()
+  "Return completion table for crew worker names with status annotations."
+  (lambda (string pred action)
+    (if (eq action 'metadata)
+        '(metadata
+          (category . gastown-crew)
+          (annotation-function . gastown-completion--crew-annotate))
+      (let ((crew (gastown-completion--get-cached-crew)))
+        (complete-with-action
+         action
+         (mapcar (lambda (c)
+                   (propertize (oref c name) 'gastown-crew c))
+                 crew)
          string pred)))))
 
 ;;; ============================================================
@@ -594,6 +863,54 @@ are passed to `completing-read'."
   (completing-read prompt (gastown-completion-polecat-table)
                    predicate require-match initial-input history default))
 
+(defun gastown-completion-read-convoy (prompt &optional predicate
+                                             require-match initial-input
+                                             history default)
+  "Read a convoy ID with rich completion.
+Pre-warms the convoy cache asynchronously before opening the minibuffer
+to avoid blocking the Emacs main thread during completion.
+PROMPT, PREDICATE, REQUIRE-MATCH, INITIAL-INPUT, HISTORY, and DEFAULT
+are passed to `completing-read'."
+  (gastown-completion--warm-if-stale
+   'gastown-completion--convoy-cache
+   gastown-completion--convoy-cache-ttl
+   #'gastown-completion--async-warm-convoys
+   gastown-completion--prefetch-timeout)
+  (completing-read prompt (gastown-completion-convoy-table)
+                   predicate require-match initial-input history default))
+
+(defun gastown-completion-read-formula (prompt &optional predicate
+                                              require-match initial-input
+                                              history default)
+  "Read a formula name with rich completion.
+Pre-warms the formula cache asynchronously before opening the minibuffer
+to avoid blocking the Emacs main thread during completion.
+PROMPT, PREDICATE, REQUIRE-MATCH, INITIAL-INPUT, HISTORY, and DEFAULT
+are passed to `completing-read'."
+  (gastown-completion--warm-if-stale
+   'gastown-completion--formula-cache
+   gastown-completion--formula-cache-ttl
+   #'gastown-completion--async-warm-formulas
+   gastown-completion--prefetch-timeout)
+  (completing-read prompt (gastown-completion-formula-table)
+                   predicate require-match initial-input history default))
+
+(defun gastown-completion-read-crew (prompt &optional predicate
+                                           require-match initial-input
+                                           history default)
+  "Read a crew worker name with rich completion.
+Pre-warms the crew cache asynchronously before opening the minibuffer
+to avoid blocking the Emacs main thread during completion.
+PROMPT, PREDICATE, REQUIRE-MATCH, INITIAL-INPUT, HISTORY, and DEFAULT
+are passed to `completing-read'."
+  (gastown-completion--warm-if-stale
+   'gastown-completion--crew-cache
+   gastown-completion--crew-cache-ttl
+   #'gastown-completion--async-warm-crew
+   gastown-completion--prefetch-timeout)
+  (completing-read prompt (gastown-completion-crew-table)
+                   predicate require-match initial-input history default))
+
 (defun gastown-completion-read-mail-address (prompt &optional predicate
                                                     require-match
                                                     initial-input history
@@ -637,7 +954,11 @@ in Gas Town completion interfaces.  For example:
   (add-to-list 'marginalia-annotators-heavy
                '(gastown-polecat . gastown-completion--polecat-annotate))
   (add-to-list 'marginalia-annotators-heavy
-               '(gastown-convoy . gastown-completion--convoy-annotate)))
+               '(gastown-convoy . gastown-completion--convoy-annotate))
+  (add-to-list 'marginalia-annotators-heavy
+               '(gastown-formula . gastown-completion--formula-annotate))
+  (add-to-list 'marginalia-annotators-heavy
+               '(gastown-crew . gastown-completion--crew-annotate)))
 
 (provide 'gastown-completion)
 ;;; gastown-completion.el ends here

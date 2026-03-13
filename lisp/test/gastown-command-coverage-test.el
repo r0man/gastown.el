@@ -486,5 +486,72 @@
       (should (member "--args" line))
       (should (member "patch release" line)))))
 
+;;; New reader wiring tests
+
+(ert-deftest gastown-coverage-convoy-status-convoy-id-reader-wired ()
+  "gastown-command-convoy-status convoy-id slot should use gastown-reader-convoy-id."
+  (require 'gastown-command-convoy)
+  (should (eq (beads-meta-slot-property 'gastown-command-convoy-status 'convoy-id
+                                        :transient-reader)
+              'gastown-reader-convoy-id)))
+
+(ert-deftest gastown-coverage-convoy-list-rig-reader-wired ()
+  "gastown-command-convoy-list rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-convoy)
+  (should (eq (beads-meta-slot-property 'gastown-command-convoy-list 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-formula-show-reader-wired ()
+  "gastown-command-formula-show formula-name slot should use gastown-reader-formula-name."
+  (require 'gastown-command-formula)
+  (should (eq (beads-meta-slot-property 'gastown-command-formula-show 'formula-name
+                                        :transient-reader)
+              'gastown-reader-formula-name)))
+
+(ert-deftest gastown-coverage-formula-run-reader-wired ()
+  "gastown-command-formula-run formula-name slot should use gastown-reader-formula-name."
+  (require 'gastown-command-formula)
+  (should (eq (beads-meta-slot-property 'gastown-command-formula-run 'formula-name
+                                        :transient-reader)
+              'gastown-reader-formula-name)))
+
+(ert-deftest gastown-coverage-mq-list-rig-reader-wired ()
+  "gastown-command-mq-list rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-list 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; New reader function tests
+
+(ert-deftest gastown-coverage-reader-convoy-id-defined ()
+  "gastown-reader-convoy-id should be defined."
+  (require 'gastown-reader)
+  (should (fboundp 'gastown-reader-convoy-id)))
+
+(ert-deftest gastown-coverage-reader-formula-name-defined ()
+  "gastown-reader-formula-name should be defined."
+  (require 'gastown-reader)
+  (should (fboundp 'gastown-reader-formula-name)))
+
+(ert-deftest gastown-coverage-reader-crew-name-defined ()
+  "gastown-reader-crew-name should be defined."
+  (require 'gastown-reader)
+  (should (fboundp 'gastown-reader-crew-name)))
+
+(ert-deftest gastown-coverage-reader-merge-strategy-defined ()
+  "gastown-reader-merge-strategy should be defined."
+  (require 'gastown-reader)
+  (should (fboundp 'gastown-reader-merge-strategy)))
+
+(ert-deftest gastown-coverage-reader-merge-strategy-uses-completing-read ()
+  "gastown-reader-merge-strategy should use completing-read with valid choices."
+  (require 'gastown-reader)
+  (cl-letf (((symbol-function 'completing-read)
+             (lambda (_prompt choices &rest _) (car choices))))
+    (let ((result (gastown-reader-merge-strategy "Merge strategy: " nil nil)))
+      (should (member result '("mr" "direct" "local"))))))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here

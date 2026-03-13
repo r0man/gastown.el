@@ -13,6 +13,7 @@
 
 (require 'gastown-command)
 (require 'gastown-context)
+(require 'gastown-reader)
 (require 'beads-meta)
 
 (require 'transient)

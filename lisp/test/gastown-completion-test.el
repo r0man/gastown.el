@@ -404,5 +404,170 @@
   "Test that gastown-completion-read-mail-address is a function."
   (should (fboundp 'gastown-completion-read-mail-address)))
 
+(ert-deftest gastown-completion-test-read-convoy-is-function ()
+  "Test that gastown-completion-read-convoy is a function."
+  (should (fboundp 'gastown-completion-read-convoy)))
+
+(ert-deftest gastown-completion-test-read-formula-is-function ()
+  "Test that gastown-completion-read-formula is a function."
+  (should (fboundp 'gastown-completion-read-formula)))
+
+(ert-deftest gastown-completion-test-read-crew-is-function ()
+  "Test that gastown-completion-read-crew is a function."
+  (should (fboundp 'gastown-completion-read-crew)))
+
+;;; ============================================================
+;;; Formula class tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-formula-class-exists ()
+  "Test that gastown-completion-formula class is defined."
+  (should (find-class 'gastown-completion-formula)))
+
+(ert-deftest gastown-completion-test-formula-construction ()
+  "Test constructing a gastown-completion-formula object."
+  (let ((formula (gastown-completion-formula
+                  :name "shiny-enterprise"
+                  :type "workflow"
+                  :description "A standard enterprise workflow."
+                  :vars 3)))
+    (should (equal "shiny-enterprise" (oref formula name)))
+    (should (equal "workflow" (oref formula type)))
+    (should (equal "A standard enterprise workflow." (oref formula description)))
+    (should (equal 3 (oref formula vars)))))
+
+(ert-deftest gastown-completion-test-parse-formula ()
+  "Test parsing a formula alist into a gastown-completion-formula object."
+  (let* ((alist '((name . "shiny-enterprise")
+                  (type . "workflow")
+                  (description . "An enterprise workflow.")
+                  (vars . 5)))
+         (formula (gastown-completion--parse-formula alist)))
+    (should (equal "shiny-enterprise" (oref formula name)))
+    (should (equal "workflow" (oref formula type)))
+    (should (equal "An enterprise workflow." (oref formula description)))
+    (should (equal 5 (oref formula vars)))))
+
+(ert-deftest gastown-completion-test-formula-annotate-returns-string ()
+  "Test that formula annotation function returns a string."
+  (let* ((formula (gastown-completion-formula
+                   :name "test-formula"
+                   :type "workflow"
+                   :description "Test description."
+                   :vars 2))
+         (candidate (propertize "test-formula" 'gastown-formula formula))
+         (result (gastown-completion--formula-annotate candidate)))
+    (should (stringp result))
+    (should (string-match-p "workflow" result))
+    (should (string-match-p "2 vars" result))))
+
+(ert-deftest gastown-completion-test-formula-annotate-no-property ()
+  "Test formula annotation returns empty string when no text property."
+  (should (string= "" (gastown-completion--formula-annotate "no-property"))))
+
+(ert-deftest gastown-completion-test-formula-table-returns-function ()
+  "Test that gastown-completion-formula-table returns a function."
+  (should (functionp (gastown-completion-formula-table))))
+
+(ert-deftest gastown-completion-test-formula-table-metadata ()
+  "Test that formula completion table returns correct metadata."
+  (let* ((gastown-completion--formula-cache
+          (cons (float-time)
+                (list (gastown-completion-formula
+                       :name "test-formula"
+                       :type "workflow"
+                       :description "A test."
+                       :vars 1))))
+         (table (gastown-completion-formula-table))
+         (metadata (funcall table "" nil 'metadata)))
+    (should (equal 'gastown-formula
+                   (cdr (assq 'category (cdr metadata)))))
+    (should (assq 'annotation-function (cdr metadata)))))
+
+;;; ============================================================
+;;; Crew class tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-crew-class-exists ()
+  "Test that gastown-completion-crew class is defined."
+  (should (find-class 'gastown-completion-crew)))
+
+(ert-deftest gastown-completion-test-crew-construction ()
+  "Test constructing a gastown-completion-crew object."
+  (let ((crew (gastown-completion-crew
+               :name "roman"
+               :rig "gastown_el"
+               :branch "main"
+               :has-session t)))
+    (should (equal "roman" (oref crew name)))
+    (should (equal "gastown_el" (oref crew rig)))
+    (should (equal "main" (oref crew branch)))
+    (should (eq t (oref crew has-session)))))
+
+(ert-deftest gastown-completion-test-parse-crew ()
+  "Test parsing a crew alist into a gastown-completion-crew object."
+  (let* ((alist '((name . "roman")
+                  (rig . "gastown_el")
+                  (branch . "main")
+                  (has_session . t)))
+         (crew (gastown-completion--parse-crew alist)))
+    (should (equal "roman" (oref crew name)))
+    (should (equal "gastown_el" (oref crew rig)))
+    (should (equal "main" (oref crew branch)))
+    (should (eq t (oref crew has-session)))))
+
+(ert-deftest gastown-completion-test-crew-annotate-returns-string ()
+  "Test that crew annotation function returns a string."
+  (let* ((crew (gastown-completion-crew
+                :name "roman"
+                :rig "gastown_el"
+                :branch "main"
+                :has-session t))
+         (candidate (propertize "roman" 'gastown-crew crew))
+         (result (gastown-completion--crew-annotate candidate)))
+    (should (stringp result))
+    (should (string-match-p "gastown_el" result))
+    (should (string-match-p "main" result))
+    (should (string-match-p "active" result))))
+
+(ert-deftest gastown-completion-test-crew-annotate-no-property ()
+  "Test crew annotation returns empty string when no text property."
+  (should (string= "" (gastown-completion--crew-annotate "no-property"))))
+
+(ert-deftest gastown-completion-test-crew-table-returns-function ()
+  "Test that gastown-completion-crew-table returns a function."
+  (should (functionp (gastown-completion-crew-table))))
+
+(ert-deftest gastown-completion-test-crew-table-metadata ()
+  "Test that crew completion table returns correct metadata."
+  (let* ((gastown-completion--crew-cache
+          (cons (float-time)
+                (list (gastown-completion-crew
+                       :name "roman"
+                       :rig "gastown_el"
+                       :branch "main"
+                       :has-session nil))))
+         (table (gastown-completion-crew-table))
+         (metadata (funcall table "" nil 'metadata)))
+    (should (equal 'gastown-crew
+                   (cdr (assq 'category (cdr metadata)))))
+    (should (assq 'annotation-function (cdr metadata)))))
+
+;;; ============================================================
+;;; Cache invalidation tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-invalidate-formula-cache ()
+  "Test that invalidate-formula-cache clears the formula cache."
+  (let ((gastown-completion--formula-cache '(1234567 . nil)))
+    (gastown-completion-invalidate-formula-cache)
+    (should (null gastown-completion--formula-cache))))
+
+(ert-deftest gastown-completion-test-invalidate-crew-cache ()
+  "Test that invalidate-crew-cache clears the crew cache."
+  (let ((gastown-completion--crew-cache '(1234567 . nil)))
+    (gastown-completion-invalidate-crew-cache)
+    (should (null gastown-completion--crew-cache))))
+
 (provide 'gastown-completion-test)
 ;;; gastown-completion-test.el ends here

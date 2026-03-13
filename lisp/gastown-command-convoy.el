@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-reader)
 (require 'beads-meta)
 
 (require 'transient)
@@ -33,6 +34,7 @@
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1)
@@ -101,6 +103,7 @@ Lists convoys with progress bars and status.")
     :transient "Convoy ID"
     :class transient-option
     :prompt "Convoy ID: "
+    :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
     :level 1
     :order 1))

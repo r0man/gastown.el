@@ -12,6 +12,7 @@
 ;;; Code:
 
 (require 'gastown-command)
+(require 'gastown-reader)
 (require 'beads-meta)
 
 (require 'transient)
@@ -41,6 +42,7 @@ List available formulas from all search paths."
     :transient "Formula name (required)"
     :class transient-option
     :prompt "Formula name: "
+    :transient-reader gastown-reader-formula-name
     :transient-group "Required"
     :level 1
     :order 1))
@@ -63,6 +65,7 @@ Display formula details (steps, variables, composition)."
     :transient "Formula name (required)"
     :class transient-option
     :prompt "Formula name: "
+    :transient-reader gastown-reader-formula-name
     :transient-group "Required"
     :level 1
     :order 1)
