@@ -223,6 +223,7 @@ be caught and re-signaled as gastown-command-error with a readable message."
     (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) t))
               ((symbol-function 'process-live-p) (lambda (_) nil))
               ((symbol-function 'get-buffer-process) (lambda (_) fake-proc))
+              ((symbol-function 'delete-process) #'ignore)
               ((symbol-function 'erase-buffer) #'ignore)
               ((symbol-function 'term-exec) #'ignore)
               ((symbol-function 'term-char-mode) #'ignore)
