@@ -218,20 +218,20 @@ be caught and re-signaled as gastown-command-error with a readable message."
 
 (ert-deftest gastown-command-test-run-term-clears-process-query-flag ()
   "run-term sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
-  (let ((flag-cleared nil)
-        (fake-proc 'fake-process))
-    (cl-letf (((symbol-function 'process-live-p) (lambda (_) nil))
-              ((symbol-function 'get-buffer-process) (lambda (_) fake-proc))
-              ((symbol-function 'delete-process) #'ignore)
-              ((symbol-function 'term-exec) #'ignore)
-              ((symbol-function 'term-char-mode) #'ignore)
-              ((symbol-function 'pop-to-buffer) #'ignore)
-              ((symbol-function 'set-process-query-on-exit-flag)
-               (lambda (proc val)
-                 (when (and (eq proc fake-proc) (not val))
-                   (setq flag-cleared t)))))
-      (gastown-command--run-term "cmd" "*test-buf*" "/tmp"))
-    (should flag-cleared)))
+  (let ((buf-name (format "*gastown-test-term-%s*" (random))))
+    (unwind-protect
+        (progn
+          (cl-letf (((symbol-function 'pop-to-buffer) #'ignore))
+            (gastown-command--run-term "sleep 60" buf-name "/tmp"))
+          (let* ((buf (get-buffer buf-name))
+                 (proc (and buf (get-buffer-process buf))))
+            (should proc)
+            (should (process-live-p proc))
+            (should-not (process-query-on-exit-flag proc))))
+      (when-let ((buf (get-buffer buf-name)))
+        (when-let ((proc (get-buffer-process buf)))
+          (delete-process proc))
+        (kill-buffer buf)))))
 
 (ert-deftest gastown-command-test-run-vterm-clears-process-query-flag ()
   "run-vterm sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
