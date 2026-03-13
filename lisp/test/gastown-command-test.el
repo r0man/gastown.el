@@ -220,11 +220,9 @@ be caught and re-signaled as gastown-command-error with a readable message."
   "run-term sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
   (let ((flag-cleared nil)
         (fake-proc 'fake-process))
-    (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) t))
-              ((symbol-function 'process-live-p) (lambda (_) nil))
+    (cl-letf (((symbol-function 'process-live-p) (lambda (_) nil))
               ((symbol-function 'get-buffer-process) (lambda (_) fake-proc))
               ((symbol-function 'delete-process) #'ignore)
-              ((symbol-function 'erase-buffer) #'ignore)
               ((symbol-function 'term-exec) #'ignore)
               ((symbol-function 'term-char-mode) #'ignore)
               ((symbol-function 'pop-to-buffer) #'ignore)
