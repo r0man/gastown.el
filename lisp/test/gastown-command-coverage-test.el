@@ -330,5 +330,161 @@
                                         :transient-reader)
               'gastown-reader-agent-target)))
 
+;;; Sling command full option coverage
+
+(ert-deftest gastown-coverage-sling-target-slot-exists ()
+  "gastown-command-sling should have a positional target slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'target)))
+
+(ert-deftest gastown-coverage-sling-target-reader-wired ()
+  "gastown-command-sling target slot should use gastown-reader-agent-target."
+  (require 'gastown-command-sling)
+  (should (eq (beads-meta-slot-property 'gastown-command-sling 'target
+                                        :transient-reader)
+              'gastown-reader-agent-target)))
+
+(ert-deftest gastown-coverage-sling-force-slot-exists ()
+  "gastown-command-sling should have a force slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'force)))
+
+(ert-deftest gastown-coverage-sling-create-slot-exists ()
+  "gastown-command-sling should have a create slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'create)))
+
+(ert-deftest gastown-coverage-sling-account-slot-exists ()
+  "gastown-command-sling should have an account slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'account)))
+
+(ert-deftest gastown-coverage-sling-agent-slot-exists ()
+  "gastown-command-sling should have an agent slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'agent)))
+
+(ert-deftest gastown-coverage-sling-crew-slot-exists ()
+  "gastown-command-sling should have a crew slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'crew)))
+
+(ert-deftest gastown-coverage-sling-formula-slot-exists ()
+  "gastown-command-sling should have a formula slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'formula)))
+
+(ert-deftest gastown-coverage-sling-on-slot-exists ()
+  "gastown-command-sling should have an on slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'on)))
+
+(ert-deftest gastown-coverage-sling-args-slot-exists ()
+  "gastown-command-sling should have an args slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'args)))
+
+(ert-deftest gastown-coverage-sling-message-slot-exists ()
+  "gastown-command-sling should have a message slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'message)))
+
+(ert-deftest gastown-coverage-sling-subject-slot-exists ()
+  "gastown-command-sling should have a subject slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'subject)))
+
+(ert-deftest gastown-coverage-sling-var-slot-exists ()
+  "gastown-command-sling should have a var slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'var)))
+
+(ert-deftest gastown-coverage-sling-stdin-slot-exists ()
+  "gastown-command-sling should have a stdin slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'stdin)))
+
+(ert-deftest gastown-coverage-sling-merge-slot-exists ()
+  "gastown-command-sling should have a merge slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'merge)))
+
+(ert-deftest gastown-coverage-sling-no-merge-slot-exists ()
+  "gastown-command-sling should have a no-merge slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'no-merge)))
+
+(ert-deftest gastown-coverage-sling-no-convoy-slot-exists ()
+  "gastown-command-sling should have a no-convoy slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'no-convoy)))
+
+(ert-deftest gastown-coverage-sling-base-branch-slot-exists ()
+  "gastown-command-sling should have a base-branch slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'base-branch)))
+
+(ert-deftest gastown-coverage-sling-ralph-slot-exists ()
+  "gastown-command-sling should have a ralph slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'ralph)))
+
+(ert-deftest gastown-coverage-sling-hook-raw-bead-slot-exists ()
+  "gastown-command-sling should have a hook-raw-bead slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'hook-raw-bead)))
+
+(ert-deftest gastown-coverage-sling-owned-slot-exists ()
+  "gastown-command-sling should have an owned slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'owned)))
+
+(ert-deftest gastown-coverage-sling-no-boot-slot-exists ()
+  "gastown-command-sling should have a no-boot slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'no-boot)))
+
+(ert-deftest gastown-coverage-sling-dry-run-slot-exists ()
+  "gastown-command-sling should have a dry-run slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'dry-run)))
+
+(ert-deftest gastown-coverage-sling-max-concurrent-slot-exists ()
+  "gastown-command-sling should have a max-concurrent slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'max-concurrent)))
+
+(ert-deftest gastown-coverage-sling-command-line-bead-target ()
+  "gastown-command-sling command line should include bead-id and target positionally."
+  (require 'gastown-command-sling)
+  (let ((cmd (gastown-command-sling :bead-id "gt-abc" :target "gastown_el")))
+    (let ((line (gastown-command-line cmd)))
+      (should (member "gt-abc" line))
+      (should (member "gastown_el" line)))))
+
+(ert-deftest gastown-coverage-sling-command-line-flags ()
+  "gastown-command-sling command line should include boolean flags when set."
+  (require 'gastown-command-sling)
+  (let ((cmd (gastown-command-sling :force t :dry-run t :no-convoy t)))
+    (let ((line (gastown-command-line cmd)))
+      (should (member "--force" line))
+      (should (member "--dry-run" line))
+      (should (member "--no-convoy" line)))))
+
+(ert-deftest gastown-coverage-sling-command-line-options ()
+  "gastown-command-sling command line should include string options when set."
+  (require 'gastown-command-sling)
+  (let ((cmd (gastown-command-sling :merge "direct" :base-branch "develop"
+                                    :formula "shiny" :args "patch release")))
+    (let ((line (gastown-command-line cmd)))
+      (should (member "--merge" line))
+      (should (member "direct" line))
+      (should (member "--base-branch" line))
+      (should (member "develop" line))
+      (should (member "--formula" line))
+      (should (member "shiny" line))
+      (should (member "--args" line))
+      (should (member "patch release" line)))))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here
