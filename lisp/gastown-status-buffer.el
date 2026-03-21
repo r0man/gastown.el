@@ -262,6 +262,7 @@ attempts to modify button text for visual feedback."
   "N"   #'gastown-status-next-section
   "P"   #'gastown-status-prev-section
   "d"   #'gastown-status-dired-at-point
+  "i"   #'gastown-status-polecat-detail-at-point
   "g"   #'gastown-status-refresh
   "q"   #'quit-window
   "w"   #'gastown-status-toggle-watch
@@ -959,6 +960,29 @@ On a global agent row: opens the agent's directory under the town root."
           (user-error "Directory not found: %s" path))))
      (t
       (user-error "No item at point")))))
+
+;;; ============================================================
+;;; Polecat Detail Integration
+;;; ============================================================
+
+(defun gastown-status-polecat-detail-at-point ()
+  "Open the polecat detail view for the polecat at point.
+
+When point is on a polecat or crew row in a `gastown-status-mode' buffer,
+opens the dedicated `gastown-polecat-detail' buffer for that agent showing
+its hook, session, mail, and work history.
+
+Signals a user-error when point is not on a polecat/crew row."
+  (interactive)
+  (let ((section (gastown-status-current-section)))
+    (unless (gastown-polecat-section-p section)
+      (user-error "No polecat at point — move to a polecat row and try again"))
+    (let* ((polecat     (oref section polecat))
+           (rig-name    (oref section rig-name))
+           (tmux-socket (when gastown-status--data
+                          (let ((tmux (oref gastown-status--data tmux)))
+                            (when tmux (oref tmux socket))))))
+      (gastown-polecat-detail-show polecat rig-name tmux-socket))))
 
 ;;; ============================================================
 ;;; Interactive Commands
