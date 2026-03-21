@@ -770,6 +770,52 @@ received it as a single argument."
       (goto-char (point-min))
       (should (search-forward "ge-abc" nil t)))))
 
+;;; Polecat Detail Integration Tests
+
+(ert-deftest gastown-status-buffer-test-polecat-detail-at-point-defined ()
+  "gastown-status-polecat-detail-at-point must be defined."
+  (should (fboundp 'gastown-status-polecat-detail-at-point)))
+
+(ert-deftest gastown-status-buffer-test-keymap-i-polecat-detail ()
+  "Test that 'i' is bound to gastown-status-polecat-detail-at-point."
+  (should (eq #'gastown-status-polecat-detail-at-point
+              (lookup-key gastown-status-mode-map "i"))))
+
+(ert-deftest gastown-status-buffer-test-polecat-detail-calls-show ()
+  "gastown-status-polecat-detail-at-point calls gastown-polecat-detail-show."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (let ((detail-polecat nil)
+          (detail-rig nil))
+      (cl-letf (((symbol-function 'gastown-polecat-detail-show)
+                 (lambda (p r &optional _sock)
+                   (setq detail-polecat p detail-rig r)
+                   nil)))
+        ;; Find the jasper polecat button in beads_el
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((sec (gastown-status-current-section)))
+              (when (and (gastown-polecat-section-p sec)
+                         (equal "jasper" (oref (oref sec polecat) name)))
+                (gastown-status-polecat-detail-at-point)
+                (setq found t)))
+            (forward-char 1))))
+      (should detail-polecat)
+      (should (equal "jasper" (oref detail-polecat name)))
+      (should (equal "beads_el" detail-rig)))))
+
+(ert-deftest gastown-status-buffer-test-polecat-detail-error-on-non-polecat ()
+  "gastown-status-polecat-detail-at-point signals error when not on polecat."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    ;; Go to start — no polecat section there
+    (goto-char (point-min))
+    (should-error (gastown-status-polecat-detail-at-point)
+                  :type 'user-error)))
+
 ;;; Dired Integration Tests
 
 (ert-deftest gastown-status-buffer-test-dired-at-point-defined ()
