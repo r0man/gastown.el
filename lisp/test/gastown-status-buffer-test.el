@@ -511,6 +511,36 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
     (should-not (string-match-p "-L" captured-cmd))
     (should (string-match-p "hq-mayor" captured-cmd))))
 
+(ert-deftest gastown-status-buffer-test-show-agent-tmux-uses-provided-dir ()
+  "gastown-status--show-agent-tmux passes DIR argument to run-in-terminal."
+  (let ((captured-dir nil))
+    (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+               (lambda (_cmd _buf-name dir) (setq captured-dir dir) nil)))
+      (gastown-status--show-agent-tmux "ge-nux" nil "/home/roman/gt/gastown_el/polecats/nux/gastown_el"))
+    (should (equal captured-dir "/home/roman/gt/gastown_el/polecats/nux/gastown_el"))))
+
+(ert-deftest gastown-status-buffer-test-polecat-click-uses-worktree-dir ()
+  "Clicking a running polecat row opens terminal in the polecat's worktree directory."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (let ((captured-dir nil))
+      (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+                 (lambda (_cmd _buf-name dir) (setq captured-dir dir) nil)))
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when (and w
+                         (let ((echo (widget-get w :help-echo)))
+                           (and (stringp echo) (string-match-p "be-jasper" echo))))
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      (should captured-dir)
+      ;; location="/tmp/gt-test", rig="beads_el", polecat="jasper"
+      (should (string-match-p "beads_el/polecats/jasper/beads_el" captured-dir)))))
+
 ;;; Context Detection Tests
 
 (ert-deftest gastown-status-buffer-test-current-section-nil-outside-buffer ()

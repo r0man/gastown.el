@@ -397,9 +397,11 @@ no -L flag is used (the default server is addressed directly)."
       (format "tmux -L %s select-window -t %s" socket session)
     (format "tmux select-window -t %s" session)))
 
-(defun gastown-status--show-agent-tmux (session socket)
+(defun gastown-status--show-agent-tmux (session socket &optional dir)
   "Open an Emacs terminal buffer showing the agent's tmux SESSION.
 SOCKET is the tmux -L socket name; nil or \"default\" uses the default server.
+DIR, when non-nil, sets the terminal buffer's `default-directory'; falls back
+to `default-directory' when not provided.
 Uses `gastown-command--run-in-terminal' so the buffer respects
 `gastown-terminal-backend'."
   (let* ((tmux-cmd (if (and socket (not (string= socket "default")))
@@ -408,7 +410,7 @@ Uses `gastown-command--run-in-terminal' so the buffer respects
          ;; Unset TMUX so nested attach works when Emacs is inside tmux.
          (cmd (format "env -u TMUX %s" tmux-cmd))
          (buf-name (format "*gt-agent-%s*" session)))
-    (gastown-command--run-in-terminal cmd buf-name default-directory)))
+    (gastown-command--run-in-terminal cmd buf-name (or dir default-directory))))
 
 ;;; ============================================================
 ;;; Async Data Fetch
@@ -569,6 +571,7 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
 RIG-NAME is the rig's name string.  RIG-SECTION is the parent section.
 TMUX-SOCKET is the tmux -L socket name for the switch-to-session action."
   (let* ((name      (or (oref agent name) ""))
+         (role      (or (oref agent role) ""))
          (running   (oref agent running))
          (session   (oref agent session))
          (info      (or (oref agent agent-info) ""))
@@ -587,15 +590,20 @@ TMUX-SOCKET is the tmux -L socket name for the switch-to-session action."
                         (propertize (format " 📬%d" unread)
                                     'face 'gastown-status-mail-indicator)))
                      section))
+         (location  (gastown-status--location))
+         (dir       (when (and location (string= role "polecat"))
+                      (expand-file-name
+                       (format "%s/polecats/%s/%s" rig-name name rig-name)
+                       location)))
          (key      (format "polecat:%s/%s" rig-name name))
          (expanded (gastown-status--item-expanded-p key))
          (row      (if (and session running)
                        (vui-button label
                          :no-decoration t
                          :help-echo (format "Show polecat in tmux: %s" session)
-                         :on-click (let ((sess session) (sock tmux-socket))
+                         :on-click (let ((sess session) (sock tmux-socket) (d dir))
                                      (lambda ()
-                                       (gastown-status--show-agent-tmux sess sock))))
+                                       (gastown-status--show-agent-tmux sess sock d))))
                      (vui-text label))))
     (if expanded
         (vui-vstack row (gastown-status--agent-detail-vnode agent))
