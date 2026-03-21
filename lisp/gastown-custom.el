@@ -47,14 +47,5 @@ for troubleshooting purposes."
                  (const :tag "Verbose (all output)" verbose))
   :group 'gastown)
 
-;;; UI Behavior
-
-(defcustom gastown-auto-refresh t
-  "Automatically refresh buffers after mutations.
-When enabled, gastown buffers will automatically refresh after
-operations like sling, done, or agent management."
-  :type 'boolean
-  :group 'gastown)
-
 (provide 'gastown-custom)
 ;;; gastown-custom.el ends here

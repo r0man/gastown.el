@@ -94,10 +94,6 @@ Handles both vectors (from `json-array-type' vector) and lists."
      :running (gastown-types--json-bool (alist-get 'running json))
      :pid (alist-get 'pid json))))
 
-(defun gastown-daemon-to-alist (obj)
-  "Convert OBJ (gastown-daemon) to alist."
-  `((running . ,(oref obj running))
-    (pid . ,(oref obj pid))))
 
 ;;; ============================================================
 ;;; Dolt Service
@@ -135,12 +131,6 @@ Handles both vectors (from `json-array-type' vector) and lists."
      :port (alist-get 'port json)
      :data-dir (alist-get 'data_dir json))))
 
-(defun gastown-dolt-service-to-alist (obj)
-  "Convert OBJ (gastown-dolt-service) to alist."
-  `((running . ,(oref obj running))
-    (pid . ,(oref obj pid))
-    (port . ,(oref obj port))
-    (data_dir . ,(oref obj data-dir))))
 
 ;;; ============================================================
 ;;; Tmux Service
@@ -184,13 +174,6 @@ Handles both vectors (from `json-array-type' vector) and lists."
      :session-count (alist-get 'session_count json)
      :socket-path (alist-get 'socket_path json))))
 
-(defun gastown-tmux-service-to-alist (obj)
-  "Convert OBJ (gastown-tmux-service) to alist."
-  `((socket . ,(oref obj socket))
-    (running . ,(oref obj running))
-    (pid . ,(oref obj pid))
-    (session_count . ,(oref obj session-count))
-    (socket_path . ,(oref obj socket-path))))
 
 ;;; ============================================================
 ;;; DND (Do Not Disturb)
@@ -222,11 +205,6 @@ Handles both vectors (from `json-array-type' vector) and lists."
      :level (alist-get 'level json)
      :agent (alist-get 'agent json))))
 
-(defun gastown-dnd-status-to-alist (obj)
-  "Convert OBJ (gastown-dnd-status) to alist."
-  `((enabled . ,(oref obj enabled))
-    (level . ,(oref obj level))
-    (agent . ,(oref obj agent))))
 
 ;;; ============================================================
 ;;; Overseer
@@ -270,13 +248,6 @@ Handles both vectors (from `json-array-type' vector) and lists."
      :source (alist-get 'source json)
      :unread-mail (alist-get 'unread_mail json))))
 
-(defun gastown-overseer-to-alist (obj)
-  "Convert OBJ (gastown-overseer) to alist."
-  `((name . ,(oref obj name))
-    (email . ,(oref obj email))
-    (username . ,(oref obj username))
-    (source . ,(oref obj source))
-    (unread_mail . ,(oref obj unread-mail))))
 
 ;;; ============================================================
 ;;; Agent
@@ -527,21 +498,6 @@ The hooks array is converted to a list of `gastown-hook-status' objects."
      :polecat-count (alist-get 'polecats json)
      :crew-count (alist-get 'crew json))))
 
-(defun gastown-rig-data-to-alist (obj)
-  "Convert OBJ (gastown-rig-data) to alist."
-  `((name . ,(oref obj name))
-    (polecats . ,(oref obj polecats))
-    (polecat_count . ,(oref obj polecat-count))
-    (crews . ,(oref obj crews))
-    (crew_count . ,(oref obj crew-count))
-    (has_witness . ,(oref obj has-witness))
-    (has_refinery . ,(oref obj has-refinery))
-    (hooks . ,(mapcar #'gastown-hook-status-to-alist (oref obj hooks)))
-    (agents . ,(mapcar #'gastown-agent-to-alist (oref obj agents)))
-    (beads_prefix . ,(oref obj beads-prefix))
-    (status . ,(oref obj status))
-    (witness . ,(oref obj witness))
-    (refinery . ,(oref obj refinery))))
 
 ;;; ============================================================
 ;;; Status (root)
@@ -647,12 +603,6 @@ The hooks array is converted to a list of `gastown-hook-status' objects."
      :session-id (alist-get 'session_id json)
      :running (gastown-types--json-bool (alist-get 'running json)))))
 
-(defun gastown-session-to-alist (obj)
-  "Convert OBJ (gastown-session) to alist."
-  `((rig . ,(oref obj rig))
-    (polecat . ,(oref obj polecat))
-    (session_id . ,(oref obj session-id))
-    (running . ,(oref obj running))))
 
 ;;; ============================================================
 ;;; Convoy
@@ -702,14 +652,6 @@ The hooks array is converted to a list of `gastown-hook-status' objects."
      :completed (alist-get 'completed json)
      :total (alist-get 'total json))))
 
-(defun gastown-convoy-data-to-alist (obj)
-  "Convert OBJ (gastown-convoy-data) to alist."
-  `((id . ,(oref obj id))
-    (title . ,(oref obj title))
-    (status . ,(oref obj status))
-    (created_at . ,(oref obj created-at))
-    (completed . ,(oref obj completed))
-    (total . ,(oref obj total))))
 
 ;;; ============================================================
 ;;; Mail Message
@@ -759,14 +701,6 @@ The hooks array is converted to a list of `gastown-hook-status' objects."
      :read (gastown-types--json-bool (alist-get 'read json))
      :priority (alist-get 'priority json))))
 
-(defun gastown-mail-message-to-alist (obj)
-  "Convert OBJ (gastown-mail-message) to alist."
-  `((id . ,(oref obj id))
-    (from . ,(oref obj from))
-    (subject . ,(oref obj subject))
-    (timestamp . ,(oref obj timestamp))
-    (read . ,(oref obj read))
-    (priority . ,(oref obj priority))))
 
 ;;; ============================================================
 ;;; Bead (from bd list --json)
@@ -799,11 +733,6 @@ For full Beads type support, use `beads-issue' from beads-types.el.")
      :title (alist-get 'title json)
      :status (alist-get 'status json))))
 
-(defun gastown-work-item-to-alist (obj)
-  "Convert OBJ (gastown-work-item) to alist."
-  `((id . ,(oref obj id))
-    (title . ,(oref obj title))
-    (status . ,(oref obj status))))
 
 ;;; ============================================================
 ;;; Polecat Entry (from gt polecat list --json)
@@ -838,23 +767,6 @@ For full Beads type support, use `beads-issue' from beads-types.el.")
   "Represents a polecat worker from `gt polecat list --json'.
 Mirrors the Go polecat.Polecat struct summary output.")
 
-(defun gastown-polecat-entry-from-json (json)
-  "Create a `gastown-polecat-entry' object from JSON alist."
-  (when json
-    (gastown-polecat-entry
-     :name (alist-get 'name json)
-     :rig (alist-get 'rig json)
-     :state (alist-get 'state json)
-     :issue (alist-get 'issue json)
-     :session-running (gastown-types--json-bool (alist-get 'session_running json)))))
-
-(defun gastown-polecat-entry-to-alist (obj)
-  "Convert OBJ (gastown-polecat-entry) to alist."
-  `((name . ,(oref obj name))
-    (rig . ,(oref obj rig))
-    (state . ,(oref obj state))
-    (issue . ,(oref obj issue))
-    (session_running . ,(oref obj session-running))))
 
 ;;; ============================================================
 ;;; Crew Worker (from gt crew list --json)
@@ -894,25 +806,6 @@ Mirrors the Go polecat.Polecat struct summary output.")
   "Represents a crew worker from `gt crew list --json'.
 Mirrors the Go crew.CrewWorker struct.")
 
-(defun gastown-crew-worker-data-from-json (json)
-  "Create a `gastown-crew-worker-data' object from JSON alist."
-  (when json
-    (gastown-crew-worker-data
-     :name (alist-get 'name json)
-     :rig (alist-get 'rig json)
-     :clone-path (alist-get 'clone_path json)
-     :branch (alist-get 'branch json)
-     :created-at (alist-get 'created_at json)
-     :updated-at (alist-get 'updated_at json))))
-
-(defun gastown-crew-worker-data-to-alist (obj)
-  "Convert OBJ (gastown-crew-worker-data) to alist."
-  `((name . ,(oref obj name))
-    (rig . ,(oref obj rig))
-    (clone_path . ,(oref obj clone-path))
-    (branch . ,(oref obj branch))
-    (created_at . ,(oref obj created-at))
-    (updated_at . ,(oref obj updated-at))))
 
 ;;; ============================================================
 ;;; Merge Request (from gt mq list --json)
@@ -967,31 +860,6 @@ Mirrors the Go crew.CrewWorker struct.")
   "Represents a merge request from `gt mq list --json'.
 Mirrors the Go refinery.MergeRequest struct.")
 
-(defun gastown-merge-request-from-json (json)
-  "Create a `gastown-merge-request' object from JSON alist."
-  (when json
-    (gastown-merge-request
-     :id (alist-get 'id json)
-     :branch (alist-get 'branch json)
-     :worker (alist-get 'worker json)
-     :issue-id (alist-get 'issue_id json)
-     :target-branch (alist-get 'target_branch json)
-     :created-at (alist-get 'created_at json)
-     :status (alist-get 'status json)
-     :close-reason (alist-get 'close_reason json)
-     :error (alist-get 'error json))))
-
-(defun gastown-merge-request-to-alist (obj)
-  "Convert OBJ (gastown-merge-request) to alist."
-  `((id . ,(oref obj id))
-    (branch . ,(oref obj branch))
-    (worker . ,(oref obj worker))
-    (issue_id . ,(oref obj issue-id))
-    (target_branch . ,(oref obj target-branch))
-    (created_at . ,(oref obj created-at))
-    (status . ,(oref obj status))
-    (close_reason . ,(oref obj close-reason))
-    (error . ,(oref obj error))))
 
 ;;; ============================================================
 ;;; Ready Command Types (from gt ready --json)
@@ -1064,10 +932,6 @@ Mirrors the Go refinery.MergeRequest struct.")
      :issues (mapcar #'gastown-ready-issue-from-json
                      (gastown-types--json-list (alist-get 'issues json))))))
 
-(defun gastown-ready-source-to-alist (obj)
-  "Convert OBJ (gastown-ready-source) to alist."
-  `((name . ,(oref obj name))
-    (issues . ,(mapcar #'gastown-ready-issue-to-alist (oref obj issues)))))
 
 ;;; ============================================================
 ;;; Status Buffer Section Types

@@ -75,10 +75,6 @@
   (unless (executable-find "dolt")
     (ert-skip "dolt executable not found")))
 
-(defun gastown-test-skip-unless-dolt-server ()
-  "Skip test if the test Dolt server is not running."
-  (unless gastown-test--dolt-server-port
-    (ert-skip "test Dolt server not available")))
 
 ;;; ============================================================
 ;;; Port Allocation
@@ -368,15 +364,6 @@ Sets environment variables globally for all test processes."
         (setenv "GT_ROOT" nil)
         (message "gastown-test: Dolt server started on port %d" port)))))
 
-(defun gastown-test-suite-teardown ()
-  "Stop the isolated Dolt server and restore environment.
-Call from Eldev configuration after running tests."
-  (gastown-test-stop-dolt-server)
-  ;; Restore saved environment
-  (dolist (entry gastown-test--saved-env)
-    (setenv (car entry) (cdr entry)))
-  (setq gastown-test--saved-env nil)
-  (message "gastown-test: Dolt server stopped"))
 
 ;;; ============================================================
 ;;; Utility Functions
