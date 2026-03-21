@@ -103,43 +103,6 @@ Set to nil to disable auto-refresh."
   "Mapping from role string to display icon.")
 
 ;;; ============================================================
-;;; Section Types (EIEIO data containers — no magit-section)
-;;; ============================================================
-;;
-;; These classes serve as typed containers for context detection
-;; (see `gastown-status-current-section' and gastown-context.el).
-;; They are attached to buffer text via `gastown-status-section'
-;; text property.
-
-(defclass gastown-services-section ()
-  nil
-  "Data container for the services overview line.")
-
-(defclass gastown-service-section ()
-  ((service :initarg :service :initform nil))
-  "Data container for an individual service.")
-
-(defclass gastown-agents-section ()
-  nil
-  "Data container for the global agents block.")
-
-(defclass gastown-agent-section ()
-  ((agent  :initarg :agent  :initform nil)
-   (parent :initarg :parent :initform nil))
-  "Data container for an individual agent row.")
-
-(defclass gastown-rig-section ()
-  ((rig    :initarg :rig    :initform nil)
-   (parent :initarg :parent :initform nil))
-  "Data container for a rig section.")
-
-(defclass gastown-polecat-section ()
-  ((polecat  :initarg :polecat  :initform nil)
-   (rig-name :initarg :rig-name :initform nil)
-   (parent   :initarg :parent   :initform nil))
-  "Data container for an individual polecat row.")
-
-;;; ============================================================
 ;;; Context Detection
 ;;; ============================================================
 

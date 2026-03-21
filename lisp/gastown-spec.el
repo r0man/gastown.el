@@ -29,6 +29,7 @@
 
 (require 'eieio)
 (require 'cl-lib)
+(require 'gastown-types)
 
 ;;; ============================================================
 ;;; Generic Method
@@ -41,31 +42,6 @@ The returned list is suitable for appending to a `gt' subcommand invocation.")
 ;;; ============================================================
 ;;; gastown-agent-spec
 ;;; ============================================================
-
-(defclass gastown-agent-spec ()
-  ((rig
-    :initarg :rig
-    :type (or null string)
-    :initform nil
-    :documentation "Filter to agents in this rig, or nil for all")
-   (role
-    :initarg :role
-    :type (or null string)
-    :initform nil
-    :documentation "Filter by role string: \"polecat\", \"witness\", \"refinery\", \"crew\".
-Nil means no role filter")
-   (running
-    :initarg :running
-    :type (or null boolean)
-    :initform nil
-    :documentation "When non-nil, filter to running agents only")
-   (order
-    :initarg :order
-    :type symbol
-    :initform 'name
-    :documentation "Sort order symbol: name, rig, or status.
-Default \\='name is omitted from CLI args."))
-  :documentation "Filter spec for the Gas Town agent/session list view.")
 
 (cl-defmethod gastown-spec--to-args ((spec gastown-agent-spec))
   "Return CLI args for SPEC as a flat list of strings."
@@ -84,21 +60,6 @@ Default \\='name is omitted from CLI args."))
 ;;; gastown-rig-spec
 ;;; ============================================================
 
-(defclass gastown-rig-spec ()
-  ((status
-    :initarg :status
-    :type (or null string)
-    :initform nil
-    :documentation "Filter to rigs with this status: \"operational\", \"degraded\",
-\"docked\", or \"parked\".  Nil means no status filter")
-   (order
-    :initarg :order
-    :type symbol
-    :initform 'name
-    :documentation "Sort order symbol: name or status.
-Default \\='name is omitted from CLI args."))
-  :documentation "Filter spec for the Gas Town rig list view.")
-
 (cl-defmethod gastown-spec--to-args ((spec gastown-rig-spec))
   "Return CLI args for SPEC as a flat list of strings."
   (let (args)
@@ -111,25 +72,6 @@ Default \\='name is omitted from CLI args."))
 ;;; ============================================================
 ;;; gastown-convoy-spec
 ;;; ============================================================
-
-(defclass gastown-convoy-spec ()
-  ((status
-    :initarg :status
-    :type (or null string)
-    :initform nil
-    :documentation "Filter to convoys with this status, or nil for all")
-   (order
-    :initarg :order
-    :type symbol
-    :initform 'newest
-    :documentation "Sort order symbol: newest or oldest.
-Default \\='newest is omitted from CLI args.")
-   (limit
-    :initarg :limit
-    :type integer
-    :initform 50
-    :documentation "Maximum number of convoys to show"))
-  :documentation "Filter spec for the Gas Town convoy list view.")
 
 (cl-defmethod gastown-spec--to-args ((spec gastown-convoy-spec))
   "Return CLI args for SPEC as a flat list of strings."
@@ -144,35 +86,6 @@ Default \\='newest is omitted from CLI args.")
 ;;; ============================================================
 ;;; gastown-mail-spec
 ;;; ============================================================
-
-(defclass gastown-mail-spec ()
-  ((unread-only
-    :initarg :unread-only
-    :type (or null boolean)
-    :initform nil
-    :documentation "When non-nil, show only unread messages")
-   (from
-    :initarg :from
-    :type (or null string)
-    :initform nil
-    :documentation "Filter to messages from this sender, or nil for all")
-   (priority
-    :initarg :priority
-    :type (or null string)
-    :initform nil
-    :documentation "Filter by priority tag, or nil for all")
-   (order
-    :initarg :order
-    :type symbol
-    :initform 'newest
-    :documentation "Sort order symbol: newest or oldest.
-Default \\='newest is omitted from CLI args.")
-   (limit
-    :initarg :limit
-    :type integer
-    :initform 100
-    :documentation "Maximum number of messages to show"))
-  :documentation "Filter spec for the Gas Town mail inbox view.")
 
 (cl-defmethod gastown-spec--to-args ((spec gastown-mail-spec))
   "Return CLI args for SPEC as a flat list of strings."

@@ -1069,5 +1069,273 @@ Mirrors the Go refinery.MergeRequest struct.")
   `((name . ,(oref obj name))
     (issues . ,(mapcar #'gastown-ready-issue-to-alist (oref obj issues)))))
 
+;;; ============================================================
+;;; Status Buffer Section Types
+;;; ============================================================
+;;
+;; These classes serve as typed containers for context detection
+;; (see `gastown-status-current-section' and gastown-context.el).
+;; They are attached to buffer text via `gastown-status-section'
+;; text property.
+
+(defclass gastown-services-section ()
+  nil
+  "Data container for the services overview line.")
+
+(defclass gastown-service-section ()
+  ((service :initarg :service :initform nil))
+  "Data container for an individual service.")
+
+(defclass gastown-agents-section ()
+  nil
+  "Data container for the global agents block.")
+
+(defclass gastown-agent-section ()
+  ((agent  :initarg :agent  :initform nil)
+   (parent :initarg :parent :initform nil))
+  "Data container for an individual agent row.")
+
+(defclass gastown-rig-section ()
+  ((rig    :initarg :rig    :initform nil)
+   (parent :initarg :parent :initform nil))
+  "Data container for a rig section.")
+
+(defclass gastown-polecat-section ()
+  ((polecat  :initarg :polecat  :initform nil)
+   (rig-name :initarg :rig-name :initform nil)
+   (parent   :initarg :parent   :initform nil))
+  "Data container for an individual polecat row.")
+
+;;; ============================================================
+;;; Completion Summary Types
+;;; ============================================================
+
+(defclass gastown-completion-rig ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Rig name.")
+   (beads-prefix
+    :initarg :beads-prefix
+    :type (or null string)
+    :initform nil
+    :documentation "Beads issue prefix for this rig.")
+   (status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Rig status (operational, degraded, docked, parked).")
+   (witness
+    :initarg :witness
+    :type (or null string)
+    :initform nil
+    :documentation "Witness service status.")
+   (refinery
+    :initarg :refinery
+    :type (or null string)
+    :initform nil
+    :documentation "Refinery service status.")
+   (polecats
+    :initarg :polecats
+    :type (or null integer)
+    :initform nil
+    :documentation "Number of polecats in this rig.")
+   (crew
+    :initarg :crew
+    :type (or null integer)
+    :initform nil
+    :documentation "Number of crew members."))
+  :documentation "A Gas Town rig summary.")
+
+(defclass gastown-completion-polecat ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Polecat name.")
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig this polecat belongs to.")
+   (state
+    :initarg :state
+    :type (or null string)
+    :initform nil
+    :documentation "Polecat state (working, idle, etc.).")
+   (issue
+    :initarg :issue
+    :type (or null string)
+    :initform nil
+    :documentation "Current issue the polecat is working on.")
+   (session-running
+    :initarg :session-running
+    :type boolean
+    :initform nil
+    :documentation "Whether the polecat session is running."))
+  :documentation "A Gas Town polecat summary.")
+
+(defclass gastown-completion-convoy ()
+  ((id
+    :initarg :id
+    :type string
+    :documentation "Convoy ID.")
+   (title
+    :initarg :title
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy title.")
+   (status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy status (open, completed, cancelled).")
+   (completed
+    :initarg :completed
+    :type (or null integer)
+    :initform nil
+    :documentation "Number of completed tasks.")
+   (total
+    :initarg :total
+    :type (or null integer)
+    :initform nil
+    :documentation "Total number of tasks."))
+  :documentation "A Gas Town convoy summary.")
+
+(defclass gastown-completion-formula ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Formula name.")
+   (type
+    :initarg :type
+    :type (or null string)
+    :initform nil
+    :documentation "Formula type (workflow, convoy, etc.).")
+   (description
+    :initarg :description
+    :type (or null string)
+    :initform nil
+    :documentation "Formula description.")
+   (vars
+    :initarg :vars
+    :type (or null integer)
+    :initform nil
+    :documentation "Number of variables in the formula."))
+  :documentation "A Gas Town formula summary.")
+
+(defclass gastown-completion-crew ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Crew worker name.")
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig this crew worker belongs to.")
+   (branch
+    :initarg :branch
+    :type (or null string)
+    :initform nil
+    :documentation "Current git branch.")
+   (has-session
+    :initarg :has-session
+    :type boolean
+    :initform nil
+    :documentation "Whether the crew worker has an active session."))
+  :documentation "A Gas Town crew worker summary.")
+
+;;; ============================================================
+;;; Filter Spec Types
+;;; ============================================================
+
+(defclass gastown-agent-spec ()
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Filter to agents in this rig, or nil for all")
+   (role
+    :initarg :role
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by role string: \"polecat\", \"witness\", \"refinery\", \"crew\".
+Nil means no role filter")
+   (running
+    :initarg :running
+    :type (or null boolean)
+    :initform nil
+    :documentation "When non-nil, filter to running agents only")
+   (order
+    :initarg :order
+    :type symbol
+    :initform 'name
+    :documentation "Sort order symbol: name, rig, or status.
+Default \\='name is omitted from CLI args."))
+  :documentation "Filter spec for the Gas Town agent/session list view.")
+
+(defclass gastown-rig-spec ()
+  ((status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Filter to rigs with this status: \"operational\", \"degraded\",
+\"docked\", or \"parked\".  Nil means no status filter")
+   (order
+    :initarg :order
+    :type symbol
+    :initform 'name
+    :documentation "Sort order symbol: name or status.
+Default \\='name is omitted from CLI args."))
+  :documentation "Filter spec for the Gas Town rig list view.")
+
+(defclass gastown-convoy-spec ()
+  ((status
+    :initarg :status
+    :type (or null string)
+    :initform nil
+    :documentation "Filter to convoys with this status, or nil for all")
+   (order
+    :initarg :order
+    :type symbol
+    :initform 'newest
+    :documentation "Sort order symbol: newest or oldest.
+Default \\='newest is omitted from CLI args.")
+   (limit
+    :initarg :limit
+    :type integer
+    :initform 50
+    :documentation "Maximum number of convoys to show"))
+  :documentation "Filter spec for the Gas Town convoy list view.")
+
+(defclass gastown-mail-spec ()
+  ((unread-only
+    :initarg :unread-only
+    :type (or null boolean)
+    :initform nil
+    :documentation "When non-nil, show only unread messages")
+   (from
+    :initarg :from
+    :type (or null string)
+    :initform nil
+    :documentation "Filter to messages from this sender, or nil for all")
+   (priority
+    :initarg :priority
+    :type (or null string)
+    :initform nil
+    :documentation "Filter by priority tag, or nil for all")
+   (order
+    :initarg :order
+    :type symbol
+    :initform 'newest
+    :documentation "Sort order symbol: newest or oldest.
+Default \\='newest is omitted from CLI args.")
+   (limit
+    :initarg :limit
+    :type integer
+    :initform 100
+    :documentation "Maximum number of messages to show"))
+  :documentation "Filter spec for the Gas Town mail inbox view.")
+
 (provide 'gastown-types)
 ;;; gastown-types.el ends here
