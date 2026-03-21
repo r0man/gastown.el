@@ -290,6 +290,12 @@ Load full role context.")
 Investigate past sessions.")
 
 
+(gastown-defcommand gastown-command-repair (gastown-command-global-options)
+  ()
+  :documentation "Represents gt repair command.
+Repair database identity and configuration issues.")
+
+
 (gastown-defcommand gastown-command-stale (gastown-command-global-options)
   ()
   :documentation "Represents gt stale command.

@@ -293,6 +293,24 @@ List merge queue entries.")
 
 ;;; Simple Work Commands
 
+(gastown-defcommand gastown-command-assign (gastown-command-global-options)
+  ()
+  :documentation "Represents gt assign command.
+Create a bead and hook it to a crew member.")
+
+
+(gastown-defcommand gastown-command-changelog (gastown-command-global-options)
+  ()
+  :documentation "Represents gt changelog command.
+Show completed work across rigs.")
+
+
+(gastown-defcommand gastown-command-mountain (gastown-command-global-options)
+  ()
+  :documentation "Represents gt mountain command.
+Activate Mountain-Eater on an epic for autonomous grinding.")
+
+
 (gastown-defcommand gastown-command-bead (gastown-command-global-options)
   ()
   :documentation "Represents gt bead command.
