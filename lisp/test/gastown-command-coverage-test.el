@@ -595,5 +595,69 @@
     (let ((result (gastown-reader-merge-strategy "Merge strategy: " nil nil)))
       (should (member result '("mr" "direct" "local"))))))
 
+;;; Directive command coverage
+
+(ert-deftest gastown-coverage-directive-show-class-exists ()
+  "gastown-command-directive-show class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-directive-show)))
+
+(ert-deftest gastown-coverage-directive-edit-class-exists ()
+  "gastown-command-directive-edit class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-directive-edit)))
+
+(ert-deftest gastown-coverage-directive-list-class-exists ()
+  "gastown-command-directive-list class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-directive-list)))
+
+(ert-deftest gastown-coverage-directive-transient-functions-exist ()
+  "All directive transient functions should be defined."
+  (require 'gastown-command-config)
+  (should (fboundp 'gastown-directive-show))
+  (should (fboundp 'gastown-directive-edit))
+  (should (fboundp 'gastown-directive-list)))
+
+(ert-deftest gastown-coverage-directive-menu-exists ()
+  "gastown-directive dispatch transient should exist."
+  (require 'gastown-command-config)
+  (should (fboundp 'gastown-directive)))
+
+(ert-deftest gastown-coverage-directive-show-cli-command ()
+  "gastown-command-directive-show should produce 'directive show' command line."
+  (require 'gastown-command-config)
+  (let ((cmd (make-instance 'gastown-command-directive-show)))
+    (should (member "directive" (gastown-command-line cmd)))
+    (should (member "show" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-directive-edit-cli-command ()
+  "gastown-command-directive-edit should produce 'directive edit' command line."
+  (require 'gastown-command-config)
+  (let ((cmd (make-instance 'gastown-command-directive-edit)))
+    (should (member "directive" (gastown-command-line cmd)))
+    (should (member "edit" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-directive-list-cli-command ()
+  "gastown-command-directive-list should produce 'directive list' command line."
+  (require 'gastown-command-config)
+  (let ((cmd (make-instance 'gastown-command-directive-list)))
+    (should (member "directive" (gastown-command-line cmd)))
+    (should (member "list" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-directive-edit-town-flag ()
+  "gastown-command-directive-edit should include --town flag when set."
+  (require 'gastown-command-config)
+  (let ((cmd (gastown-command-directive-edit :town t)))
+    (should (member "--town" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-directive-show-rig-option ()
+  "gastown-command-directive-show should include --rig option when set."
+  (require 'gastown-command-config)
+  (let ((cmd (gastown-command-directive-show :rig "sky")))
+    (let ((line (gastown-command-line cmd)))
+      (should (member "--rig" line))
+      (should (member "sky" line)))))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here

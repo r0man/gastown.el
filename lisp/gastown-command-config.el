@@ -7,7 +7,7 @@
 ;;; Commentary:
 
 ;; This module defines EIEIO classes for configuration commands:
-;; gt account, gt completion, gt config, gt disable, gt enable,
+;; gt account, gt completion, gt config, gt directive, gt disable, gt enable,
 ;; gt hooks, gt issue, gt plugin, gt shell, gt theme, gt uninstall.
 
 ;;; Code:
@@ -41,6 +41,99 @@ Generate shell completion scripts.")
   ()
   :documentation "Represents gt config command.
 Show or edit Gas Town configuration.")
+
+
+;;; Directive Commands
+
+(gastown-defcommand gastown-command-directive-show (gastown-command-global-options)
+  ((role
+    :initarg :role
+    :type (or null string)
+    :initform nil
+    :documentation "Role name to show directive for."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Role name (required)"
+    :class transient-option
+    :prompt "Role: "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name (default: auto-detect from cwd)."
+    :long-option "rig"
+    :option-type :string
+    :key "R"
+    :transient "Rig name"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Options"
+    :level 2
+    :order 2))
+  :documentation "Represents gt directive show command.
+Display the resolved directive content for a role with source annotation."
+  :cli-command "directive show")
+
+
+(gastown-defcommand gastown-command-directive-edit (gastown-command-global-options)
+  ((role
+    :initarg :role
+    :type (or null string)
+    :initform nil
+    :documentation "Role name to edit directive for."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Role name (required)"
+    :class transient-option
+    :prompt "Role: "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name (default: auto-detect from cwd)."
+    :long-option "rig"
+    :option-type :string
+    :key "R"
+    :transient "Rig name"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Options"
+    :level 2
+    :order 2)
+   (town
+    :initarg :town
+    :type boolean
+    :initform nil
+    :documentation "Edit town-level directive instead of rig-level."
+    :long-option "town"
+    :option-type :boolean
+    :key "t"
+    :transient "Edit town-level directive"
+    :class transient-switch
+    :argument "--town"
+    :transient-group "Options"
+    :level 2
+    :order 3))
+  :documentation "Represents gt directive edit command.
+Open the directive file for a role in $EDITOR."
+  :cli-command "directive edit")
+
+
+(gastown-defcommand gastown-command-directive-list (gastown-command-global-options)
+  ()
+  :documentation "Represents gt directive list command.
+List all directive files across town and rig levels."
+  :cli-command "directive list")
 
 
 ;;; Disable Command
@@ -121,6 +214,28 @@ Uninstall Gas Town components.")
 (beads-meta-define-transient gastown-command-config "gastown-config"
   "Show or edit Gas Town configuration.")
 
+;;;###autoload (autoload 'gastown-directive-show "gastown-command-config" nil t)
+(beads-meta-define-transient gastown-command-directive-show "gastown-directive-show"
+  "Show active directive for a role.")
+
+;;;###autoload (autoload 'gastown-directive-edit "gastown-command-config" nil t)
+(beads-meta-define-transient gastown-command-directive-edit "gastown-directive-edit"
+  "Edit directive for a role.")
+
+;;;###autoload (autoload 'gastown-directive-list "gastown-command-config" nil t)
+(beads-meta-define-transient gastown-command-directive-list "gastown-directive-list"
+  "List all directive files.")
+
+;;; Directive Dispatch Transient
+
+;;;###autoload (autoload 'gastown-directive "gastown-command-config" nil t)
+(transient-define-prefix gastown-directive ()
+  "Manage operator-provided role directives."
+  ["Directive Commands"
+   ("s" "Show directive" gastown-directive-show)
+   ("e" "Edit directive" gastown-directive-edit)
+   ("l" "List directives" gastown-directive-list)])
+
 ;;;###autoload (autoload 'gastown-disable "gastown-command-config" nil t)
 (beads-meta-define-transient gastown-command-disable "gastown-disable"
   "Disable a feature or plugin.")
@@ -169,6 +284,8 @@ Uninstall Gas Town components.")
    ("h" "Hooks" gastown-hooks)
    ("e" "Enable" gastown-enable)
    ("d" "Disable" gastown-disable)]
+  ["Directives"
+   ("D" "Directive..." gastown-directive)]
   ["Lifecycle"
    ("i" "Issue" gastown-issue)
    ("u" "Uninstall" gastown-uninstall)])
