@@ -490,7 +490,9 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
   "gastown-status--show-agent-tmux calls gastown-command--run-in-terminal."
   (let ((captured-cmd nil))
     (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
-               (lambda (cmd &rest _) (setq captured-cmd cmd) nil)))
+               (lambda (cmd &rest _) (setq captured-cmd cmd) nil))
+              ((symbol-function 'gastown-status--agent-working-dir)
+               (lambda (_session _socket) "/tmp/")))
       (gastown-status--show-agent-tmux "hq-mayor" nil))
     (should captured-cmd)
     (should (string-match-p "attach-session" captured-cmd))
@@ -500,7 +502,9 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
   "gastown-status--show-agent-tmux includes -L socket flag when socket is named."
   (let ((captured-cmd nil))
     (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
-               (lambda (cmd &rest _) (setq captured-cmd cmd) nil)))
+               (lambda (cmd &rest _) (setq captured-cmd cmd) nil))
+              ((symbol-function 'gastown-status--agent-working-dir)
+               (lambda (_session _socket) "/tmp/")))
       (gastown-status--show-agent-tmux "ge-nux" "gt"))
     (should (string-match-p "-L gt" captured-cmd))
     (should (string-match-p "ge-nux" captured-cmd))))
@@ -509,18 +513,31 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
   "gastown-status--show-agent-tmux omits -L when socket is \"default\"."
   (let ((captured-cmd nil))
     (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
-               (lambda (cmd &rest _) (setq captured-cmd cmd) nil)))
+               (lambda (cmd &rest _) (setq captured-cmd cmd) nil))
+              ((symbol-function 'gastown-status--agent-working-dir)
+               (lambda (_session _socket) "/tmp/")))
       (gastown-status--show-agent-tmux "hq-mayor" "default"))
     (should-not (string-match-p "-L" captured-cmd))
     (should (string-match-p "hq-mayor" captured-cmd))))
 
 (ert-deftest gastown-status-buffer-test-show-agent-tmux-uses-provided-dir ()
-  "gastown-status--show-agent-tmux passes DIR argument to run-in-terminal."
+  "gastown-status--show-agent-tmux passes explicit DIR argument to run-in-terminal."
   (let ((captured-dir nil))
     (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
                (lambda (_cmd _buf-name dir) (setq captured-dir dir) nil)))
       (gastown-status--show-agent-tmux "ge-nux" nil "/home/roman/gt/gastown_el/polecats/nux/gastown_el"))
     (should (equal captured-dir "/home/roman/gt/gastown_el/polecats/nux/gastown_el"))))
+
+(ert-deftest gastown-status-buffer-test-show-agent-tmux-queries-tmux-when-no-dir ()
+  "gastown-status--show-agent-tmux queries tmux working dir when DIR is nil."
+  (let ((captured-dir nil))
+    (cl-letf (((symbol-function 'gastown-command--run-in-terminal)
+               (lambda (_cmd _buf dir) (setq captured-dir dir) nil))
+              ((symbol-function 'gastown-status--agent-working-dir)
+               (lambda (_session _socket) "/home/roman/gt/beads_el/witness/")))
+      (let ((default-directory "/some/other/dir/"))
+        (gastown-status--show-agent-tmux "be-witness" nil)))
+    (should (equal captured-dir "/home/roman/gt/beads_el/witness/"))))
 
 (ert-deftest gastown-status-buffer-test-polecat-click-uses-worktree-dir ()
   "Clicking a running polecat row opens terminal in the polecat's worktree directory."
@@ -543,6 +560,32 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
       (should captured-dir)
       ;; location="/tmp/gt-test", rig="beads_el", polecat="jasper"
       (should (string-match-p "beads_el/polecats/jasper/beads_el" captured-dir)))))
+
+;;; Agent Working Directory Tests
+
+(ert-deftest gastown-status-buffer-test-agent-working-dir-from-tmux ()
+  "gastown-status--agent-working-dir queries tmux for pane_current_path."
+  (cl-letf (((symbol-function 'shell-command-to-string)
+             (lambda (_cmd) "/home/roman/gt/beads_el/witness\n")))
+    (should (equal (gastown-status--agent-working-dir "be-witness" nil)
+                   "/home/roman/gt/beads_el/witness/"))))
+
+(ert-deftest gastown-status-buffer-test-agent-working-dir-with-socket ()
+  "gastown-status--agent-working-dir uses -L flag for named socket."
+  (let ((captured-cmd nil))
+    (cl-letf (((symbol-function 'shell-command-to-string)
+               (lambda (cmd) (setq captured-cmd cmd) "/tmp\n")))
+      (gastown-status--agent-working-dir "hq-mayor" "gt"))
+    (should (string-match-p "-L gt" captured-cmd))
+    (should (string-match-p "hq-mayor" captured-cmd))))
+
+(ert-deftest gastown-status-buffer-test-agent-working-dir-fallback ()
+  "gastown-status--agent-working-dir falls back to default-directory on empty result."
+  (let ((default-directory "/fallback/dir/"))
+    (cl-letf (((symbol-function 'shell-command-to-string)
+               (lambda (_cmd) "")))
+      (should (equal (gastown-status--agent-working-dir "bad-session" nil)
+                     "/fallback/dir/")))))
 
 ;;; Context Detection Tests
 

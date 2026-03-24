@@ -361,11 +361,24 @@ no -L flag is used (the default server is addressed directly)."
       (format "tmux -L %s select-window -t %s" socket session)
     (format "tmux select-window -t %s" session)))
 
+(defun gastown-status--agent-working-dir (session socket)
+  "Return the working directory of the agent's tmux SESSION.
+SOCKET is the tmux -L socket name; nil or \"default\" uses the default server.
+Falls back to `default-directory' if the session path cannot be determined."
+  (let* ((cmd (if (and socket (not (string= socket "default")))
+                  (format "tmux -L %s display-message -t %s -p '#{pane_current_path}'" socket session)
+                (format "tmux display-message -t %s -p '#{pane_current_path}'" session)))
+         (path (string-trim (shell-command-to-string cmd))))
+    (if (and (not (string-empty-p path)) (file-directory-p path))
+        (file-name-as-directory path)
+      default-directory)))
+
 (defun gastown-status--show-agent-tmux (session socket &optional dir)
   "Open an Emacs terminal buffer showing the agent's tmux SESSION.
 SOCKET is the tmux -L socket name; nil or \"default\" uses the default server.
-DIR, when non-nil, sets the terminal buffer's `default-directory'; falls back
-to `default-directory' when not provided.
+DIR, when non-nil, sets the terminal buffer's `default-directory'; otherwise
+queries tmux for the agent's actual working directory, falling back to
+`default-directory' if unavailable.
 Uses `gastown-command--run-in-terminal' so the buffer respects
 `gastown-terminal-backend'."
   (let* ((tmux-cmd (if (and socket (not (string= socket "default")))
@@ -373,8 +386,9 @@ Uses `gastown-command--run-in-terminal' so the buffer respects
                      (format "tmux attach-session -t %s" session)))
          ;; Unset TMUX so nested attach works when Emacs is inside tmux.
          (cmd (format "env -u TMUX %s" tmux-cmd))
-         (buf-name (format "*gt-agent-%s*" session)))
-    (gastown-command--run-in-terminal cmd buf-name (or dir default-directory))))
+         (buf-name (format "*gt-agent-%s*" session))
+         (effective-dir (or dir (gastown-status--agent-working-dir session socket))))
+    (gastown-command--run-in-terminal cmd buf-name effective-dir)))
 
 ;;; ============================================================
 ;;; Async Data Fetch
