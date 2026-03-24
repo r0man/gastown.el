@@ -162,6 +162,7 @@ Available backends:
          (process-environment (cons "CLICOLOR_FORCE=1" process-environment))
          (buf (get-buffer-create buffer-name)))
     (with-current-buffer buf
+      (setq-local default-directory default-dir)
       (unless (derived-mode-p 'term-mode)
         (term-mode))
       (let ((proc (get-buffer-process buf)))
@@ -194,6 +195,7 @@ Available backends:
          (vterm-buffer-name buffer-name)
          (buf (vterm buffer-name)))
     (with-current-buffer buf
+      (setq-local default-directory default-dir)
       (setq-local vterm-kill-buffer-on-exit nil)
       (when-let ((proc (get-buffer-process buf)))
         (set-process-query-on-exit-flag proc nil)))
@@ -211,6 +213,7 @@ Available backends:
          (process-environment (cons "CLICOLOR_FORCE=1" process-environment))
          (buf (get-buffer-create buffer-name)))
     (with-current-buffer buf
+      (setq-local default-directory default-dir)
       (unless (derived-mode-p 'eat-mode)
         (eat-mode))
       (let ((proc (get-buffer-process buf)))

@@ -264,6 +264,52 @@ be caught and re-signaled as gastown-command-error with a readable message."
       (gastown-command--run-eat "cmd" "*test-buf*" "/tmp"))
     (should flag-cleared)))
 
+;;; default-directory tests
+
+(ert-deftest gastown-command-test-run-term-sets-default-directory ()
+  "run-term sets buffer's default-directory to the given dir."
+  (let ((buf-name (format "*gastown-test-term-dir-%s*" (random))))
+    (unwind-protect
+        (progn
+          (cl-letf (((symbol-function 'pop-to-buffer) #'ignore))
+            (gastown-command--run-term "sleep 60" buf-name "/tmp"))
+          (let ((buf (get-buffer buf-name)))
+            (should buf)
+            (should (equal (with-current-buffer buf default-directory) "/tmp"))))
+      (when-let ((buf (get-buffer buf-name)))
+        (when-let ((proc (get-buffer-process buf)))
+          (delete-process proc))
+        (kill-buffer buf)))))
+
+(ert-deftest gastown-command-test-run-vterm-sets-default-directory ()
+  "run-vterm sets buffer's default-directory to the given dir."
+  (skip-unless (gastown-command--vterm-available-p))
+  (let* ((test-buf (get-buffer-create "*gastown-test-vterm-dir*"))
+         (captured-dir nil))
+    (unwind-protect
+        (progn
+          (cl-letf (((symbol-function 'vterm) (lambda (_name) test-buf))
+                    ((symbol-function 'get-buffer-process) (lambda (_) nil)))
+            (gastown-command--run-vterm "cmd" "*gastown-test-vterm-dir*" "/tmp"))
+          (setq captured-dir (with-current-buffer test-buf default-directory))
+          (should (equal captured-dir "/tmp")))
+      (kill-buffer test-buf))))
+
+(ert-deftest gastown-command-test-run-eat-sets-default-directory ()
+  "run-eat sets buffer's default-directory to the given dir."
+  (skip-unless (gastown-command--eat-available-p))
+  (let* ((test-buf (get-buffer-create "*gastown-test-eat-dir*")))
+    (unwind-protect
+        (progn
+          (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) t))
+                    ((symbol-function 'process-live-p) (lambda (_) nil))
+                    ((symbol-function 'get-buffer-process) (lambda (_) nil))
+                    ((symbol-function 'eat-exec) #'ignore)
+                    ((symbol-function 'pop-to-buffer) #'ignore))
+            (gastown-command--run-eat "cmd" "*gastown-test-eat-dir*" "/tmp"))
+          (should (equal (with-current-buffer test-buf default-directory) "/tmp")))
+      (kill-buffer test-buf))))
+
 ;;; execute-interactive tilde expansion tests
 
 (ert-deftest gastown-command-test-execute-interactive-expands-tilde ()
