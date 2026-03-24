@@ -216,6 +216,47 @@ be caught and re-signaled as gastown-command-error with a readable message."
 
 ;;; Terminal backend no-query-on-exit tests
 
+(ert-deftest gastown-command-test-run-term-suppresses-kill-query-buffer-locally ()
+  "run-term sets kill-buffer-query-functions buffer-locally to skip process kill prompt."
+  (let ((buf-name (format "*gastown-test-term-kill-%s*" (random))))
+    (unwind-protect
+        (progn
+          (cl-letf (((symbol-function 'pop-to-buffer) #'ignore))
+            (gastown-command--run-term "sleep 60" buf-name "/tmp"))
+          (let ((buf (get-buffer buf-name)))
+            (should buf)
+            (with-current-buffer buf
+              (should-not (memq 'process-kill-buffer-query-function
+                                kill-buffer-query-functions)))))
+      (when-let ((buf (get-buffer buf-name)))
+        (when-let ((proc (get-buffer-process buf)))
+          (delete-process proc))
+        (kill-buffer buf)))))
+
+(ert-deftest gastown-command-test-run-vterm-suppresses-kill-query-buffer-locally ()
+  "run-vterm sets kill-buffer-query-functions buffer-locally to skip process kill prompt."
+  (skip-unless (gastown-command--vterm-available-p))
+  (with-temp-buffer
+    (cl-letf (((symbol-function 'vterm) (lambda (_name) (current-buffer)))
+              ((symbol-function 'get-buffer-process) (lambda (_) nil))
+              ((symbol-function 'gastown-terminal-mouse-mode) #'ignore))
+      (gastown-command--run-vterm "cmd" (buffer-name) "/tmp"))
+    (should-not (memq 'process-kill-buffer-query-function
+                      kill-buffer-query-functions))))
+
+(ert-deftest gastown-command-test-run-eat-suppresses-kill-query-buffer-locally ()
+  "run-eat sets kill-buffer-query-functions buffer-locally to skip process kill prompt."
+  (skip-unless (gastown-command--eat-available-p))
+  (with-temp-buffer
+    (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) t))
+              ((symbol-function 'process-live-p) (lambda (_) nil))
+              ((symbol-function 'get-buffer-process) (lambda (_) nil))
+              ((symbol-function 'eat-exec) #'ignore)
+              ((symbol-function 'pop-to-buffer) #'ignore))
+      (gastown-command--run-eat "cmd" (buffer-name) "/tmp"))
+    (should-not (memq 'process-kill-buffer-query-function
+                      kill-buffer-query-functions))))
+
 (ert-deftest gastown-command-test-run-term-clears-process-query-flag ()
   "run-term sets process-query-on-exit-flag nil so agent buffers need no kill confirmation."
   (let ((buf-name (format "*gastown-test-term-%s*" (random))))

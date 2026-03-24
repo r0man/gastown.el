@@ -174,6 +174,9 @@ Available backends:
                  (list "-c" (concat "cd " (shell-quote-argument default-dir)
                                     " && " cmd-string "; exit")))
       (term-char-mode)
+      (setq-local kill-buffer-query-functions
+                  (remq 'process-kill-buffer-query-function
+                        kill-buffer-query-functions))
       (when-let ((proc (get-buffer-process buf)))
         (set-process-query-on-exit-flag proc nil)))
     (pop-to-buffer buf)))
@@ -198,6 +201,9 @@ Available backends:
     (with-current-buffer buf
       (setq-local default-directory default-dir)
       (setq-local vterm-kill-buffer-on-exit nil)
+      (setq-local kill-buffer-query-functions
+                  (remq 'process-kill-buffer-query-function
+                        kill-buffer-query-functions))
       (gastown-terminal-mouse-mode 1)
       (when-let ((proc (get-buffer-process buf)))
         (set-process-query-on-exit-flag proc nil)))
@@ -224,6 +230,9 @@ Available backends:
       (eat-exec buf buffer-name shell-file-name nil
                 (list "-c" (concat "cd " (shell-quote-argument default-dir)
                                    " && " cmd-string "; exit")))
+      (setq-local kill-buffer-query-functions
+                  (remq 'process-kill-buffer-query-function
+                        kill-buffer-query-functions))
       (when-let ((proc (get-buffer-process buf)))
         (set-process-query-on-exit-flag proc nil)))
     (pop-to-buffer buf)))
