@@ -57,7 +57,8 @@
               ((symbol-function 'gastown-terminal--posn-col-row)
                (lambda (_) '(4 . 9)))
               ((symbol-function 'gastown-terminal--event-start) #'identity)
-              ((symbol-function 'posn-window) (lambda (_) (selected-window)))
+              ((symbol-function 'gastown-terminal--posn-window)
+               (lambda (_) (selected-window)))
               ((symbol-function 'window-buffer)
                (lambda (_) (current-buffer))))
       (with-temp-buffer
@@ -76,7 +77,8 @@
               ((symbol-function 'gastown-terminal--posn-col-row)
                (lambda (_) '(0 . 0)))
               ((symbol-function 'gastown-terminal--event-start) #'identity)
-              ((symbol-function 'posn-window) (lambda (_) (selected-window)))
+              ((symbol-function 'gastown-terminal--posn-window)
+               (lambda (_) (selected-window)))
               ((symbol-function 'window-buffer)
                (lambda (_) (current-buffer))))
       (with-temp-buffer
@@ -93,7 +95,8 @@
               ((symbol-function 'gastown-terminal--posn-col-row)
                (lambda (_) '(0 . 0)))
               ((symbol-function 'gastown-terminal--event-start) #'identity)
-              ((symbol-function 'posn-window) (lambda (_) (selected-window)))
+              ((symbol-function 'gastown-terminal--posn-window)
+               (lambda (_) (selected-window)))
               ((symbol-function 'window-buffer)
                (lambda (_) (current-buffer))))
       (with-temp-buffer
@@ -111,7 +114,8 @@
               ((symbol-function 'gastown-terminal--posn-col-row)
                (lambda (_) '(0 . 0)))
               ((symbol-function 'gastown-terminal--event-start) #'identity)
-              ((symbol-function 'posn-window) (lambda (_) (selected-window)))
+              ((symbol-function 'gastown-terminal--posn-window)
+               (lambda (_) (selected-window)))
               ((symbol-function 'window-buffer)
                (lambda (_) (current-buffer))))
       (with-temp-buffer

@@ -378,7 +378,21 @@
     :prompt "Max concurrent spawns: "
     :transient-group "Advanced"
     :level 2
-    :order 45))
+    :order 45)
+   (review-only
+    :initarg :review-only
+    :type boolean
+    :initform nil
+    :documentation "Mark work as review-only: assignee evaluates and reports back without merging."
+    :long-option "review-only"
+    :option-type :boolean
+    :key "e"
+    :transient "--review-only"
+    :class transient-switch
+    :argument "--review-only"
+    :transient-group "Advanced"
+    :level 2
+    :order 46))
   :documentation "Represents gt sling command.
 Assigns work to an agent — the unified work dispatch command.")
 

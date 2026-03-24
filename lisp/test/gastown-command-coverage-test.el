@@ -449,6 +449,11 @@
   (require 'gastown-command-sling)
   (should (slot-exists-p (make-instance 'gastown-command-sling) 'dry-run)))
 
+(ert-deftest gastown-coverage-sling-review-only-slot-exists ()
+  "gastown-command-sling should have a review-only slot."
+  (require 'gastown-command-sling)
+  (should (slot-exists-p (make-instance 'gastown-command-sling) 'review-only)))
+
 (ert-deftest gastown-coverage-sling-max-concurrent-slot-exists ()
   "gastown-command-sling should have a max-concurrent slot."
   (require 'gastown-command-sling)

@@ -19,12 +19,17 @@ Thin wrapper around `event-start' for testability."
 Thin wrapper around `posn-col-row' for testability."
   (posn-col-row pos))
 
+(defun gastown-terminal--posn-window (pos)
+  "Return the window of position POS.
+Thin wrapper around `posn-window' for testability."
+  (posn-window pos))
+
 (defun gastown-terminal--send-mouse-wheel (event button)
   "Send SGR mouse wheel escape sequence for BUTTON at EVENT position.
 Falls back to normal scrolling when not in a vterm buffer with a
 live process."
   (let* ((pos (gastown-terminal--event-start event))
-         (window (posn-window pos))
+         (window (gastown-terminal--posn-window pos))
          (coords (gastown-terminal--posn-col-row pos))
          (col (1+ (car coords)))
          (row (1+ (cdr coords))))
