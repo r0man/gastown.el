@@ -82,7 +82,7 @@
       (should (equal sent "\e[<65;1;1M")))))
 
 (ert-deftest gastown-terminal-test-fallback-when-not-vterm ()
-  "Falls back to mwheel-scroll when not in vterm-mode."
+  "Falls back to `mwheel-scroll' when not in vterm-mode."
   (let ((fell-back nil))
     (cl-letf (((symbol-function 'derived-mode-p) (lambda (&rest _) nil))
               ((symbol-function 'get-buffer-process) (lambda (_) nil))
