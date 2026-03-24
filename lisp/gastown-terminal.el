@@ -27,12 +27,12 @@ live process."
         (mwheel-scroll event)))))
 
 (defun gastown-terminal-send-mouse-wheel-up (event)
-  "Send mouse wheel up to the terminal process."
+  "Send mouse wheel up EVENT to the terminal process."
   (interactive "e")
   (gastown-terminal--send-mouse-wheel event 64))
 
 (defun gastown-terminal-send-mouse-wheel-down (event)
-  "Send mouse wheel down to the terminal process."
+  "Send mouse wheel down EVENT to the terminal process."
   (interactive "e")
   (gastown-terminal--send-mouse-wheel event 65))
 
