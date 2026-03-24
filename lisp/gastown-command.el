@@ -48,6 +48,7 @@
 (declare-function vterm "vterm")
 (declare-function eat-mode "eat")
 (declare-function eat-exec "eat")
+(declare-function gastown-terminal-mouse-mode "gastown-terminal")
 (declare-function term-mode "term")
 (declare-function term-exec "term")
 (declare-function term-char-mode "term")
@@ -195,6 +196,7 @@ Available backends:
          (buf (vterm buffer-name)))
     (with-current-buffer buf
       (setq-local vterm-kill-buffer-on-exit nil)
+      (gastown-terminal-mouse-mode 1)
       (when-let ((proc (get-buffer-process buf)))
         (set-process-query-on-exit-flag proc nil)))
     buf))
