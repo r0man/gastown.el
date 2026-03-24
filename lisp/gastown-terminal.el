@@ -9,13 +9,23 @@
 
 ;;; Code:
 
+(defun gastown-terminal--event-start (event)
+  "Return the start position of EVENT.
+Thin wrapper around `event-start' for testability."
+  (event-start event))
+
+(defun gastown-terminal--posn-col-row (pos)
+  "Return the column/row of position POS.
+Thin wrapper around `posn-col-row' for testability."
+  (posn-col-row pos))
+
 (defun gastown-terminal--send-mouse-wheel (event button)
   "Send SGR mouse wheel escape sequence for BUTTON at EVENT position.
 Falls back to normal scrolling when not in a vterm buffer with a
 live process."
-  (let* ((pos (event-start event))
+  (let* ((pos (gastown-terminal--event-start event))
          (window (posn-window pos))
-         (coords (posn-col-row pos))
+         (coords (gastown-terminal--posn-col-row pos))
          (col (1+ (car coords)))
          (row (1+ (cdr coords))))
     (with-current-buffer (window-buffer window)
