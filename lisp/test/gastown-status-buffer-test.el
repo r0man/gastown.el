@@ -464,7 +464,9 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
                 ((symbol-function 'start-process-shell-command)
                  (lambda (&rest _) (setq start-process-called t) nil))
                 ((symbol-function 'gastown-command--run-in-terminal)
-                 (lambda (cmd &rest _) (setq terminal-cmd cmd) nil)))
+                 (lambda (cmd &rest _) (setq terminal-cmd cmd) nil))
+                ((symbol-function 'gastown-status--agent-working-dir)
+                 (lambda (_session _socket) "/tmp/")))
         ;; Find and activate the button whose help-echo matches "hq-mayor"
         (goto-char (point-min))
         (let ((found nil))
@@ -566,7 +568,9 @@ Returns t when found, nil otherwise.  Call after `gastown-status--render'."
 (ert-deftest gastown-status-buffer-test-agent-working-dir-from-tmux ()
   "gastown-status--agent-working-dir queries tmux for pane_current_path."
   (cl-letf (((symbol-function 'shell-command-to-string)
-             (lambda (_cmd) "/home/roman/gt/beads_el/witness\n")))
+             (lambda (_cmd) "/home/roman/gt/beads_el/witness\n"))
+            ((symbol-function 'file-directory-p)
+             (lambda (_path) t)))
     (should (equal (gastown-status--agent-working-dir "be-witness" nil)
                    "/home/roman/gt/beads_el/witness/"))))
 
