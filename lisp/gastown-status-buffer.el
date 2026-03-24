@@ -373,6 +373,15 @@ Falls back to `default-directory' if the session path cannot be determined."
         (file-name-as-directory path)
       default-directory)))
 
+(defun gastown-status--tmux-session-exists-p (session socket)
+  "Return non-nil if tmux SESSION exists on SOCKET.
+SOCKET is the tmux -L socket name; nil or \"default\" uses the default server."
+  (let ((args (append
+               (when (and socket (not (string= socket "default")))
+                 (list "-L" socket))
+               (list "has-session" "-t" session))))
+    (= 0 (apply #'call-process "tmux" nil nil nil args))))
+
 (defun gastown-status--show-agent-tmux (session socket &optional dir)
   "Open an Emacs terminal buffer showing the agent's tmux SESSION.
 SOCKET is the tmux -L socket name; nil or \"default\" uses the default server.
@@ -380,7 +389,10 @@ DIR, when non-nil, sets the terminal buffer's `default-directory'; otherwise
 queries tmux for the agent's actual working directory, falling back to
 `default-directory' if unavailable.
 Uses `gastown-command--run-in-terminal' so the buffer respects
-`gastown-terminal-backend'."
+`gastown-terminal-backend'.
+Signals a user-error if the tmux session does not exist."
+  (unless (gastown-status--tmux-session-exists-p session socket)
+    (user-error "Can't find session: %s (agent may have stopped)" session))
   (let* ((tmux-cmd (if (and socket (not (string= socket "default")))
                        (format "tmux -L %s attach-session -t %s" socket session)
                      (format "tmux attach-session -t %s" session)))
