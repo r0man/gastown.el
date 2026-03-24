@@ -238,6 +238,58 @@ Hand off to a fresh session, work continues from hook.")
 Remove work from an agent's hook.")
 
 
+;;; MQ Post-Merge Command
+
+(gastown-defcommand gastown-command-mq-post-merge (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (mr-id
+    :initarg :mr-id
+    :type (or null string)
+    :initform nil
+    :documentation "Merge request bead ID."
+    :positional 2
+    :option-type :string
+    :key "m"
+    :transient "MR bead ID (required)"
+    :class transient-option
+    :prompt "MR ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Required"
+    :level 1
+    :order 2)
+   (skip-branch-delete
+    :initarg :skip-branch-delete
+    :type boolean
+    :initform nil
+    :documentation "Skip remote branch deletion."
+    :long-option "skip-branch-delete"
+    :option-type :boolean
+    :key "s"
+    :transient "--skip-branch-delete"
+    :class transient-switch
+    :argument "--skip-branch-delete"
+    :transient-group "Options"
+    :level 2
+    :order 3))
+  :documentation "Represents gt mq post-merge command.
+Run post-merge cleanup: close MR bead, close source issue, delete remote branch."
+  :cli-command "mq post-merge")
+
+
 ;;; MQ List Command
 
 (gastown-defcommand gastown-command-mq-list (gastown-command-global-options)
@@ -290,6 +342,10 @@ List merge queue entries.")
 ;;;###autoload (autoload 'gastown-mq-list "gastown-command-work" nil t)
 (beads-meta-define-transient gastown-command-mq-list "gastown-mq-list"
   "List merge queue entries.")
+
+;;;###autoload (autoload 'gastown-mq-post-merge "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-post-merge "gastown-mq-post-merge"
+  "Run post-merge cleanup (close MR, delete branch).")
 
 ;;; Simple Work Commands
 
@@ -509,7 +565,8 @@ Show work list.")
 (transient-define-prefix gastown-mq ()
   "Manage the Gas Town merge queue."
   ["Merge Queue"
-   ("l" "List merge queue" gastown-mq-list)])
+   ("l" "List merge queue" gastown-mq-list)
+   ("p" "Post-merge cleanup" gastown-mq-post-merge)])
 
 ;;; Work Management Dispatch Transient
 

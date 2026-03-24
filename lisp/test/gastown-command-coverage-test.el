@@ -523,6 +523,48 @@
                                         :transient-reader)
               'gastown-reader-rig-name)))
 
+;;; MQ post-merge command coverage
+
+(ert-deftest gastown-coverage-mq-post-merge-class-exists ()
+  "gastown-command-mq-post-merge class should exist."
+  (require 'gastown-command-work)
+  (should (find-class 'gastown-command-mq-post-merge)))
+
+(ert-deftest gastown-coverage-mq-post-merge-cli-command ()
+  "gastown-command-mq-post-merge should include 'post-merge' in command line."
+  (require 'gastown-command-work)
+  (let ((cmd (make-instance 'gastown-command-mq-post-merge)))
+    (should (member "post-merge" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-mq-post-merge-cli-command-includes-mq ()
+  "gastown-command-mq-post-merge should include 'mq' in command line."
+  (require 'gastown-command-work)
+  (let ((cmd (make-instance 'gastown-command-mq-post-merge)))
+    (should (member "mq" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-mq-post-merge-rig-reader-wired ()
+  "gastown-command-mq-post-merge rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-post-merge 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-mq-post-merge-mr-id-reader-wired ()
+  "gastown-command-mq-post-merge mr-id slot should use gastown-reader-bead-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-post-merge 'mr-id
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-mq-post-merge-skip-branch-delete-flag ()
+  "gastown-command-mq-post-merge with skip-branch-delete should include flag."
+  (require 'gastown-command-work)
+  (let ((cmd (make-instance 'gastown-command-mq-post-merge
+                            :skip-branch-delete t
+                            :rig "gastown"
+                            :mr-id "ge-mr-abc")))
+    (should (member "--skip-branch-delete" (gastown-command-line cmd)))))
+
 ;;; New reader function tests
 
 (ert-deftest gastown-coverage-reader-convoy-id-defined ()
