@@ -48,7 +48,6 @@
 (declare-function vterm "vterm")
 (declare-function eat-mode "eat")
 (declare-function eat-exec "eat")
-(declare-function gastown-terminal-mouse-mode "gastown-terminal")
 (declare-function term-mode "term")
 (declare-function term-exec "term")
 (declare-function term-char-mode "term")
@@ -204,7 +203,6 @@ Available backends:
       (setq-local kill-buffer-query-functions
                   (remq 'process-kill-buffer-query-function
                         kill-buffer-query-functions))
-      (gastown-terminal-mouse-mode 1)
       (when-let ((proc (get-buffer-process buf)))
         (set-process-query-on-exit-flag proc nil)))
     buf))

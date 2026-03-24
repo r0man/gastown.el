@@ -238,8 +238,7 @@ be caught and re-signaled as gastown-command-error with a readable message."
   (skip-unless (gastown-command--vterm-available-p))
   (with-temp-buffer
     (cl-letf (((symbol-function 'vterm) (lambda (_name) (current-buffer)))
-              ((symbol-function 'get-buffer-process) (lambda (_) nil))
-              ((symbol-function 'gastown-terminal-mouse-mode) #'ignore))
+              ((symbol-function 'get-buffer-process) (lambda (_) nil)))
       (gastown-command--run-vterm "cmd" (buffer-name) "/tmp"))
     (should-not (memq 'process-kill-buffer-query-function
                       kill-buffer-query-functions))))

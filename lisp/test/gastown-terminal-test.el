@@ -122,5 +122,38 @@
         (gastown-terminal--send-mouse-wheel 'fake-event 64))
       (should-not sent))))
 
+;;; Hook registration tests
+
+(ert-deftest gastown-terminal-test-vterm-mode-hook-registered ()
+  "gastown-terminal--vterm-setup is registered in vterm-mode-hook."
+  (should (memq #'gastown-terminal--vterm-setup vterm-mode-hook)))
+
+(ert-deftest gastown-terminal-test-vterm-copy-mode-hook-registered ()
+  "gastown-terminal--vterm-copy-mode-setup is registered in vterm-copy-mode-hook."
+  (should (memq #'gastown-terminal--vterm-copy-mode-setup vterm-copy-mode-hook)))
+
+(ert-deftest gastown-terminal-test-vterm-setup-enables-mouse-mode ()
+  "gastown-terminal--vterm-setup enables gastown-terminal-mouse-mode."
+  (with-temp-buffer
+    (gastown-terminal--vterm-setup)
+    (should gastown-terminal-mouse-mode)
+    (gastown-terminal-mouse-mode -1)))
+
+(ert-deftest gastown-terminal-test-copy-mode-setup-disables-mouse-mode ()
+  "gastown-terminal--vterm-copy-mode-setup disables mouse mode when copy mode is on."
+  (with-temp-buffer
+    (gastown-terminal-mouse-mode 1)
+    (let ((vterm-copy-mode t))
+      (gastown-terminal--vterm-copy-mode-setup))
+    (should-not gastown-terminal-mouse-mode)))
+
+(ert-deftest gastown-terminal-test-copy-mode-setup-reenables-mouse-mode ()
+  "gastown-terminal--vterm-copy-mode-setup re-enables mouse mode when copy mode exits."
+  (with-temp-buffer
+    (let ((vterm-copy-mode nil))
+      (gastown-terminal--vterm-copy-mode-setup))
+    (should gastown-terminal-mouse-mode)
+    (gastown-terminal-mouse-mode -1)))
+
 (provide 'gastown-terminal-test)
 ;;; gastown-terminal-test.el ends here

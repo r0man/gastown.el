@@ -9,6 +9,8 @@
 
 ;;; Code:
 
+(defvar vterm-copy-mode)
+
 (defun gastown-terminal--event-start (event)
   "Return the start position of EVENT.
 Thin wrapper around `event-start' for testability."
@@ -68,6 +70,21 @@ scrolling the Emacs buffer."
                                                          (symbol-name dir))))
                               fn))))
             map))
+
+;;; Vterm integration
+
+(defun gastown-terminal--vterm-setup ()
+  "Enable `gastown-terminal-mouse-mode' in a vterm buffer."
+  (gastown-terminal-mouse-mode 1))
+
+(defun gastown-terminal--vterm-copy-mode-setup ()
+  "Toggle `gastown-terminal-mouse-mode' based on `vterm-copy-mode' state.
+Disables mouse forwarding while in copy mode so the user can scroll
+the buffer normally, then re-enables it when copy mode exits."
+  (gastown-terminal-mouse-mode (if vterm-copy-mode -1 1)))
+
+(add-hook 'vterm-mode-hook #'gastown-terminal--vterm-setup)
+(add-hook 'vterm-copy-mode-hook #'gastown-terminal--vterm-copy-mode-setup)
 
 (provide 'gastown-terminal)
 ;;; gastown-terminal.el ends here
