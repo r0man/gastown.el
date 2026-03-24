@@ -530,6 +530,23 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
         (vui-vstack row (gastown-status--agent-detail-vnode agent))
       row)))
 
+(defun gastown-status--crew-action (action crew-name)
+  "Run `gt crew ACTION CREW-NAME' asynchronously.
+ACTION is either \"start\" or \"stop\".
+Refreshes the status buffer after the command completes."
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (buf (get-buffer gastown-status-buffer-name)))
+    (message "gt crew %s %s..." action crew-name)
+    (make-process
+     :name (format "gastown-crew-%s" action)
+     :command (list exe "crew" action crew-name)
+     :connection-type 'pipe
+     :sentinel (lambda (_proc event)
+                 (when (string-prefix-p "finished" event)
+                   (message "gt crew %s %s: done" action crew-name)
+                   (when buf
+                     (gastown-status-do-refresh buf)))))))
+
 (defun gastown-status--polecat-line-vnode (agent rig-name &optional rig-section tmux-socket)
   "Build a crew/polecat AGENT (`gastown-agent') row vnode.
 RIG-NAME is the rig's name string.  RIG-SECTION is the parent section.
@@ -568,10 +585,29 @@ TMUX-SOCKET is the tmux -L socket name for the switch-to-session action."
                          :on-click (let ((sess session) (sock tmux-socket) (d dir))
                                      (lambda ()
                                        (gastown-status--show-agent-tmux sess sock d))))
-                     (vui-text label))))
+                     (vui-text label)))
+         (action-btn
+          (when (string= role "crew")
+            (if running
+                (vui-button " [stop]"
+                  :no-decoration t
+                  :face 'gastown-status-stopped
+                  :help-echo (format "Stop crew member: %s" name)
+                  :on-click (let ((n name))
+                              (lambda ()
+                                (gastown-status--crew-action "stop" n))))
+              (vui-button " [start]"
+                :no-decoration t
+                :help-echo (format "Start crew member: %s" name)
+                :on-click (let ((n name))
+                            (lambda ()
+                              (gastown-status--crew-action "start" n)))))))
+         (row-line (if action-btn
+                       (vui-hstack :spacing 0 row action-btn)
+                     row)))
     (if expanded
-        (vui-vstack row (gastown-status--agent-detail-vnode agent))
-      row)))
+        (vui-vstack row-line (gastown-status--agent-detail-vnode agent))
+      row-line)))
 
 ;;; ============================================================
 ;;; Rig Component (collapsible, local state)
