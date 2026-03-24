@@ -56,6 +56,9 @@
                          (gastown-agent :name "roman" :role "crew" :running nil
                                         :unread-mail 0 :agent-info "claude/sonnet"
                                         :session "be-crew-roman")
+                         (gastown-agent :name "fred" :role "crew" :running t
+                                        :unread-mail 0 :agent-info "claude/sonnet"
+                                        :session "be-crew-fred")
                          (gastown-agent :name "jasper" :role "polecat" :running t
                                         :unread-mail 0 :agent-info "claude"
                                         :session "be-jasper")
@@ -858,6 +861,85 @@ received it as a single argument."
       (insert "\n")
       (goto-char (point-min))
       (should (eq sec (gastown-status--find-section-on-line))))))
+
+;;; Crew Start/Stop Action Tests
+
+(ert-deftest gastown-status-buffer-test-crew-action-function-defined ()
+  "gastown-status--crew-action must be defined."
+  (should (fboundp 'gastown-status--crew-action)))
+
+(ert-deftest gastown-status-buffer-test-crew-start-button-rendered ()
+  "Non-running crew member renders a [start] action button."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should (gastown-status-buffer-test--find-button-echo "Start crew member: roman"))))
+
+(ert-deftest gastown-status-buffer-test-crew-stop-button-rendered ()
+  "Running crew member renders a [stop] action button."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should (gastown-status-buffer-test--find-button-echo "Stop crew member: fred"))))
+
+(ert-deftest gastown-status-buffer-test-crew-no-start-for-polecat ()
+  "Polecat (non-running) does NOT get a [start] button."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should-not (gastown-status-buffer-test--find-button-echo "Start crew member: obsidian"))))
+
+(ert-deftest gastown-status-buffer-test-crew-start-calls-gt-crew ()
+  "Clicking [start] on a stopped crew member calls gt crew start."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (let ((captured-cmd nil))
+      (cl-letf (((symbol-function 'make-process)
+                 (lambda (&rest args)
+                   (setq captured-cmd (plist-get args :command))
+                   nil)))
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when (and w
+                         (let ((echo (widget-get w :help-echo)))
+                           (and (stringp echo)
+                                (string-match-p "Start crew member: roman" echo))))
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      (should captured-cmd)
+      (should (member "crew" captured-cmd))
+      (should (member "start" captured-cmd))
+      (should (member "roman" captured-cmd)))))
+
+(ert-deftest gastown-status-buffer-test-crew-stop-calls-gt-crew ()
+  "Clicking [stop] on a running crew member calls gt crew stop."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (let ((captured-cmd nil))
+      (cl-letf (((symbol-function 'make-process)
+                 (lambda (&rest args)
+                   (setq captured-cmd (plist-get args :command))
+                   nil)))
+        (goto-char (point-min))
+        (let ((found nil))
+          (while (and (not found) (< (point) (point-max)))
+            (let ((w (widget-at (point))))
+              (when (and w
+                         (let ((echo (widget-get w :help-echo)))
+                           (and (stringp echo)
+                                (string-match-p "Stop crew member: fred" echo))))
+                (widget-apply-action w)
+                (setq found t)))
+            (forward-char 1))))
+      (should captured-cmd)
+      (should (member "crew" captured-cmd))
+      (should (member "stop" captured-cmd))
+      (should (member "fred" captured-cmd)))))
 
 (provide 'gastown-status-buffer-test)
 ;;; gastown-status-buffer-test.el ends here
