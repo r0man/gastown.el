@@ -1011,5 +1011,58 @@ received it as a single argument."
       (should (member "stop" captured-cmd))
       (should (member "fred" captured-cmd)))))
 
+;;; Rendering Tests — Timestamp
+
+;; Helper component: wraps gastown-status--full-content-vnode with an explicit
+;; timestamp so tests can verify timestamp rendering without the async component.
+(vui-defcomponent gastown-status-test-with-ts (data ts)
+  "Test-only static render with explicit timestamp TS."
+  :render
+  (gastown-status--full-content-vnode data ts))
+
+(defun gastown-status-buffer-test--render-with-ts (data ts)
+  "Mount DATA into current buffer using explicit timestamp TS."
+  (vui-mount
+   (vui-component 'gastown-status-test-with-ts :data data :ts ts)
+   (buffer-name)))
+
+(ert-deftest gastown-status-buffer-test-render-no-timestamp-by-default ()
+  "Synchronous render (no timestamp arg) shows no 'Last updated' line."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should-not (search-forward "Last updated:" nil t))))
+
+(ert-deftest gastown-status-buffer-test-full-content-with-timestamp ()
+  "gastown-status--full-content-vnode with timestamp renders 'Last updated' line."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (let ((ts (encode-time 0 30 14 1 1 2026)))
+      (gastown-status-buffer-test--render-with-ts
+       gastown-status-buffer-test--sample-data ts))
+    (goto-char (point-min))
+    (should (search-forward "Last updated:" nil t))))
+
+(ert-deftest gastown-status-buffer-test-full-content-nil-timestamp-no-line ()
+  "gastown-status--full-content-vnode with nil timestamp omits 'Last updated' line."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status-buffer-test--render-with-ts
+     gastown-status-buffer-test--sample-data nil)
+    (goto-char (point-min))
+    (should-not (search-forward "Last updated:" nil t))))
+
+(ert-deftest gastown-status-buffer-test-full-content-timestamp-format ()
+  "Timestamp line shows HH:MM:SS format matching the supplied time."
+  (with-temp-buffer
+    (gastown-status-mode)
+    ;; Encode 14:30:00 on 2026-01-01
+    (let ((ts (encode-time 0 30 14 1 1 2026)))
+      (gastown-status-buffer-test--render-with-ts
+       gastown-status-buffer-test--sample-data ts))
+    (goto-char (point-min))
+    (should (search-forward "Last updated: 14:30:00" nil t))))
+
 (provide 'gastown-status-buffer-test)
 ;;; gastown-status-buffer-test.el ends here

@@ -821,8 +821,12 @@ eliminating the blank loading flash."
      (data
       (gastown-status--full-content-vnode
        data
-       ;; Show timestamp only when full data has arrived
-       (when (eq full-status 'ready) (current-time)))))))
+       ;; Show current time when full data just arrived; retain the
+       ;; stale timestamp while a refresh is in-flight so the
+       ;; "Last updated" line never disappears (no flicker).
+       (if (eq full-status 'ready)
+           (current-time)
+         (car last-ts-ref)))))))
 
 ;;; ============================================================
 ;;; Main Render (synchronous, for testing)
