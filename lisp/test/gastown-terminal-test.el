@@ -11,6 +11,8 @@
 (require 'ert)
 (require 'gastown-terminal)
 
+(defvar vterm-copy-mode)
+
 ;;; Minor mode tests
 
 (ert-deftest gastown-terminal-test-mode-defines-keymap ()
