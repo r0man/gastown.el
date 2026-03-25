@@ -1161,5 +1161,53 @@ received it as a single argument."
     (goto-char (point-min))
     (should (search-forward "Last updated: 14:30:00" nil t))))
 
+(ert-deftest gastown-status-buffer-test-timestamp-updates-on-refresh ()
+  "Timestamp in async component updates when new full data arrives on refresh.
+
+The inline eq-based ref update must fire when a freshly-resolved data object
+differs by identity from the previously cached one, advancing last-ts-ref."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (let* ((full-resolve nil)
+           (time-seq (list (encode-time 0 0 10 1 1 2026)   ; 10:00:00 — first load
+                           (encode-time 0 30 14 1 1 2026))) ; 14:30:00 — after refresh
+           (time-idx 0)
+           (buf (current-buffer))
+           ;; Two structurally-equal but distinct objects simulating two fetch results.
+           (data1 gastown-status-buffer-test--sample-data)
+           (data2 (gastown-gt-status
+                   :name (oref data1 name)
+                   :location (oref data1 location)
+                   :overseer (oref data1 overseer)
+                   :dnd (oref data1 dnd)
+                   :daemon (oref data1 daemon)
+                   :dolt (oref data1 dolt)
+                   :tmux (oref data1 tmux)
+                   :agents (oref data1 agents)
+                   :rigs (oref data1 rigs))))
+      (cl-letf (((symbol-function 'gastown-status--async-fetch)
+                 (lambda (resolve _reject &optional fast)
+                   (unless fast (setq full-resolve resolve))
+                   nil))
+                ((symbol-function 'current-time)
+                 (lambda ()
+                   (prog1 (nth time-idx time-seq)
+                     (setq time-idx (min (1+ time-idx)
+                                         (1- (length time-seq))))))))
+        ;; Mount: both fetches start (pending), nothing resolves yet.
+        (vui-mount (vui-component 'gastown-status-app) (buffer-name))
+        ;; Resolve the first full fetch outside the render — immediate re-render.
+        (funcall full-resolve data1)
+        ;; First load: should show 10:00:00
+        (goto-char (point-min))
+        (should (search-forward "Last updated: 10:00:00" nil t))
+        ;; Increment refresh-tick — new pending fetches start.
+        (gastown-status-do-refresh buf)
+        ;; Resolve the second full fetch with a fresh data object.
+        (funcall full-resolve data2)
+        ;; After refresh: should show 14:30:00 (advanced time, new data object).
+        (goto-char (point-min))
+        (should (search-forward "Last updated: 14:30:00" nil t))))))
+
 (provide 'gastown-status-buffer-test)
 ;;; gastown-status-buffer-test.el ends here

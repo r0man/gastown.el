@@ -801,13 +801,16 @@ eliminating the blank loading flash."
     ;; bumps it, this component re-renders (showing updated expansion state)
     ;; without triggering new data fetches (vui-use-async keys are unchanged).
     (ignore expand-tick)
-    ;; When full data arrives, save it to refs for use during next refresh.
-    ;; Using refs (not state) avoids an extra re-render on update.
-    (vui-use-effect ((plist-get full-result :data))
-      (let ((d (plist-get full-result :data)))
-        (when d
-          (setcar last-data-ref d)
-          (setcar last-ts-ref (current-time)))))
+    ;; When new full data arrives, update refs inline so last-ts-ref is current
+    ;; by the time this render writes to the buffer.  Object identity (eq) is
+    ;; the right comparison: vui-use-async returns the SAME cached object on
+    ;; repeated renders of an unchanged tick; only a newly-completed fetch
+    ;; produces a fresh object.  This prevents spurious timestamp updates on
+    ;; expand-tick re-renders where no new data was fetched.
+    (let ((d (plist-get full-result :data)))
+      (when (and d (not (eq d (car last-data-ref))))
+        (setcar last-data-ref d)
+        (setcar last-ts-ref (current-time))))
     (cond
      ;; Both fetches still pending — show stale data if available (no flicker)
      ((and (eq fast-status 'pending) (eq full-status 'pending))
@@ -826,14 +829,7 @@ eliminating the blank loading flash."
                      (vui-set-state :refresh-tick (1+ refresh-tick))))))
      ;; Data available (fast or full)
      (data
-      (gastown-status--full-content-vnode
-       data
-       ;; Show current time when full data just arrived; retain the
-       ;; stale timestamp while a refresh is in-flight so the
-       ;; "Last updated" line never disappears (no flicker).
-       (if (eq full-status 'ready)
-           (current-time)
-         (car last-ts-ref)))))))
+      (gastown-status--full-content-vnode data (car last-ts-ref))))))
 
 ;;; ============================================================
 ;;; Main Render (synchronous, for testing)
