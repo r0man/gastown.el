@@ -429,6 +429,11 @@
   (let ((cmd (make-instance 'gastown-command-mail-inbox)))
     (should (slot-exists-p cmd 'unread))))
 
+(ert-deftest gastown-tabulated-test-mail-inbox-has-all-slot ()
+  "gastown-command-mail-inbox has all slot for --all filter."
+  (let ((cmd (make-instance 'gastown-command-mail-inbox)))
+    (should (slot-exists-p cmd 'all))))
+
 ;;; ============================================================
 ;;; Full filter menus — rig
 ;;; ============================================================
@@ -540,23 +545,22 @@
 ;;; Full filter menus — mail (extended)
 ;;; ============================================================
 
-(ert-deftest gastown-tabulated-test-mail-apply-filter-unread-toggle ()
-  "gastown-mail-inbox--apply-filter toggles unread-only in buffer-local spec."
+(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-all ()
+  "gastown-mail-inbox--apply-filter stores all in buffer-local spec."
   (with-temp-buffer
     (setq gastown-current-mail-spec nil)
     (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
-      (gastown-mail-inbox--apply-filter '("--unread")))
+      (gastown-mail-inbox--apply-filter '("--all")))
     (should (gastown-mail-spec-p gastown-current-mail-spec))
-    (should (oref gastown-current-mail-spec unread-only))))
+    (should (oref gastown-current-mail-spec all))))
 
-(ert-deftest gastown-tabulated-test-mail-apply-filter-no-unread ()
-  "gastown-mail-inbox--apply-filter without --unread clears unread-only."
+(ert-deftest gastown-tabulated-test-mail-apply-filter-clears-all ()
+  "gastown-mail-inbox--apply-filter without --all clears all in buffer-local spec."
   (with-temp-buffer
-    (setq gastown-current-mail-spec (make-instance 'gastown-mail-spec :unread-only t))
+    (setq gastown-current-mail-spec (make-instance 'gastown-mail-spec :all t))
     (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
       (gastown-mail-inbox--apply-filter '()))
-    (should (gastown-mail-spec-p gastown-current-mail-spec))
-    (should (null (oref gastown-current-mail-spec unread-only)))))
+    (should (null (oref gastown-current-mail-spec all)))))
 
 ;;; ============================================================
 ;;; Session List Jump — shell injection fix

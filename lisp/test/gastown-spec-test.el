@@ -149,6 +149,16 @@
   (let ((spec (gastown-mail-spec :unread-only nil)))
     (should (not (member "--unread" (gastown-spec--to-args spec))))))
 
+(ert-deftest gastown-spec-test-mail-spec-to-args-all ()
+  "Mail spec with all t produces --all arg."
+  (let ((spec (gastown-mail-spec :all t)))
+    (should (member "--all" (gastown-spec--to-args spec)))))
+
+(ert-deftest gastown-spec-test-mail-spec-to-args-all-nil ()
+  "Mail spec with all nil produces no --all arg."
+  (let ((spec (gastown-mail-spec :all nil)))
+    (should (not (member "--all" (gastown-spec--to-args spec))))))
+
 ;;; ============================================================
 ;;; defcustom defaults
 ;;; ============================================================

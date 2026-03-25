@@ -23,7 +23,7 @@
 ;;   gastown-agent-spec   — agent/session list (rig, role, running, order)
 ;;   gastown-rig-spec     — rig list (status, order)
 ;;   gastown-convoy-spec  — convoy list (status)
-;;   gastown-mail-spec    — mail inbox (unread-only)
+;;   gastown-mail-spec    — mail inbox (unread-only, all)
 
 ;;; Code:
 
@@ -89,6 +89,8 @@ The returned list is suitable for appending to a `gt' subcommand invocation.")
   (let (args)
     (when (oref spec unread-only)
       (push "--unread" args))
+    (when (oref spec all)
+      (push "--all" args))
     (nreverse args)))
 
 ;;; ============================================================

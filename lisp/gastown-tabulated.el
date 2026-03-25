@@ -599,6 +599,7 @@ Key bindings:
   (interactive (list (transient-args 'gastown-mail-inbox-filter)))
   (let ((spec (or gastown-current-mail-spec (make-instance 'gastown-mail-spec))))
     (oset spec unread-only (if (member "--unread" args) t nil))
+    (oset spec all (if (member "--all" args) t nil))
     (setq gastown-current-mail-spec spec))
   (gastown-mail-inbox-refresh))
 
@@ -689,8 +690,10 @@ Key bindings:
   (interactive)
   (let* ((spec   (gastown-effective-mail-spec))
          (unread (oref spec unread-only))
+         (all    (oref spec all))
          (data   (gastown-command-mail-inbox! :json t
-                                              :unread (if unread t nil))))
+                                              :unread (if unread t nil)
+                                              :all (if all t nil))))
     (gastown-mail-inbox--populate data)
     (message "Mail inbox refreshed")))
 

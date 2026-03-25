@@ -1166,7 +1166,12 @@ Default \\='name is omitted from CLI args."))
     :initarg :unread-only
     :type (or null boolean)
     :initform nil
-    :documentation "When non-nil, show only unread messages (--unread flag)"))
+    :documentation "When non-nil, show only unread messages (--unread flag)")
+   (all
+    :initarg :all
+    :type (or null boolean)
+    :initform nil
+    :documentation "When non-nil, show all messages including read (--all flag)"))
   :documentation "Filter spec for the Gas Town mail inbox view.")
 
 (provide 'gastown-types)
