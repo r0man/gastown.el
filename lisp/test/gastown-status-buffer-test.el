@@ -822,6 +822,103 @@ received it as a single argument."
     (goto-char (point-min))
     (should (search-forward "↳ role:" nil t))))
 
+(ert-deftest gastown-status-buffer-test-rig-agent-uses-qualified-key ()
+  "Rig-scoped agent uses rig-qualified key, not bare name key."
+  ;; Expanding "agent:beads_el/witness" should show detail for witness in beads_el.
+  ;; The old bare key "agent:witness" must NOT trigger expansion.
+  (let* ((test-data
+          (gastown-gt-status
+           :name "gt" :location "/tmp"
+           :rigs (list (gastown-rig-data
+                        :name "beads_el"
+                        :agents (list
+                                 (gastown-agent :name "witness" :role "witness"
+                                                :running t :unread-mail 0
+                                                :agent-info "claude"
+                                                :session "be-witness")))))))
+    ;; Expanding with the qualified key should show detail.
+    (with-temp-buffer
+      (gastown-status-mode)
+      (setq gastown-status--expanded-items (make-hash-table :test 'equal))
+      (puthash "agent:beads_el/witness" t gastown-status--expanded-items)
+      (gastown-status--render test-data)
+      (goto-char (point-min))
+      (should (search-forward "↳ role:" nil t)))
+    ;; Expanding with the old bare key should NOT show detail.
+    (with-temp-buffer
+      (gastown-status-mode)
+      (setq gastown-status--expanded-items (make-hash-table :test 'equal))
+      (puthash "agent:witness" t gastown-status--expanded-items)
+      (gastown-status--render test-data)
+      (goto-char (point-min))
+      (should-not (search-forward "↳ role:" nil t)))))
+
+(ert-deftest gastown-status-buffer-test-tab-does-not-toggle-same-name-in-other-rig ()
+  "TAB on an agent in rig-A must not expand the same-named agent in rig-B."
+  ;; Two rigs, each with a \"witness\" agent.  TAB on rig-A's witness should
+  ;; not affect rig-B's witness.
+  (let* ((rig-a-witness (gastown-agent :name "witness" :role "witness"
+                                       :running t :unread-mail 0
+                                       :agent-info "claude"
+                                       :session "a-witness"))
+         (rig-b-witness (gastown-agent :name "witness" :role "witness"
+                                       :running t :unread-mail 0
+                                       :agent-info "claude"
+                                       :session "b-witness"))
+         (test-data
+          (gastown-gt-status
+           :name "gt" :location "/tmp"
+           :rigs (list (gastown-rig-data :name "rig_a"
+                                         :agents (list rig-a-witness))
+                       (gastown-rig-data :name "rig_b"
+                                         :agents (list rig-b-witness))))))
+    (with-temp-buffer
+      (gastown-status-mode)
+      ;; Simulate: expand rig_a/witness only.
+      (setq gastown-status--expanded-items (make-hash-table :test 'equal))
+      (puthash "agent:rig_a/witness" t gastown-status--expanded-items)
+      (gastown-status--render test-data)
+      (let ((content (buffer-string)))
+        ;; The ↳ detail block should appear exactly once (for rig_a/witness).
+        (should (string-match-p "↳ role:" content))
+        ;; Exactly one expansion marker expected.
+        (with-temp-buffer
+          (insert content)
+          (goto-char (point-min))
+          (let ((count 0))
+            (while (search-forward "↳ role:" nil t)
+              (cl-incf count))
+            (should (= 1 count))))))))
+
+(ert-deftest gastown-status-buffer-test-tab-action-uses-rig-qualified-agent-key ()
+  "gastown-status-tab-action toggles the rig-qualified key for rig agents."
+  (let* ((witness (gastown-agent :name "witness" :role "witness"
+                                 :running t :unread-mail 0
+                                 :agent-info "claude"
+                                 :session "be-witness"))
+         (test-data
+          (gastown-gt-status
+           :name "gt" :location "/tmp"
+           :rigs (list (gastown-rig-data :name "beads_el"
+                                         :agents (list witness))))))
+    (with-temp-buffer
+      (gastown-status-mode)
+      (gastown-status--render test-data)
+      ;; Find the witness agent line and invoke tab.
+      (goto-char (point-min))
+      (let ((found nil))
+        (while (and (not found) (< (point) (point-max)))
+          (let ((sec (gastown-status-current-section)))
+            (when (and (gastown-agent-section-p sec)
+                       (equal "witness" (oref (oref sec agent) name)))
+              (gastown-status-tab-action)
+              (setq found t)))
+          (forward-char 1))
+        ;; The rig-qualified key should be set; bare key must not be.
+        (should found)
+        (should (gastown-status--item-expanded-p "agent:beads_el/witness"))
+        (should-not (gastown-status--item-expanded-p "agent:witness"))))))
+
 (ert-deftest gastown-status-buffer-test-agent-detail-shows-hook ()
   "Expanded polecat row shows hook bead when agent has work."
   (let* ((polecat-with-hook

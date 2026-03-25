@@ -542,7 +542,12 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
                         (propertize (format " 📬%d" unread)
                                     'face 'gastown-status-mail-indicator)))
                      section))
-         (key      (format "agent:%s" name))
+         (rig-name (and rig-section
+                         (oref rig-section rig)
+                         (oref (oref rig-section rig) name)))
+         (key      (if rig-name
+                       (format "agent:%s/%s" rig-name name)
+                     (format "agent:%s" name)))
          (expanded (gastown-status--item-expanded-p key))
          (row      (if (and session running)
                        (vui-button label
@@ -932,9 +937,16 @@ additional fields (address, role, session, state, model, hook)."
           (gastown-status--activate-button))))
      ;; Global agent row
      ((gastown-agent-section-p section)
-      (let* ((agent (oref section agent))
-             (name  (or (oref agent name) ""))
-             (key   (format "agent:%s" name)))
+      (let* ((agent    (oref section agent))
+             (parent   (oref section parent))
+             (name     (or (oref agent name) ""))
+             (rig-name (and parent
+                            (gastown-rig-section-p parent)
+                            (oref parent rig)
+                            (oref (oref parent rig) name)))
+             (key      (if rig-name
+                           (format "agent:%s/%s" rig-name name)
+                         (format "agent:%s" name))))
         (gastown-status--toggle-expanded key)
         (gastown-status--rerender-expand)))
      ;; Polecat / crew row
