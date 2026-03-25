@@ -50,41 +50,10 @@
     :class transient-option
     :argument "--status="
     :prompt "Status: "
-    :transient-choices ("active" "completed" "cancelled")
+    :transient-choices ("open" "closed")
     :transient-group "Filters"
     :level 1
-    :order 2)
-   (order
-    :initarg :order
-    :type (or null string)
-    :initform nil
-    :documentation "Sort order"
-    :long-option "order"
-    :option-type :string
-    :key "o"
-    :transient "Sort order"
-    :class transient-option
-    :argument "--order="
-    :prompt "Order: "
-    :transient-choices ("newest" "oldest")
-    :transient-group "Options"
-    :level 1
-    :order 3)
-   (limit
-    :initarg :limit
-    :type (or null integer)
-    :initform nil
-    :documentation "Maximum number of convoys to show"
-    :long-option "limit"
-    :option-type :string
-    :key "l"
-    :transient "Maximum number of convoys to show"
-    :class transient-option
-    :argument "--limit="
-    :prompt "Limit: "
-    :transient-group "Options"
-    :level 1
-    :order 4))
+    :order 2))
   :documentation "Represents gt convoy list command.
 Lists convoys with progress bars and status.")
 

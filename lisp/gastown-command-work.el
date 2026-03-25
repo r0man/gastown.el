@@ -602,7 +602,7 @@ Show work list.")
    ("p" "Prune branches" gastown-prune-branches)
    ("l" "Cleanup" gastown-cleanup)
    ("L" "Release" gastown-release)
-   ("g" "Commit" gastown-commit)
+   ("G" "Commit" gastown-commit)
    ("w" "Work list" gastown-wl)
    ("T" "Scheduler" gastown-scheduler)])
 

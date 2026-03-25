@@ -476,10 +476,8 @@ Key bindings:
   "Filter the Gas Town convoy list."
   :value '()
   ["Filters"
-   ("-s" "Status" "--status=")
-   ("-o" "Order"  "--order="
-    :choices ("newest" "oldest"))
-   ("-l" "Limit"  "--limit=")]
+   ("-s" "Status" "--status="
+    :choices ("open" "closed"))]
   ["Actions"
    ("a" "Apply" gastown-convoy-list--apply-filter)
    ("c" "Clear all" gastown-convoy-list--clear-filter)])
@@ -488,15 +486,8 @@ Key bindings:
   "Apply transient ARGS as convoy list filter and refresh."
   (interactive (list (transient-args 'gastown-convoy-list-filter)))
   (let* ((status (transient-arg-value "--status=" args))
-         (order  (transient-arg-value "--order=" args))
-         (limit  (transient-arg-value "--limit=" args))
          (spec   (or gastown-current-convoy-spec (make-instance 'gastown-convoy-spec))))
     (oset spec status (if (and status (not (string-empty-p status))) status nil))
-    (oset spec order  (if (and order (not (string-empty-p order)))
-                          (intern order)
-                        'newest))
-    (when (and limit (not (string-empty-p limit)))
-      (oset spec limit (string-to-number limit)))
     (setq gastown-current-convoy-spec spec))
   (gastown-convoy-list-refresh))
 
@@ -559,13 +550,8 @@ Key bindings:
   (interactive)
   (let* ((spec   (gastown-effective-convoy-spec))
          (status (oref spec status))
-         (order  (unless (eq (oref spec order) 'newest)
-                   (symbol-name (oref spec order))))
-         (limit  (oref spec limit))
          (data   (gastown-command-convoy-list! :json t
-                                               :status status
-                                               :order order
-                                               :limit limit)))
+                                               :status status)))
     (gastown-convoy-list--populate data)
     (message "Convoy list refreshed")))
 
@@ -603,12 +589,7 @@ Key bindings:
   :value '()
   ["Filters"
    ("-u" "Unread only" "--unread")
-   ("-f" "From"     "--from=")
-   ("-p" "Priority" "--priority="
-    :choices ("low" "normal" "high" "critical"))
-   ("-o" "Order"    "--order="
-    :choices ("newest" "oldest"))
-   ("-l" "Limit"    "--limit=")]
+   ("-a" "All (including read)" "--all")]
   ["Actions"
    ("a" "Apply" gastown-mail-inbox--apply-filter)
    ("c" "Clear all" gastown-mail-inbox--clear-filter)])
@@ -616,21 +597,20 @@ Key bindings:
 (defun gastown-mail-inbox--apply-filter (&optional args)
   "Apply transient ARGS as mail inbox filter and refresh."
   (interactive (list (transient-args 'gastown-mail-inbox-filter)))
-  (let* ((from     (transient-arg-value "--from=" args))
-         (priority (transient-arg-value "--priority=" args))
-         (order    (transient-arg-value "--order=" args))
-         (limit    (transient-arg-value "--limit=" args))
-         (spec     (or gastown-current-mail-spec (make-instance 'gastown-mail-spec))))
+  (let ((spec (or gastown-current-mail-spec (make-instance 'gastown-mail-spec))))
     (oset spec unread-only (if (member "--unread" args) t nil))
-    (oset spec from     (if (and from     (not (string-empty-p from)))     from     nil))
-    (oset spec priority (if (and priority (not (string-empty-p priority))) priority nil))
-    (oset spec order    (if (and order (not (string-empty-p order)))
-                            (intern order)
-                          'newest))
-    (when (and limit (not (string-empty-p limit)))
-      (oset spec limit (string-to-number limit)))
     (setq gastown-current-mail-spec spec))
   (gastown-mail-inbox-refresh))
+
+(defun gastown-mail-inbox-toggle-unread ()
+  "Toggle the unread-only filter on the mail inbox."
+  (interactive)
+  (let ((spec (or gastown-current-mail-spec (make-instance 'gastown-mail-spec))))
+    (oset spec unread-only (not (oref spec unread-only)))
+    (setq gastown-current-mail-spec spec))
+  (gastown-mail-inbox-refresh)
+  (message "Unread filter: %s"
+           (if (oref gastown-current-mail-spec unread-only) "on" "off")))
 
 (defun gastown-mail-inbox--clear-filter ()
   "Clear mail inbox filter spec and refresh."
@@ -674,6 +654,9 @@ Key bindings:
     (define-key map (kbd "g")   #'gastown-mail-inbox-refresh)
     (define-key map (kbd "/")   #'gastown-mail-inbox-filter)
     (define-key map (kbd "RET") #'gastown-mail-inbox-read)
+    (define-key map (kbd "s")   #'gastown-mail-send)
+    (define-key map (kbd "u")   #'gastown-mail-inbox-toggle-unread)
+    (define-key map (kbd "q")   #'quit-window)
     map)
   "Keymap for `gastown-mail-inbox-mode'.")
 
@@ -704,19 +687,10 @@ Key bindings:
 (defun gastown-mail-inbox-refresh ()
   "Refresh the *gastown-mail-inbox* buffer, applying the current filter spec."
   (interactive)
-  (let* ((spec     (gastown-effective-mail-spec))
-         (unread   (oref spec unread-only))
-         (from     (oref spec from))
-         (priority (oref spec priority))
-         (order    (unless (eq (oref spec order) 'newest)
-                     (symbol-name (oref spec order))))
-         (limit    (oref spec limit))
-         (data     (gastown-command-mail-inbox! :json t
-                                                :unread (if unread t nil)
-                                                :from from
-                                                :priority priority
-                                                :order order
-                                                :limit limit)))
+  (let* ((spec   (gastown-effective-mail-spec))
+         (unread (oref spec unread-only))
+         (data   (gastown-command-mail-inbox! :json t
+                                              :unread (if unread t nil))))
     (gastown-mail-inbox--populate data)
     (message "Mail inbox refreshed")))
 

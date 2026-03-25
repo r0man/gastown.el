@@ -103,90 +103,51 @@
 ;;; ============================================================
 
 (ert-deftest gastown-spec-test-convoy-spec-default-slots ()
-  "Default convoy spec has nil status, newest order, and 50 limit."
+  "Default convoy spec has nil status."
   (let ((spec (gastown-convoy-spec)))
-    (should (null (oref spec status)))
-    (should (eq 'newest (oref spec order)))
-    (should (= 50 (oref spec limit)))))
+    (should (null (oref spec status)))))
 
 (ert-deftest gastown-spec-test-convoy-spec-to-args-empty ()
-  "Convoy spec with all defaults produces only the --limit arg."
+  "Empty convoy spec produces empty args list."
   (let* ((spec (gastown-convoy-spec))
          (args (gastown-spec--to-args spec)))
-    (should (member "--limit=50" args))
-    (should (not (seq-filter (lambda (a) (string-prefix-p "--status" a)) args)))
-    (should (not (seq-filter (lambda (a) (string-prefix-p "--order" a)) args)))))
+    (should (equal '() args))))
 
 (ert-deftest gastown-spec-test-convoy-spec-to-args-status ()
   "Convoy spec with status produces --status= arg."
   (let ((spec (gastown-convoy-spec :status "open")))
     (should (member "--status=open" (gastown-spec--to-args spec)))))
 
-(ert-deftest gastown-spec-test-convoy-spec-to-args-order-oldest ()
-  "Convoy spec with oldest order produces --order=oldest arg."
-  (let ((spec (gastown-convoy-spec :order 'oldest)))
-    (should (member "--order=oldest" (gastown-spec--to-args spec)))))
-
-(ert-deftest gastown-spec-test-convoy-spec-to-args-limit ()
-  "Convoy spec with custom limit produces --limit= arg."
-  (let ((spec (gastown-convoy-spec :limit 10)))
-    (should (member "--limit=10" (gastown-spec--to-args spec)))))
+(ert-deftest gastown-spec-test-convoy-spec-to-args-status-closed ()
+  "Convoy spec with closed status produces --status=closed arg."
+  (let ((spec (gastown-convoy-spec :status "closed")))
+    (should (member "--status=closed" (gastown-spec--to-args spec)))))
 
 ;;; ============================================================
 ;;; gastown-mail-spec
 ;;; ============================================================
 
 (ert-deftest gastown-spec-test-mail-spec-default-slots ()
-  "Default mail spec has nil unread-only, from, priority, newest order, 100 limit."
+  "Default mail spec has nil unread-only."
   (let ((spec (gastown-mail-spec)))
-    (should (null (oref spec unread-only)))
-    (should (null (oref spec from)))
-    (should (null (oref spec priority)))
-    (should (eq 'newest (oref spec order)))
-    (should (= 100 (oref spec limit)))))
+    (should (null (oref spec unread-only)))))
 
 (ert-deftest gastown-spec-test-mail-spec-to-args-empty ()
-  "Mail spec with all defaults produces only the --limit arg."
+  "Empty mail spec produces empty args list."
   (let* ((spec (gastown-mail-spec))
          (args (gastown-spec--to-args spec)))
-    (should (member "--limit=100" args))
-    (should (not (member "--unread" args)))
-    (should (not (seq-filter (lambda (a) (string-prefix-p "--from" a)) args)))
-    (should (not (seq-filter (lambda (a) (string-prefix-p "--priority" a)) args)))))
+    (should (equal '() args))
+    (should (not (member "--unread" args)))))
 
 (ert-deftest gastown-spec-test-mail-spec-to-args-unread-only ()
   "Mail spec with unread-only t produces --unread arg."
   (let ((spec (gastown-mail-spec :unread-only t)))
     (should (member "--unread" (gastown-spec--to-args spec)))))
 
-(ert-deftest gastown-spec-test-mail-spec-to-args-from ()
-  "Mail spec with from produces --from= arg."
-  (let ((spec (gastown-mail-spec :from "gastown_el/witness")))
-    (should (member "--from=gastown_el/witness" (gastown-spec--to-args spec)))))
-
-(ert-deftest gastown-spec-test-mail-spec-to-args-priority ()
-  "Mail spec with priority produces --priority= arg."
-  (let ((spec (gastown-mail-spec :priority "high")))
-    (should (member "--priority=high" (gastown-spec--to-args spec)))))
-
-(ert-deftest gastown-spec-test-mail-spec-to-args-order-oldest ()
-  "Mail spec with oldest order produces --order=oldest arg."
-  (let ((spec (gastown-mail-spec :order 'oldest)))
-    (should (member "--order=oldest" (gastown-spec--to-args spec)))))
-
-(ert-deftest gastown-spec-test-mail-spec-to-args-limit ()
-  "Mail spec with custom limit produces --limit= arg."
-  (let ((spec (gastown-mail-spec :limit 25)))
-    (should (member "--limit=25" (gastown-spec--to-args spec)))))
-
-(ert-deftest gastown-spec-test-mail-spec-to-args-combined ()
-  "Mail spec with multiple fields produces all corresponding args."
-  (let* ((spec (gastown-mail-spec :unread-only t :from "mayor/" :priority "high" :limit 20))
-         (args (gastown-spec--to-args spec)))
-    (should (member "--unread" args))
-    (should (member "--from=mayor/" args))
-    (should (member "--priority=high" args))
-    (should (member "--limit=20" args))))
+(ert-deftest gastown-spec-test-mail-spec-to-args-unread-nil ()
+  "Mail spec with unread-only nil produces no --unread arg."
+  (let ((spec (gastown-mail-spec :unread-only nil)))
+    (should (not (member "--unread" (gastown-spec--to-args spec))))))
 
 ;;; ============================================================
 ;;; defcustom defaults

@@ -22,8 +22,8 @@
 ;; Spec classes:
 ;;   gastown-agent-spec   — agent/session list (rig, role, running, order)
 ;;   gastown-rig-spec     — rig list (status, order)
-;;   gastown-convoy-spec  — convoy list (status, order, limit)
-;;   gastown-mail-spec    — mail inbox (unread-only, from, priority, order, limit)
+;;   gastown-convoy-spec  — convoy list (status)
+;;   gastown-mail-spec    — mail inbox (unread-only)
 
 ;;; Code:
 
@@ -78,9 +78,6 @@ The returned list is suitable for appending to a `gt' subcommand invocation.")
   (let (args)
     (when (oref spec status)
       (push (format "--status=%s" (oref spec status)) args))
-    (unless (eq (oref spec order) 'newest)
-      (push (format "--order=%s" (oref spec order)) args))
-    (push (format "--limit=%d" (oref spec limit)) args)
     (nreverse args)))
 
 ;;; ============================================================
@@ -92,13 +89,6 @@ The returned list is suitable for appending to a `gt' subcommand invocation.")
   (let (args)
     (when (oref spec unread-only)
       (push "--unread" args))
-    (when (oref spec from)
-      (push (format "--from=%s" (oref spec from)) args))
-    (when (oref spec priority)
-      (push (format "--priority=%s" (oref spec priority)) args))
-    (unless (eq (oref spec order) 'newest)
-      (push (format "--order=%s" (oref spec order)) args))
-    (push (format "--limit=%d" (oref spec limit)) args)
     (nreverse args)))
 
 ;;; ============================================================

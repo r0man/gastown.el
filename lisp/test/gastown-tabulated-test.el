@@ -519,63 +519,44 @@
 ;;; Full filter menus — convoy (extended)
 ;;; ============================================================
 
-(ert-deftest gastown-tabulated-test-convoy-apply-filter-sets-order ()
-  "gastown-convoy-list--apply-filter stores order in buffer-local spec."
+(ert-deftest gastown-tabulated-test-convoy-apply-filter-sets-closed-status ()
+  "gastown-convoy-list--apply-filter stores closed status in buffer-local spec."
   (with-temp-buffer
     (setq gastown-current-convoy-spec nil)
     (cl-letf (((symbol-function 'gastown-convoy-list-refresh) #'ignore))
-      (gastown-convoy-list--apply-filter '("--order=oldest")))
+      (gastown-convoy-list--apply-filter '("--status=closed")))
     (should (gastown-convoy-spec-p gastown-current-convoy-spec))
-    (should (eq 'oldest (oref gastown-current-convoy-spec order)))))
+    (should (equal "closed" (oref gastown-current-convoy-spec status)))))
 
-(ert-deftest gastown-tabulated-test-convoy-apply-filter-sets-limit ()
-  "gastown-convoy-list--apply-filter stores limit in buffer-local spec."
+(ert-deftest gastown-tabulated-test-convoy-apply-filter-clears-status ()
+  "gastown-convoy-list--apply-filter with no args stores nil status."
   (with-temp-buffer
-    (setq gastown-current-convoy-spec nil)
+    (setq gastown-current-convoy-spec (make-instance 'gastown-convoy-spec :status "open"))
     (cl-letf (((symbol-function 'gastown-convoy-list-refresh) #'ignore))
-      (gastown-convoy-list--apply-filter '("--limit=25")))
-    (should (gastown-convoy-spec-p gastown-current-convoy-spec))
-    (should (= 25 (oref gastown-current-convoy-spec limit)))))
+      (gastown-convoy-list--apply-filter '()))
+    (should (null (oref gastown-current-convoy-spec status)))))
 
 ;;; ============================================================
 ;;; Full filter menus — mail (extended)
 ;;; ============================================================
 
-(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-from ()
-  "gastown-mail-inbox--apply-filter stores from in buffer-local spec."
+(ert-deftest gastown-tabulated-test-mail-apply-filter-unread-toggle ()
+  "gastown-mail-inbox--apply-filter toggles unread-only in buffer-local spec."
   (with-temp-buffer
     (setq gastown-current-mail-spec nil)
     (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
-      (gastown-mail-inbox--apply-filter '("--from=gastown_el/witness")))
+      (gastown-mail-inbox--apply-filter '("--unread")))
     (should (gastown-mail-spec-p gastown-current-mail-spec))
-    (should (equal "gastown_el/witness" (oref gastown-current-mail-spec from)))))
+    (should (oref gastown-current-mail-spec unread-only))))
 
-(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-priority ()
-  "gastown-mail-inbox--apply-filter stores priority in buffer-local spec."
+(ert-deftest gastown-tabulated-test-mail-apply-filter-no-unread ()
+  "gastown-mail-inbox--apply-filter without --unread clears unread-only."
   (with-temp-buffer
-    (setq gastown-current-mail-spec nil)
+    (setq gastown-current-mail-spec (make-instance 'gastown-mail-spec :unread-only t))
     (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
-      (gastown-mail-inbox--apply-filter '("--priority=high")))
+      (gastown-mail-inbox--apply-filter '()))
     (should (gastown-mail-spec-p gastown-current-mail-spec))
-    (should (equal "high" (oref gastown-current-mail-spec priority)))))
-
-(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-order ()
-  "gastown-mail-inbox--apply-filter stores order in buffer-local spec."
-  (with-temp-buffer
-    (setq gastown-current-mail-spec nil)
-    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
-      (gastown-mail-inbox--apply-filter '("--order=oldest")))
-    (should (gastown-mail-spec-p gastown-current-mail-spec))
-    (should (eq 'oldest (oref gastown-current-mail-spec order)))))
-
-(ert-deftest gastown-tabulated-test-mail-apply-filter-sets-limit ()
-  "gastown-mail-inbox--apply-filter stores limit in buffer-local spec."
-  (with-temp-buffer
-    (setq gastown-current-mail-spec nil)
-    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
-      (gastown-mail-inbox--apply-filter '("--limit=20")))
-    (should (gastown-mail-spec-p gastown-current-mail-spec))
-    (should (= 20 (oref gastown-current-mail-spec limit)))))
+    (should (null (oref gastown-current-mail-spec unread-only)))))
 
 ;;; ============================================================
 ;;; Session List Jump — shell injection fix

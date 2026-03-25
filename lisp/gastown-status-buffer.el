@@ -241,6 +241,8 @@ Key bindings:
 \\{gastown-status-mode-map}"
   :group 'gastown-status-buffer
   (setq truncate-lines t)
+  (setq-local header-line-format
+              " Gas Town Status  (g=refresh  TAB=toggle  i=detail  d=dired  w=watch  ?=opts  q=quit)")
   (add-hook 'kill-buffer-hook #'gastown-status--cancel-watch nil t))
 
 ;; Activate semantic cursor preservation globally for status buffers.

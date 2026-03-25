@@ -106,6 +106,8 @@ access to all gt CLI commands organized by category."
    ("W" "Work commands..." gastown-work-menu)]
   ["Agents & Communication"
    ("a" "Agent management..." gastown-agent-management)
+   ("m" "Mail" gastown-mail)
+   ("n" "Nudge" gastown-nudge)
    ("C" "Communication..." gastown-comm-menu)]
   ["Infrastructure"
    ("U" "Services..." gastown-services)
