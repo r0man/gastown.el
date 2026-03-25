@@ -71,7 +71,36 @@
     :transient-reader gastown-reader-bead-id
     :transient-group "Options"
     :level 2
-    :order 3))
+    :order 3)
+   (pre-verified
+    :initarg :pre-verified
+    :type boolean
+    :initform nil
+    :documentation "Mark MR as pre-verified (polecat ran gates after rebasing onto target)"
+    :long-option "pre-verified"
+    :option-type :boolean
+    :key "p"
+    :transient "Mark as pre-verified"
+    :class transient-switch
+    :argument "--pre-verified"
+    :transient-group "Options"
+    :level 2
+    :order 4)
+   (target
+    :initarg :target
+    :type (or null string)
+    :initform nil
+    :documentation "Target branch for the merge request"
+    :long-option "target"
+    :option-type :string
+    :key "t"
+    :transient "Target branch"
+    :class transient-option
+    :argument "--target="
+    :prompt "Target branch: "
+    :transient-group "Options"
+    :level 2
+    :order 5))
   :documentation "Represents gt done command.
 Signal work ready for merge queue.")
 
