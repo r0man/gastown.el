@@ -234,7 +234,7 @@ on top of `tabulated-list-mode-map'.")
     :choices ("name" "status"))]
   ["Actions"
    ("a" "Apply" gastown-rig-list--apply-filter)
-   ("c" "Clear all" gastown-rig-list-clear-filter)])
+   ("c" "Clear all" gastown-rig-list--clear-filter)])
 
 (defun gastown-rig-list--apply-filter (&optional args)
   "Apply transient ARGS as rig list filter and refresh."
@@ -249,7 +249,7 @@ on top of `tabulated-list-mode-map'.")
     (setq gastown-current-rig-spec spec))
   (gastown-rig-list-refresh))
 
-(defun gastown-rig-list-clear-filter ()
+(defun gastown-rig-list--clear-filter ()
   "Clear rig list filter spec and refresh."
   (interactive)
   (setq gastown-current-rig-spec nil)

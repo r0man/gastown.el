@@ -241,7 +241,7 @@
 (ert-deftest gastown-spec-test-effective-rig-spec-returns-buffer-local ()
   "gastown-effective-rig-spec returns buffer-local spec when set."
   (with-temp-buffer
-    (let ((local-spec (gastown-rig-spec :status "active")))
+    (let ((local-spec (gastown-rig-spec :status "operational")))
       (setq gastown-current-rig-spec local-spec)
       (should (eq local-spec (gastown-effective-rig-spec))))))
 

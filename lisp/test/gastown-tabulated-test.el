@@ -341,7 +341,7 @@
 (ert-deftest gastown-tabulated-test-filter-functions-exist ()
   "All filter apply/clear functions are defined."
   (should (fboundp 'gastown-rig-list--apply-filter))
-  (should (fboundp 'gastown-rig-list-clear-filter))
+  (should (fboundp 'gastown-rig-list--clear-filter))
   (should (fboundp 'gastown-session-list--apply-filter))
   (should (fboundp 'gastown-session-list--clear-filter))
   (should (fboundp 'gastown-convoy-list--apply-filter))
@@ -474,11 +474,11 @@
     (should (eq 'status (oref gastown-current-rig-spec order)))))
 
 (ert-deftest gastown-tabulated-test-rig-clear-filter-resets-spec ()
-  "gastown-rig-list--apply-filter with c clear action resets spec."
+  "gastown-rig-list--clear-filter resets buffer-local spec to nil."
   (with-temp-buffer
     (setq gastown-current-rig-spec (make-instance 'gastown-rig-spec :status "degraded"))
     (cl-letf (((symbol-function 'gastown-rig-list-refresh) #'ignore))
-      (gastown-rig-list-clear-filter))
+      (gastown-rig-list--clear-filter))
     (should (null gastown-current-rig-spec))))
 
 ;;; ============================================================

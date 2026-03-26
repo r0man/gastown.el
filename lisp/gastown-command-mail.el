@@ -113,6 +113,8 @@ Reads a specific mail message.")
     :type (or null string)
     :initform nil
     :documentation "Message body"
+    ;; gt mail send uses -m (short option), so :long-option "m" generates --m
+    ;; for direct CLI invocation and :argument "-m=" overrides the transient prefix.
     :long-option "m"
     :option-type :string
     :key "m"

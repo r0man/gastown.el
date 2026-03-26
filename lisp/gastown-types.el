@@ -623,7 +623,7 @@ The hooks array is converted to a list of `gastown-hook-status' objects."
     :initarg :status
     :type (or null string)
     :initform nil
-    :documentation "Convoy status (active, completed, etc.).")
+    :documentation "Convoy status: open or closed.")
    (created-at
     :initarg :created-at
     :type (or null string)
