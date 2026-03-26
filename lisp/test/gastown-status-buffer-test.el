@@ -1209,5 +1209,99 @@ differs by identity from the previously cached one, advancing last-ts-ref."
         (goto-char (point-min))
         (should (search-forward "Last updated: 14:30:00" nil t))))))
 
+;;; Cursor Preservation Tests (ge-ppx regression)
+
+(defun gastown-status-buffer-test--mount-and-resolve (buf data)
+  "Mount the async status app in BUF and synchronously resolve with DATA.
+Returns the resolve function so callers can trigger further refreshes."
+  (let ((full-resolve nil))
+    (with-current-buffer buf
+      (cl-letf (((symbol-function 'gastown-status--async-fetch)
+                 (lambda (resolve _reject &optional fast)
+                   (unless fast (setq full-resolve resolve))
+                   nil)))
+        (vui-mount (vui-component 'gastown-status-app) (buffer-name))
+        (funcall full-resolve data)))
+    full-resolve))
+
+(ert-deftest gastown-status-buffer-test-cursor-preserved-on-section-line ()
+  "Point on a section line is preserved across incremental re-renders.
+gastown-status--around-rerender uses section identity (not line number) so
+that even if content shifts, the cursor stays on the same logical section."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (let* ((data gastown-status-buffer-test--sample-data)
+           (buf (current-buffer))
+           (full-resolve
+            (gastown-status-buffer-test--mount-and-resolve buf data)))
+      ;; Navigate to first section line (an agent/polecat row)
+      (goto-char (point-min))
+      (while (and (not (eobp))
+                  (null (gastown-status--find-section-on-line)))
+        (forward-line 1))
+      (let* ((section (gastown-status--find-section-on-line))
+             (section-id (and section (gastown-status--section-id section))))
+        (should section-id)
+        ;; Trigger a refresh (incremental re-render via vui--rerender-instance)
+        (gastown-status-do-refresh buf)
+        (funcall full-resolve data)
+        ;; Point must still be on the same section
+        (let ((current-section (gastown-status--find-section-on-line)))
+          (should current-section)
+          (should (equal (gastown-status--section-id current-section)
+                         section-id)))))))
+
+(ert-deftest gastown-status-buffer-test-window-point-preserved-in-non-selected-window ()
+  "Window-point is synced after re-render when buffer is in a non-selected window.
+Regression for ge-ppx: erase-buffer resets all window-points to point-min.
+gastown-status--around-rerender must call set-window-point to restore them."
+  (save-window-excursion
+    (let* ((data gastown-status-buffer-test--sample-data)
+           (buf (generate-new-buffer " *ge-ppx-status-test*"))
+           (other-buf (generate-new-buffer " *ge-ppx-other-test*")))
+      (unwind-protect
+          (progn
+            ;; Mount async component and resolve with initial data
+            (with-current-buffer buf
+              (gastown-status-mode))
+            (let ((full-resolve
+                   (gastown-status-buffer-test--mount-and-resolve buf data)))
+              ;; Find a section line in the status buffer
+              (let* ((target-pos nil)
+                     (target-section nil))
+                (with-current-buffer buf
+                  (goto-char (point-min))
+                  (while (and (not (eobp))
+                              (null (gastown-status--find-section-on-line)))
+                    (forward-line 1))
+                  (setq target-section (gastown-status--find-section-on-line))
+                  (setq target-pos (point)))
+                (should target-section)
+                ;; Set up windows: selected → other-buf, status-window → buf
+                (with-current-buffer other-buf (insert "placeholder"))
+                (set-window-buffer (selected-window) other-buf)
+                (let ((status-window (split-window (selected-window) nil 'below)))
+                  (set-window-buffer status-window buf)
+                  (set-window-point status-window target-pos)
+                  ;; Confirm: status-window is NOT the selected window
+                  (should (not (eq (selected-window) status-window)))
+                  ;; Trigger incremental refresh (buf is in non-selected window)
+                  (with-current-buffer buf
+                    (gastown-status-do-refresh buf)
+                    (funcall full-resolve data))
+                  ;; Window-point must be preserved at the section, not point-min
+                  (let ((wp (window-point status-window)))
+                    (should (> wp 1))
+                    (with-current-buffer buf
+                      (save-excursion
+                        (goto-char wp)
+                        (let ((s (gastown-status--find-section-on-line)))
+                          (should s)
+                          (should (equal (gastown-status--section-id s)
+                                         (gastown-status--section-id
+                                          target-section)))))))))))
+        (when (buffer-live-p buf)       (kill-buffer buf))
+        (when (buffer-live-p other-buf) (kill-buffer other-buf))))))
+
 (provide 'gastown-status-buffer-test)
 ;;; gastown-status-buffer-test.el ends here

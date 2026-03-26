@@ -179,7 +179,11 @@ ORIG is the original `vui--rerender-instance' function.
 INSTANCE is the vui component instance being re-rendered.
 When the buffer uses `gastown-status-mode', saves and restores cursor
 position based on section identity rather than widget paths, which
-are unstable when buffer content changes (e.g. async data arrives)."
+are unstable when buffer content changes (e.g. async data arrives).
+After restoration, syncs `window-point' for all windows showing the buffer:
+`erase-buffer' resets every `window-point' to 1, and `goto-char' inside
+`with-current-buffer' only updates the buffer's own point — non-selected
+windows still show point at the top without the explicit `set-window-point'."
   (let* ((buf (vui-instance-buffer instance))
          (in-status-mode (and buf
                               (buffer-live-p buf)
@@ -187,7 +191,8 @@ are unstable when buffer content changes (e.g. async data arrives)."
                                 (derived-mode-p 'gastown-status-mode)))))
     (if in-status-mode
         (let ((section-id nil)
-              (col 0))
+              (col 0)
+              (windows (get-buffer-window-list buf nil t)))
           (with-current-buffer buf
             (let ((s (gastown-status--find-section-on-line)))
               (when s
@@ -196,7 +201,15 @@ are unstable when buffer content changes (e.g. async data arrives)."
           (funcall orig instance)
           (when section-id
             (with-current-buffer buf
-              (gastown-status--restore-cursor-to-section section-id col))))
+              (gastown-status--restore-cursor-to-section section-id col)))
+          ;; Propagate the restored buffer point to all windows that were
+          ;; showing this buffer before the re-render.  erase-buffer resets
+          ;; every window-point to 1; without this sync, non-selected windows
+          ;; jump to the top of the buffer on every refresh.
+          (let ((pos (with-current-buffer buf (point))))
+            (dolist (win windows)
+              (when (window-live-p win)
+                (set-window-point win pos)))))
       (funcall orig instance))))
 
 ;;; ============================================================
