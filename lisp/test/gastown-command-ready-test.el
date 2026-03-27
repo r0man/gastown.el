@@ -181,5 +181,13 @@
   "gastown-ready entry point is defined as autoload."
   (should (fboundp 'gastown-ready)))
 
+(ert-deftest gastown-ready-test-mode-sets-header-line ()
+  "gastown-ready-mode sets header-line-format with key hint hints."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (should (stringp header-line-format))
+    (should (string-match-p "g=refresh" header-line-format))
+    (should (string-match-p "q=quit" header-line-format))))
+
 (provide 'gastown-command-ready-test)
 ;;; gastown-command-ready-test.el ends here

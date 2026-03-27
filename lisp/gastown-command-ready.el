@@ -124,6 +124,8 @@ Key bindings:
 \\{gastown-ready-mode-map}"
   :group 'gastown-ready-buffer
   (setq truncate-lines t)
+  (setq-local header-line-format
+              " Gas Town Ready  (g=refresh  RET=open  w=watch  q=quit)")
   (add-hook 'kill-buffer-hook #'gastown-ready--cancel-watch nil t))
 
 ;;; ============================================================

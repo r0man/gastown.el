@@ -447,8 +447,14 @@ Key bindings:
   (interactive)
   (let ((id (tabulated-list-get-id)))
     (if id
-        (call-process "tmux" nil nil nil "select-window" "-t"
-                      (format "gt:%s" id))
+        (let ((exit-code
+               (condition-case err
+                   (call-process "tmux" nil nil nil "select-window" "-t"
+                                 (format "gt:%s" id))
+                 (file-error
+                  (user-error "Tmux not found: %s" (error-message-string err))))))
+          (unless (zerop exit-code)
+            (user-error "Session gt:%s not found in tmux" id)))
       (user-error "No session at point"))))
 
 ;;;###autoload
@@ -604,10 +610,14 @@ Key bindings:
   (gastown-mail-inbox-refresh))
 
 (defun gastown-mail-inbox-toggle-unread ()
-  "Toggle the unread-only filter on the mail inbox."
+  "Toggle the unread-only filter on the mail inbox.
+When enabling unread-only, clears the all flag (mutually exclusive)."
   (interactive)
   (let ((spec (or gastown-current-mail-spec (make-instance 'gastown-mail-spec))))
-    (oset spec unread-only (not (oref spec unread-only)))
+    (let ((new-val (not (oref spec unread-only))))
+      (oset spec unread-only new-val)
+      (when new-val
+        (oset spec all nil)))
     (setq gastown-current-mail-spec spec))
   (gastown-mail-inbox-refresh)
   (message "Unread filter: %s"

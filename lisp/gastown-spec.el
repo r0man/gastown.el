@@ -85,12 +85,12 @@ The returned list is suitable for appending to a `gt' subcommand invocation.")
 ;;; ============================================================
 
 (cl-defmethod gastown-spec--to-args ((spec gastown-mail-spec))
-  "Return CLI args for SPEC as a flat list of strings."
+  "Return CLI args for SPEC as a flat list of strings.
+--unread and --all are mutually exclusive; --all takes precedence."
   (let (args)
-    (when (oref spec unread-only)
-      (push "--unread" args))
-    (when (oref spec all)
-      (push "--all" args))
+    (cond
+     ((oref spec all)        (push "--all" args))
+     ((oref spec unread-only) (push "--unread" args)))
     (nreverse args)))
 
 ;;; ============================================================

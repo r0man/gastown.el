@@ -563,6 +563,28 @@
     (should (null (oref gastown-current-mail-spec all)))))
 
 ;;; ============================================================
+;;; Mail inbox toggle-unread — mutual exclusivity
+
+(ert-deftest gastown-tabulated-test-toggle-unread-clears-all ()
+  "Enabling unread-only via toggle clears the all flag."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec
+          (make-instance 'gastown-mail-spec :all t :unread-only nil))
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox-toggle-unread))
+    (should (oref gastown-current-mail-spec unread-only))
+    (should (null (oref gastown-current-mail-spec all)))))
+
+(ert-deftest gastown-tabulated-test-toggle-unread-off-leaves-all-unchanged ()
+  "Disabling unread-only via toggle does not change all flag."
+  (with-temp-buffer
+    (setq gastown-current-mail-spec
+          (make-instance 'gastown-mail-spec :all nil :unread-only t))
+    (cl-letf (((symbol-function 'gastown-mail-inbox-refresh) #'ignore))
+      (gastown-mail-inbox-toggle-unread))
+    (should (null (oref gastown-current-mail-spec unread-only)))
+    (should (null (oref gastown-current-mail-spec all)))))
+
 ;;; Session List Jump — shell injection fix
 ;;; ============================================================
 
@@ -618,6 +640,20 @@ A session name like 'foo;rm -rf /' must not execute arbitrary commands."
     (should-not shell-command-called)
     ;; The malicious ID is passed as literal data, not executed
     (should (member "gt:foo;rm -rf /" call-process-args))))
+
+(ert-deftest gastown-tabulated-test-session-list-jump-nonzero-exit-errors ()
+  "gastown-session-list-jump signals user-error when tmux returns non-zero."
+  (gastown-tabulated-test--with-id-at-point "hq-missing"
+    (cl-letf (((symbol-function 'call-process)
+               (lambda (&rest _) 1)))
+      (should-error (gastown-session-list-jump) :type 'user-error))))
+
+(ert-deftest gastown-tabulated-test-session-list-jump-tmux-not-found-errors ()
+  "gastown-session-list-jump signals user-error when tmux binary is missing."
+  (gastown-tabulated-test--with-id-at-point "hq-session"
+    (cl-letf (((symbol-function 'call-process)
+               (lambda (&rest _) (signal 'file-error '("No such file or directory")))))
+      (should-error (gastown-session-list-jump) :type 'user-error))))
 
 (provide 'gastown-tabulated-test)
 ;;; gastown-tabulated-test.el ends here

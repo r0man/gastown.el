@@ -159,6 +159,19 @@
   (let ((spec (gastown-mail-spec :all nil)))
     (should (not (member "--all" (gastown-spec--to-args spec))))))
 
+(ert-deftest gastown-spec-test-mail-spec-to-args-all-wins-over-unread ()
+  "When both all and unread-only are set, only --all is emitted (mutual exclusion)."
+  (let* ((spec (gastown-mail-spec :all t :unread-only t))
+         (args (gastown-spec--to-args spec)))
+    (should (member "--all" args))
+    (should (not (member "--unread" args)))))
+
+(ert-deftest gastown-spec-test-mail-spec-to-args-never-both ()
+  "gastown-spec--to-args never emits both --all and --unread."
+  (let* ((spec (gastown-mail-spec :all t :unread-only t))
+         (args (gastown-spec--to-args spec)))
+    (should (= 1 (length args)))))
+
 ;;; ============================================================
 ;;; defcustom defaults
 ;;; ============================================================
