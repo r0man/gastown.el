@@ -316,28 +316,38 @@ Used by `gastown-ready--render' for synchronous rendering in tests."
 (vui-defcomponent gastown-ready-app ()
   "Root async component for the Gas Town ready buffer.
 
-Fetches `gt ready --json' asynchronously, shows spinner while loading,
-renders issues grouped by source on success."
+Fetches `gt ready --json' asynchronously.  On first load shows a spinner;
+on subsequent refreshes shows stale data while new data loads (no flash).
+Triggered by incrementing :refresh-tick via `gastown-ready-do-refresh'."
   :state ((refresh-tick 0))
   :render
-  (let* ((result (vui-use-async (list 'ready refresh-tick)
+  ;; last-data-ref persists across re-renders so stale sources survive
+  ;; refresh ticks.  When refresh-tick increments, the pending fetch shows
+  ;; the previous data instead of a blank spinner.
+  (let* ((last-data-ref (vui-use-ref nil))
+         (result (vui-use-async (list 'ready refresh-tick)
                    #'gastown-ready--async-fetch))
          (status  (plist-get result :status))
          (sources (plist-get result :data))
          (err     (plist-get result :error)))
+    ;; Cache new data in ref when it arrives (identity check avoids spurious writes)
+    (when (and sources (not (eq sources (car last-data-ref))))
+      (setcar last-data-ref sources))
     (cond
+     ;; Fetch in-flight — show stale data to avoid spinner flash on refresh
      ((eq status 'pending)
-      (vui-text (propertize "⏳ Loading ready work…"
-                            'face 'gastown-ready-status-icon)))
+      (if (car last-data-ref)
+          (gastown-ready--full-content-vnode (car last-data-ref))
+        (vui-text (propertize "⏳ Loading ready work…"
+                              'face 'gastown-ready-status-icon))))
      (err
       (vui-vstack
        (vui-text (propertize "Error loading ready work:" 'face 'error))
        (vui-text (propertize (or err "unknown error") 'face 'error))
        (vui-newline)
        (vui-button "[Retry]"
-         :on-click (let ((tick refresh-tick))
-                     (lambda ()
-                       (vui-set-state :refresh-tick (1+ tick)))))))
+         :on-click (lambda ()
+                     (vui-set-state :refresh-tick (1+ refresh-tick))))))
      (sources
       (gastown-ready--full-content-vnode sources))
      (t
@@ -359,6 +369,30 @@ and re-rendered via vui-mount.  Used by tests and direct refresh."
      (buffer-name))))
 
 ;;; ============================================================
+;;; In-Place Refresh
+;;; ============================================================
+
+(defun gastown-ready-do-refresh (buf)
+  "Refresh the ready component in BUF without a full remount.
+
+Increments `:refresh-tick' state on the existing `gastown-ready-app'
+root instance, triggering a new async fetch while keeping the previous
+render visible until new data arrives (no spinner flash, no collapse reset).
+
+Returns t when an existing instance was refreshed, nil when BUF has
+no live vui root instance (caller should fall back to `vui-mount')."
+  (when (buffer-live-p buf)
+    (with-current-buffer buf
+      (when vui--root-instance
+        (let* ((inst  vui--root-instance)
+               (state (vui-instance-state inst))
+               (tick  (or (plist-get state :refresh-tick) 0)))
+          (setf (vui-instance-state inst)
+                (plist-put state :refresh-tick (1+ tick))))
+        (vui-flush-sync)
+        t))))
+
+;;; ============================================================
 ;;; Watch Mode
 ;;; ============================================================
 
@@ -369,7 +403,8 @@ and re-rendered via vui-mount.  Used by tests and direct refresh."
     (setq gastown-ready--watch-timer nil)))
 
 (defun gastown-ready--start-watch (buf interval)
-  "Start auto-refresh timer for BUF with INTERVAL seconds."
+  "Start auto-refresh timer for BUF with INTERVAL seconds.
+The timer only triggers a refresh when BUF is visible in a window."
   (gastown-ready--cancel-watch)
   (with-current-buffer buf
     (setq gastown-ready--watch-timer
@@ -378,9 +413,8 @@ and re-rendered via vui-mount.  Used by tests and direct refresh."
            (lambda ()
              (when (and (buffer-live-p buf)
                         (get-buffer-window buf))
-               (vui-mount
-                (vui-component 'gastown-ready-app)
-                gastown-ready-buffer-name)))))))
+               (gastown-ready-do-refresh buf)))))))
+
 
 ;;; ============================================================
 ;;; Interactive Commands
@@ -395,11 +429,16 @@ and re-rendered via vui-mount.  Used by tests and direct refresh."
       (user-error "No issue at point"))))
 
 (defun gastown-ready-refresh ()
-  "Refresh the *gastown-ready* buffer."
+  "Refresh the *gastown-ready* buffer.
+Updates the existing component in-place when possible (no flash, no
+collapse reset); falls back to a full remount when the buffer has no
+live vui instance."
   (interactive)
-  (vui-mount
-   (vui-component 'gastown-ready-app)
-   gastown-ready-buffer-name))
+  (let ((buf (get-buffer gastown-ready-buffer-name)))
+    (unless (and buf (gastown-ready-do-refresh buf))
+      (vui-mount
+       (vui-component 'gastown-ready-app)
+       gastown-ready-buffer-name))))
 
 ;;;###autoload
 (defun gastown-ready-toggle-watch ()
@@ -430,7 +469,15 @@ and re-rendered via vui-mount.  Used by tests and direct refresh."
 
 ;;;###autoload
 (defun gastown-ready ()
-  "Show ready work across town in a dedicated buffer (async, vui-based)."
+  "Show ready work across town in a dedicated buffer (async, vui-based).
+
+On first open, mounts a fresh `gastown-ready-app' component.
+On subsequent calls (refresh), updates the existing component in-place:
+previous data remains visible while new data loads (no spinner flash,
+no collapse reset).
+
+An auto-refresh timer fires every `gastown-ready-refresh-interval' seconds
+while the buffer is visible."
   (interactive)
   (let ((buf (get-buffer-create gastown-ready-buffer-name)))
     (with-current-buffer buf
@@ -439,9 +486,11 @@ and re-rendered via vui-mount.  Used by tests and direct refresh."
       (when (and gastown-ready-refresh-interval
                  (not gastown-ready--watch-timer))
         (gastown-ready--start-watch buf gastown-ready-refresh-interval)))
-    (vui-mount
-     (vui-component 'gastown-ready-app)
-     gastown-ready-buffer-name)
+    ;; Refresh in-place when a live instance exists; full remount otherwise.
+    (unless (gastown-ready-do-refresh buf)
+      (vui-mount
+       (vui-component 'gastown-ready-app)
+       gastown-ready-buffer-name))
     (pop-to-buffer gastown-ready-buffer-name)))
 
 (provide 'gastown-command-ready)

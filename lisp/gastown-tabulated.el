@@ -437,7 +437,7 @@ Key bindings:
          (data    (gastown-command-session-list! :json t
                                                  :rig rig
                                                  :role role
-                                                 :running (if running t nil)
+                                                 :running running
                                                  :order order)))
     (gastown-session-list--populate data)
     (message "Session list refreshed")))

@@ -159,6 +159,53 @@
     (should (equal "ge-xyz"
                    (get-text-property (point) 'gastown-ready-issue-id)))))
 
+;;; gastown-ready-do-refresh tests
+
+(defun gastown-ready-test--mount-with-mock (buf)
+  "Mount gastown-ready-app in BUF with a mock fetch that never resolves.
+Returns the buffer so the caller can call gastown-ready-do-refresh on it."
+  (with-current-buffer buf
+    (gastown-ready-mode)
+    (cl-letf (((symbol-function 'gastown-ready--async-fetch)
+               (lambda (_resolve _reject) nil)))
+      (vui-mount (vui-component 'gastown-ready-app) (buffer-name))))
+  buf)
+
+(ert-deftest gastown-ready-test-do-refresh-defined ()
+  "gastown-ready-do-refresh is a defined function."
+  (should (fboundp 'gastown-ready-do-refresh)))
+
+(ert-deftest gastown-ready-test-do-refresh-returns-nil-for-dead-buffer ()
+  "gastown-ready-do-refresh returns nil for a non-live buffer."
+  (should-not (gastown-ready-do-refresh (get-buffer-create " *dead*")))
+  (kill-buffer " *dead*"))
+
+(ert-deftest gastown-ready-test-do-refresh-returns-nil-without-instance ()
+  "gastown-ready-do-refresh returns nil when no vui root instance exists."
+  (with-temp-buffer
+    (should-not (gastown-ready-do-refresh (current-buffer)))))
+
+(ert-deftest gastown-ready-test-do-refresh-increments-tick ()
+  "gastown-ready-do-refresh increments :refresh-tick on the live root instance."
+  (with-temp-buffer
+    (let ((buf (gastown-ready-test--mount-with-mock (current-buffer))))
+      (let ((tick-before (plist-get (vui-instance-state vui--root-instance)
+                                    :refresh-tick)))
+        (cl-letf (((symbol-function 'gastown-ready--async-fetch)
+                   (lambda (_resolve _reject) nil)))
+          (gastown-ready-do-refresh buf))
+        (let ((tick-after (plist-get (vui-instance-state vui--root-instance)
+                                     :refresh-tick)))
+          (should (= (1+ tick-before) tick-after)))))))
+
+(ert-deftest gastown-ready-test-do-refresh-returns-t-with-instance ()
+  "gastown-ready-do-refresh returns t when a live vui root instance exists."
+  (with-temp-buffer
+    (let ((buf (gastown-ready-test--mount-with-mock (current-buffer))))
+      (cl-letf (((symbol-function 'gastown-ready--async-fetch)
+                 (lambda (_resolve _reject) nil)))
+        (should (gastown-ready-do-refresh buf))))))
+
 ;;; Mode and method existence tests
 
 (ert-deftest gastown-ready-test-mode-defined ()
