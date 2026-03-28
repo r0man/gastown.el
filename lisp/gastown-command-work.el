@@ -342,6 +342,341 @@ Run post-merge cleanup: close MR bead, close source issue, delete remote branch.
 List merge queue entries.")
 
 
+;;; MQ Integration Command
+
+(gastown-defcommand gastown-command-mq-integration (gastown-command-global-options)
+  ()
+  :documentation "Represents gt mq integration command.
+Manage integration branches for batch work on epics."
+  :cli-command "mq integration")
+
+
+;;; MQ Next Command
+
+(gastown-defcommand gastown-command-mq-next (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (strategy
+    :initarg :strategy
+    :type (or null string)
+    :initform nil
+    :documentation "Ordering strategy (priority or fifo)."
+    :long-option "strategy"
+    :option-type :string
+    :key "s"
+    :transient "Strategy"
+    :class transient-option
+    :argument "--strategy="
+    :prompt "Strategy: "
+    :transient-choices ("priority" "fifo")
+    :transient-group "Options"
+    :level 2
+    :order 2))
+  :documentation "Represents gt mq next command.
+Show the next merge request to process based on priority score."
+  :cli-command "mq next")
+
+
+;;; MQ Reject Command
+
+(gastown-defcommand gastown-command-mq-reject (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (mr-id
+    :initarg :mr-id
+    :type (or null string)
+    :initform nil
+    :documentation "MR ID or branch to reject."
+    :positional 2
+    :option-type :string
+    :key "m"
+    :transient "MR ID or branch (required)"
+    :class transient-option
+    :prompt "MR ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Required"
+    :level 1
+    :order 2)
+   (reason
+    :initarg :reason
+    :type (or null string)
+    :initform nil
+    :documentation "Reason for rejection."
+    :long-option "reason"
+    :option-type :string
+    :key "R"
+    :transient "Reason (required)"
+    :class transient-option
+    :argument "--reason="
+    :prompt "Reason: "
+    :transient-group "Options"
+    :level 1
+    :order 3))
+  :documentation "Represents gt mq reject command.
+Manually reject a merge request."
+  :cli-command "mq reject")
+
+
+;;; MQ Retry Command
+
+(gastown-defcommand gastown-command-mq-retry (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (mr-id
+    :initarg :mr-id
+    :type (or null string)
+    :initform nil
+    :documentation "MR ID to retry."
+    :positional 2
+    :option-type :string
+    :key "m"
+    :transient "MR ID (required)"
+    :class transient-option
+    :prompt "MR ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Required"
+    :level 1
+    :order 2)
+   (now
+    :initarg :now
+    :type boolean
+    :initform nil
+    :documentation "Immediately process instead of waiting for refinery loop."
+    :long-option "now"
+    :option-type :boolean
+    :key "n"
+    :transient "--now"
+    :class transient-switch
+    :argument "--now"
+    :transient-group "Options"
+    :level 2
+    :order 3))
+  :documentation "Represents gt mq retry command.
+Retry a failed merge request."
+  :cli-command "mq retry")
+
+
+;;; MQ Status Command
+
+(gastown-defcommand gastown-command-mq-status (gastown-command-global-options)
+  ((mr-id
+    :initarg :mr-id
+    :type (or null string)
+    :initform nil
+    :documentation "MR ID to show status for."
+    :positional 1
+    :option-type :string
+    :key "m"
+    :transient "MR ID (required)"
+    :class transient-option
+    :prompt "MR ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt mq status command.
+Display detailed information about a merge request."
+  :cli-command "mq status")
+
+
+;;; MQ Submit Command
+
+(gastown-defcommand gastown-command-mq-submit (gastown-command-global-options)
+  ((issue
+    :initarg :issue
+    :type (or null string)
+    :initform nil
+    :documentation "Source issue ID (default: parse from branch name)."
+    :long-option "issue"
+    :option-type :string
+    :key "i"
+    :transient "Source issue ID"
+    :class transient-option
+    :argument "--issue="
+    :prompt "Issue ID: "
+    :transient-reader gastown-reader-bead-id
+    :transient-group "Options"
+    :level 2
+    :order 1)
+   (epic
+    :initarg :epic
+    :type (or null string)
+    :initform nil
+    :documentation "Target epic's integration branch instead of main."
+    :long-option "epic"
+    :option-type :string
+    :key "e"
+    :transient "Epic ID (target integration branch)"
+    :class transient-option
+    :argument "--epic="
+    :prompt "Epic ID: "
+    :transient-group "Options"
+    :level 2
+    :order 2)
+   (no-cleanup
+    :initarg :no-cleanup
+    :type boolean
+    :initform nil
+    :documentation "Don't auto-cleanup after submit."
+    :long-option "no-cleanup"
+    :option-type :boolean
+    :key "n"
+    :transient "--no-cleanup"
+    :class transient-switch
+    :argument "--no-cleanup"
+    :transient-group "Options"
+    :level 2
+    :order 3))
+  :documentation "Represents gt mq submit command.
+Submit current branch to the merge queue."
+  :cli-command "mq submit")
+
+
+;;; Synthesis Subcommands
+
+(gastown-defcommand gastown-command-synthesis-start (gastown-command-global-options)
+  ((convoy-id
+    :initarg :convoy-id
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy ID to start synthesis for."
+    :positional 1
+    :option-type :string
+    :key "c"
+    :transient "Convoy ID (required)"
+    :class transient-option
+    :prompt "Convoy ID: "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Target rig for synthesis polecat."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "Target rig"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Options"
+    :level 2
+    :order 2)
+   (force
+    :initarg :force
+    :type boolean
+    :initform nil
+    :documentation "Start even if some legs are incomplete."
+    :long-option "force"
+    :option-type :boolean
+    :key "f"
+    :transient "--force"
+    :class transient-switch
+    :argument "--force"
+    :transient-group "Options"
+    :level 2
+    :order 3)
+   (dry-run
+    :initarg :dry-run
+    :type boolean
+    :initform nil
+    :documentation "Preview execution without running."
+    :long-option "dry-run"
+    :option-type :boolean
+    :key "d"
+    :transient "--dry-run"
+    :class transient-switch
+    :argument "--dry-run"
+    :transient-group "Options"
+    :level 1
+    :order 4))
+  :documentation "Represents gt synthesis start command.
+Start the synthesis step for a convoy."
+  :cli-command "synthesis start")
+
+
+(gastown-defcommand gastown-command-synthesis-status (gastown-command-global-options)
+  ((convoy-id
+    :initarg :convoy-id
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy ID to check synthesis readiness for."
+    :positional 1
+    :option-type :string
+    :key "c"
+    :transient "Convoy ID (required)"
+    :class transient-option
+    :prompt "Convoy ID: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt synthesis status command.
+Show whether a convoy is ready for synthesis."
+  :cli-command "synthesis status")
+
+
+(gastown-defcommand gastown-command-synthesis-close (gastown-command-global-options)
+  ((convoy-id
+    :initarg :convoy-id
+    :type (or null string)
+    :initform nil
+    :documentation "Convoy ID to close after synthesis."
+    :positional 1
+    :option-type :string
+    :key "c"
+    :transient "Convoy ID (required)"
+    :class transient-option
+    :prompt "Convoy ID: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt synthesis close command.
+Close a convoy after synthesis is complete."
+  :cli-command "synthesis close")
+
+
 ;;; Transient Menus
 
 ;;;###autoload (autoload 'gastown-done "gastown-command-work" nil t)
@@ -375,6 +710,42 @@ List merge queue entries.")
 ;;;###autoload (autoload 'gastown-mq-post-merge "gastown-command-work" nil t)
 (beads-meta-define-transient gastown-command-mq-post-merge "gastown-mq-post-merge"
   "Run post-merge cleanup (close MR, delete branch).")
+
+;;;###autoload (autoload 'gastown-mq-integration "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-integration "gastown-mq-integration"
+  "Manage integration branches for epics.")
+
+;;;###autoload (autoload 'gastown-mq-next "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-next "gastown-mq-next"
+  "Show next merge request to process.")
+
+;;;###autoload (autoload 'gastown-mq-reject "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-reject "gastown-mq-reject"
+  "Reject a merge request.")
+
+;;;###autoload (autoload 'gastown-mq-retry "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-retry "gastown-mq-retry"
+  "Retry a failed merge request.")
+
+;;;###autoload (autoload 'gastown-mq-status "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-status "gastown-mq-status"
+  "Show merge request status.")
+
+;;;###autoload (autoload 'gastown-mq-submit "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mq-submit "gastown-mq-submit"
+  "Submit current branch to the merge queue.")
+
+;;;###autoload (autoload 'gastown-synthesis-start "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-synthesis-start "gastown-synthesis-start"
+  "Start the synthesis step for a convoy.")
+
+;;;###autoload (autoload 'gastown-synthesis-status "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-synthesis-status "gastown-synthesis-status"
+  "Show convoy synthesis readiness.")
+
+;;;###autoload (autoload 'gastown-synthesis-close "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-synthesis-close "gastown-synthesis-close"
+  "Close a convoy after synthesis.")
 
 ;;; Simple Work Commands
 
@@ -588,14 +959,32 @@ Show work list.")
 (beads-meta-define-transient gastown-command-wl "gastown-wl"
   "Show work list.")
 
+;;; Synthesis Dispatch Transient
+
+;;;###autoload (autoload 'gastown-synthesis-menu "gastown-command-work" nil t)
+(transient-define-prefix gastown-synthesis-menu ()
+  "Manage synthesis steps for convoy formulas."
+  ["Synthesis"
+   ("s" "Status" gastown-synthesis-status)
+   ("S" "Start synthesis" gastown-synthesis-start)
+   ("x" "Close after synthesis" gastown-synthesis-close)])
+
 ;;; MQ Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-mq "gastown-command-work" nil t)
 (transient-define-prefix gastown-mq ()
   "Manage the Gas Town merge queue."
-  ["Merge Queue"
+  ["Merge Queue Info"
    ("l" "List merge queue" gastown-mq-list)
-   ("p" "Post-merge cleanup" gastown-mq-post-merge)])
+   ("n" "Next MR" gastown-mq-next)
+   ("s" "MR status" gastown-mq-status)]
+  ["MR Actions"
+   ("S" "Submit branch" gastown-mq-submit)
+   ("r" "Retry failed MR" gastown-mq-retry)
+   ("X" "Reject MR" gastown-mq-reject)
+   ("p" "Post-merge cleanup" gastown-mq-post-merge)]
+  ["Advanced"
+   ("i" "Integration branches" gastown-mq-integration)])
 
 ;;; Work Management Dispatch Transient
 
@@ -617,7 +1006,7 @@ Show work list.")
   ["Molecules & Formulas"
    ("m" "Molecule" gastown-mol)
    ("f" "Formula..." gastown-formula-menu)
-   ("y" "Synthesis" gastown-synthesis)
+   ("y" "Synthesis..." gastown-synthesis-menu)
    ("q" "Merge queue" gastown-mq)
    ("v" "Convoy" gastown-convoy)]
   ["Memory & Context"

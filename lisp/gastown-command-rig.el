@@ -256,6 +256,264 @@ Show detailed status for a specific rig."
   :cli-command "rig status")
 
 
+;;; Rig Add Command
+
+(gastown-defcommand gastown-command-rig-add (gastown-command-global-options)
+  ((name
+    :initarg :name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name."
+    :positional 1
+    :option-type :string
+    :key "n"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (git-url
+    :initarg :git-url
+    :type (or null string)
+    :initform nil
+    :documentation "Git repository URL."
+    :positional 2
+    :option-type :string
+    :key "u"
+    :transient "Git URL"
+    :class transient-option
+    :prompt "Git URL: "
+    :transient-group "Required"
+    :level 1
+    :order 2)
+   (prefix
+    :initarg :prefix
+    :type (or null string)
+    :initform nil
+    :documentation "Beads issue prefix."
+    :long-option "prefix"
+    :option-type :string
+    :key "p"
+    :transient "Beads issue prefix"
+    :class transient-option
+    :argument "--prefix="
+    :prompt "Prefix: "
+    :transient-group "Options"
+    :level 2
+    :order 3)
+   (adopt
+    :initarg :adopt
+    :type boolean
+    :initform nil
+    :documentation "Adopt existing directory instead of creating new."
+    :long-option "adopt"
+    :option-type :boolean
+    :key "a"
+    :transient "--adopt"
+    :class transient-switch
+    :argument "--adopt"
+    :transient-group "Options"
+    :level 2
+    :order 4))
+  :documentation "Represents gt rig add command.
+Add a new rig by cloning a repository."
+  :cli-command "rig add")
+
+
+;;; Rig Boot Command
+
+(gastown-defcommand gastown-command-rig-boot (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to boot."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt rig boot command.
+Start witness and refinery for a rig."
+  :cli-command "rig boot")
+
+
+;;; Rig Config Command
+
+(gastown-defcommand gastown-command-rig-config (gastown-command-global-options)
+  ()
+  :documentation "Represents gt rig config command.
+View and manage rig configuration across property layers."
+  :cli-command "rig config")
+
+
+;;; Rig Remove Command
+
+(gastown-defcommand gastown-command-rig-remove (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to remove."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (force
+    :initarg :force
+    :type boolean
+    :initform nil
+    :documentation "Kill running sessions before removing."
+    :long-option "force"
+    :option-type :boolean
+    :key "f"
+    :transient "--force (kill sessions)"
+    :class transient-switch
+    :argument "--force"
+    :transient-group "Options"
+    :level 2
+    :order 2))
+  :documentation "Represents gt rig remove command.
+Remove a rig from the registry (does not delete files)."
+  :cli-command "rig remove")
+
+
+;;; Rig Reset Command
+
+(gastown-defcommand gastown-command-rig-reset (gastown-command-global-options)
+  ((handoff
+    :initarg :handoff
+    :type boolean
+    :initform nil
+    :documentation "Clear handoff content only."
+    :long-option "handoff"
+    :option-type :boolean
+    :key "H"
+    :transient "--handoff"
+    :class transient-switch
+    :argument "--handoff"
+    :transient-group "Reset Targets"
+    :level 1
+    :order 1)
+   (mail
+    :initarg :mail
+    :type boolean
+    :initform nil
+    :documentation "Clear stale mail messages only."
+    :long-option "mail"
+    :option-type :boolean
+    :key "m"
+    :transient "--mail"
+    :class transient-switch
+    :argument "--mail"
+    :transient-group "Reset Targets"
+    :level 1
+    :order 2)
+   (stale
+    :initarg :stale
+    :type boolean
+    :initform nil
+    :documentation "Reset orphaned in_progress issues."
+    :long-option "stale"
+    :option-type :boolean
+    :key "s"
+    :transient "--stale"
+    :class transient-switch
+    :argument "--stale"
+    :transient-group "Reset Targets"
+    :level 1
+    :order 3)
+   (dry-run
+    :initarg :dry-run
+    :type boolean
+    :initform nil
+    :documentation "Show what would be reset without making changes."
+    :long-option "dry-run"
+    :option-type :boolean
+    :key "d"
+    :transient "--dry-run"
+    :class transient-switch
+    :argument "--dry-run"
+    :transient-group "Options"
+    :level 1
+    :order 4))
+  :documentation "Represents gt rig reset command.
+Reset rig state (handoff content, mail, stale issues)."
+  :cli-command "rig reset")
+
+
+;;; Rig Settings Command
+
+(gastown-defcommand gastown-command-rig-settings (gastown-command-global-options)
+  ()
+  :documentation "Represents gt rig settings command.
+View and manage rig settings (settings/config.json)."
+  :cli-command "rig settings")
+
+
+;;; Rig Shutdown Command
+
+(gastown-defcommand gastown-command-rig-shutdown (gastown-command-global-options)
+  ((rig-name
+    :initarg :rig-name
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name to shutdown."
+    :positional 1
+    :option-type :string
+    :key "r"
+    :transient "Rig name (required)"
+    :class transient-option
+    :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (force
+    :initarg :force
+    :type boolean
+    :initform nil
+    :documentation "Force immediate shutdown."
+    :long-option "force"
+    :option-type :boolean
+    :key "f"
+    :transient "--force"
+    :class transient-switch
+    :argument "--force"
+    :transient-group "Options"
+    :level 2
+    :order 2)
+   (nuclear
+    :initarg :nuclear
+    :type boolean
+    :initform nil
+    :documentation "DANGER: Bypass ALL safety checks (loses uncommitted work!)."
+    :long-option "nuclear"
+    :option-type :boolean
+    :key "N"
+    :transient "--nuclear (DANGER)"
+    :class transient-switch
+    :argument "--nuclear"
+    :transient-group "Options"
+    :level 3
+    :order 3))
+  :documentation "Represents gt rig shutdown command.
+Gracefully stop all rig agents."
+  :cli-command "rig shutdown")
+
+
 ;;; Transient Menus
 
 ;;;###autoload (autoload 'gastown-rig-list "gastown-command-rig" nil t)
@@ -298,6 +556,34 @@ Show detailed status for a specific rig."
 (beads-meta-define-transient gastown-command-rig-status "gastown-rig-status"
   "Show detailed status for a rig.")
 
+;;;###autoload (autoload 'gastown-rig-add "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-add "gastown-rig-add"
+  "Add a new rig by cloning a repository.")
+
+;;;###autoload (autoload 'gastown-rig-boot "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-boot "gastown-rig-boot"
+  "Start witness and refinery for a rig.")
+
+;;;###autoload (autoload 'gastown-rig-config "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-config "gastown-rig-config"
+  "View and manage rig configuration.")
+
+;;;###autoload (autoload 'gastown-rig-remove "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-remove "gastown-rig-remove"
+  "Remove a rig from the registry.")
+
+;;;###autoload (autoload 'gastown-rig-reset "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-reset "gastown-rig-reset"
+  "Reset rig state.")
+
+;;;###autoload (autoload 'gastown-rig-settings "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-settings "gastown-rig-settings"
+  "View and manage rig settings.")
+
+;;;###autoload (autoload 'gastown-rig-shutdown "gastown-command-rig" nil t)
+(beads-meta-define-transient gastown-command-rig-shutdown "gastown-rig-shutdown"
+  "Gracefully stop all rig agents.")
+
 ;;; Rig Dispatch Transient
 
 ;;;###autoload (autoload 'gastown-rig "gastown-command-rig" nil t)
@@ -305,17 +591,25 @@ Show detailed status for a specific rig."
   "Manage rigs in the workspace."
   ["Rig Status"
    ("l" "List rigs" gastown-rig-list)
-   ("s" "Rig status" gastown-rig-status)]
+   ("s" "Rig status" gastown-rig-status)
+   ("c" "Rig config" gastown-rig-config)
+   ("C" "Rig settings" gastown-rig-settings)]
   ["Rig Lifecycle"
+   ("b" "Boot rig" gastown-rig-boot)
    ("S" "Start rig" gastown-rig-start)
    ("x" "Stop rig" gastown-rig-stop)
+   ("X" "Shutdown rig" gastown-rig-shutdown)
    ("r" "Restart rig" gastown-rig-restart)
    ("R" "Reboot rig" gastown-rig-reboot)]
   ["Rig State"
    ("d" "Dock rig" gastown-rig-dock)
    ("u" "Undock rig" gastown-rig-undock)
    ("p" "Park rig" gastown-rig-park)
-   ("P" "Unpark rig" gastown-rig-unpark)])
+   ("P" "Unpark rig" gastown-rig-unpark)]
+  ["Registry"
+   ("a" "Add rig" gastown-rig-add)
+   ("D" "Remove rig" gastown-rig-remove)
+   ("z" "Reset rig state" gastown-rig-reset)])
 
 (provide 'gastown-command-rig)
 ;;; gastown-command-rig.el ends here

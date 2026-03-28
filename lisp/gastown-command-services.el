@@ -82,6 +82,146 @@ Shows the Gas Town daemon status.")
 (beads-meta-define-transient gastown-command-daemon-status "gastown-daemon-status"
   "Show Gas Town daemon status.")
 
+;;; Daemon Subcommands
+
+(gastown-defcommand gastown-command-daemon-start (gastown-command-global-options)
+  ()
+  :documentation "Represents gt daemon start command.
+Start the Gas Town daemon in the background."
+  :cli-command "daemon start")
+
+
+(gastown-defcommand gastown-command-daemon-stop (gastown-command-global-options)
+  ()
+  :documentation "Represents gt daemon stop command.
+Stop the running Gas Town daemon."
+  :cli-command "daemon stop")
+
+
+(gastown-defcommand gastown-command-daemon-logs (gastown-command-global-options)
+  ((lines
+    :initarg :lines
+    :type (or null string)
+    :initform nil
+    :documentation "Number of lines to show."
+    :long-option "lines"
+    :option-type :string
+    :key "n"
+    :transient "Lines to show"
+    :class transient-option
+    :argument "--lines="
+    :prompt "Lines: "
+    :transient-group "Options"
+    :level 1
+    :order 1)
+   (follow
+    :initarg :follow
+    :type boolean
+    :initform nil
+    :documentation "Follow log output in real time."
+    :long-option "follow"
+    :option-type :boolean
+    :key "f"
+    :transient "--follow"
+    :class transient-switch
+    :argument "--follow"
+    :transient-group "Options"
+    :level 1
+    :order 2))
+  :documentation "Represents gt daemon logs command.
+View the daemon log file."
+  :cli-command "daemon logs")
+
+
+(gastown-defcommand gastown-command-daemon-rotate-logs (gastown-command-global-options)
+  ((force
+    :initarg :force
+    :type boolean
+    :initform nil
+    :documentation "Rotate all logs regardless of size."
+    :long-option "force"
+    :option-type :boolean
+    :key "f"
+    :transient "--force"
+    :class transient-switch
+    :argument "--force"
+    :transient-group "Options"
+    :level 2
+    :order 1))
+  :documentation "Represents gt daemon rotate-logs command.
+Rotate all daemon-managed log files."
+  :cli-command "daemon rotate-logs")
+
+
+(gastown-defcommand gastown-command-daemon-clear-backoff (gastown-command-global-options)
+  ((agent
+    :initarg :agent
+    :type (or null string)
+    :initform nil
+    :documentation "Agent name to clear backoff for."
+    :positional 1
+    :option-type :string
+    :key "a"
+    :transient "Agent name (required)"
+    :class transient-option
+    :prompt "Agent: "
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt daemon clear-backoff command.
+Clear crash loop backoff for an agent."
+  :cli-command "daemon clear-backoff")
+
+
+(gastown-defcommand gastown-command-daemon-enable-supervisor (gastown-command-global-options)
+  ()
+  :documentation "Represents gt daemon enable-supervisor command.
+Configure launchd/systemd for daemon auto-restart."
+  :cli-command "daemon enable-supervisor")
+
+
+;;; Transients for Daemon Subcommands
+
+;;;###autoload (autoload 'gastown-daemon-start "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-daemon-start "gastown-daemon-start"
+  "Start the Gas Town daemon.")
+
+;;;###autoload (autoload 'gastown-daemon-stop "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-daemon-stop "gastown-daemon-stop"
+  "Stop the Gas Town daemon.")
+
+;;;###autoload (autoload 'gastown-daemon-logs "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-daemon-logs "gastown-daemon-logs"
+  "View daemon logs.")
+
+;;;###autoload (autoload 'gastown-daemon-rotate-logs "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-daemon-rotate-logs "gastown-daemon-rotate-logs"
+  "Rotate daemon log files.")
+
+;;;###autoload (autoload 'gastown-daemon-clear-backoff "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-daemon-clear-backoff "gastown-daemon-clear-backoff"
+  "Clear crash loop backoff for an agent.")
+
+;;;###autoload (autoload 'gastown-daemon-enable-supervisor "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-daemon-enable-supervisor "gastown-daemon-enable-supervisor"
+  "Configure launchd/systemd for daemon auto-restart.")
+
+;;; Daemon Dispatch Transient
+
+;;;###autoload (autoload 'gastown-daemon-menu "gastown-command-services" nil t)
+(transient-define-prefix gastown-daemon-menu ()
+  "Manage the Gas Town background daemon."
+  ["Daemon Status"
+   ("s" "Status" gastown-daemon-status)
+   ("l" "Logs" gastown-daemon-logs)]
+  ["Daemon Lifecycle"
+   ("S" "Start daemon" gastown-daemon-start)
+   ("x" "Stop daemon" gastown-daemon-stop)]
+  ["Maintenance"
+   ("r" "Rotate logs" gastown-daemon-rotate-logs)
+   ("c" "Clear backoff" gastown-daemon-clear-backoff)
+   ("e" "Enable supervisor" gastown-daemon-enable-supervisor)])
+
 ;;; Additional Service Commands
 
 (gastown-defcommand gastown-command-dolt (gastown-command-global-options)
@@ -206,7 +346,7 @@ Remove orphaned databases from .dolt-data/."
    ("s" "Start service" gastown-start)
    ("S" "Shutdown (with cleanup)" gastown-shutdown)]
   ["Management"
-   ("D" "Daemon status" gastown-daemon-status)
+   ("D" "Daemon..." gastown-daemon-menu)
    ("o" "Dolt server..." gastown-dolt-menu)
    ("m" "Maintain" gastown-maintain)
    ("r" "Reaper" gastown-reaper)
