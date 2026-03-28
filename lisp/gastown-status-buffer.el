@@ -576,20 +576,24 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
         (vui-vstack row (gastown-status--agent-detail-vnode agent))
       row)))
 
-(defun gastown-status--crew-action (action crew-name)
-  "Run `gt crew ACTION CREW-NAME' asynchronously.
+(defun gastown-status--crew-action (action rig-name crew-name)
+  "Run `gt crew ACTION' for CREW-NAME in RIG-NAME asynchronously.
 ACTION is either \"start\" or \"stop\".
 Refreshes the status buffer after the command completes."
   (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
-         (buf (get-buffer gastown-status-buffer-name)))
-    (message "gt crew %s %s..." action crew-name)
+         (buf (get-buffer gastown-status-buffer-name))
+         (qualified (format "%s/%s" rig-name crew-name))
+         (cmd (if (string= action "start")
+                  (list exe "crew" action rig-name crew-name)
+                (list exe "crew" action qualified))))
+    (message "gt crew %s %s..." action qualified)
     (make-process
      :name (format "gastown-crew-%s" action)
-     :command (list exe "crew" action crew-name)
+     :command cmd
      :connection-type 'pipe
      :sentinel (lambda (_proc event)
                  (when (string-prefix-p "finished" event)
-                   (message "gt crew %s %s: done" action crew-name)
+                   (message "gt crew %s %s: done" action qualified)
                    (when buf
                      (gastown-status-do-refresh buf)))))))
 
@@ -639,15 +643,15 @@ TMUX-SOCKET is the tmux -L socket name for the switch-to-session action."
                   :no-decoration t
                   :face 'gastown-status-stopped
                   :help-echo (format "Stop crew member: %s" name)
-                  :on-click (let ((n name))
+                  :on-click (let ((n name) (r rig-name))
                               (lambda ()
-                                (gastown-status--crew-action "stop" n))))
+                                (gastown-status--crew-action "stop" r n))))
               (vui-button " [start]"
                 :no-decoration t
                 :help-echo (format "Start crew member: %s" name)
-                :on-click (let ((n name))
+                :on-click (let ((n name) (r rig-name))
                             (lambda ()
-                              (gastown-status--crew-action "start" n)))))))
+                              (gastown-status--crew-action "start" r n)))))))
          (row-line (if action-btn
                        (vui-hstack :spacing 0 row action-btn)
                      row)))

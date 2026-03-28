@@ -1080,6 +1080,7 @@ received it as a single argument."
       (should captured-cmd)
       (should (member "crew" captured-cmd))
       (should (member "start" captured-cmd))
+      (should (member "beads_el" captured-cmd))
       (should (member "roman" captured-cmd)))))
 
 (ert-deftest gastown-status-buffer-test-crew-stop-calls-gt-crew ()
@@ -1106,7 +1107,7 @@ received it as a single argument."
       (should captured-cmd)
       (should (member "crew" captured-cmd))
       (should (member "stop" captured-cmd))
-      (should (member "fred" captured-cmd)))))
+      (should (member "beads_el/fred" captured-cmd)))))
 
 ;;; Rendering Tests — Timestamp
 
