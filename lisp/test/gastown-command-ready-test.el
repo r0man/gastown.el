@@ -236,5 +236,12 @@ Returns the buffer so the caller can call gastown-ready-do-refresh on it."
     (should (string-match-p "g=refresh" header-line-format))
     (should (string-match-p "q=quit" header-line-format))))
 
+(ert-deftest gastown-ready-test-mode-navigation-keys-bound ()
+  "gastown-ready-mode binds n and p for navigation."
+  (with-temp-buffer
+    (gastown-ready-mode)
+    (should (eq (key-binding "n") #'next-line))
+    (should (eq (key-binding "p") #'previous-line))))
+
 (provide 'gastown-command-ready-test)
 ;;; gastown-command-ready-test.el ends here

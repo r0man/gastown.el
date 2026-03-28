@@ -246,7 +246,6 @@ Configure launchd/systemd for daemon auto-restart."
     :initform nil
     :documentation "Reason for the emergency stop."
     :long-option "reason"
-    :short-option "r"
     :option-type :string
     :key "m"
     :transient "Reason"

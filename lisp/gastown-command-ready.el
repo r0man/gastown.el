@@ -112,6 +112,8 @@ Set to nil to disable auto-refresh."
   "g"   #'gastown-ready-refresh
   "q"   #'quit-window
   "w"   #'gastown-ready-toggle-watch
+  "n"   #'next-line
+  "p"   #'previous-line
   "RET" #'gastown-ready-show-issue)
 
 (define-derived-mode gastown-ready-mode vui-mode "GT-Ready"
@@ -125,7 +127,7 @@ Key bindings:
   :group 'gastown-ready-buffer
   (setq truncate-lines t)
   (setq-local header-line-format
-              " Gas Town Ready  (g=refresh  RET=open  w=watch  q=quit)")
+              " Gas Town Ready  (g=refresh  n/p=navigate  RET=open  w=watch  q=quit)")
   (add-hook 'kill-buffer-hook #'gastown-ready--cancel-watch nil t))
 
 ;;; ============================================================
