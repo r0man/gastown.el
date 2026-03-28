@@ -222,6 +222,74 @@ Configure launchd/systemd for daemon auto-restart."
    ("c" "Clear backoff" gastown-daemon-clear-backoff)
    ("e" "Enable supervisor" gastown-daemon-enable-supervisor)])
 
+;;; Emergency Stop Commands
+
+(gastown-defcommand gastown-command-estop (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Freeze only this rig instead of the whole town."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Scope"
+    :level 1
+    :order 1)
+   (reason
+    :initarg :reason
+    :type (or null string)
+    :initform nil
+    :documentation "Reason for the emergency stop."
+    :long-option "reason"
+    :short-option "r"
+    :option-type :string
+    :key "m"
+    :transient "Reason"
+    :class transient-option
+    :argument "--reason="
+    :prompt "Reason: "
+    :transient-group "Options"
+    :level 1
+    :order 2))
+  :documentation "Represents gt estop command.
+Emergency stop — freeze all agent sessions.")
+
+
+(gastown-defcommand gastown-command-thaw (gastown-command-global-options)
+  ((rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Thaw only this rig instead of the whole town."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Scope"
+    :level 1
+    :order 1))
+  :documentation "Represents gt thaw command.
+Resume agent sessions frozen by gt estop.")
+
+
+;;; Transients for Emergency Stop Commands
+
+;;;###autoload (autoload 'gastown-estop "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-estop "gastown-estop"
+  "Emergency stop — freeze all agents.")
+
+;;;###autoload (autoload 'gastown-thaw "gastown-command-services" nil t)
+(beads-meta-define-transient gastown-command-thaw "gastown-thaw"
+  "Resume agents frozen by estop.")
+
 ;;; Additional Service Commands
 
 (gastown-defcommand gastown-command-dolt (gastown-command-global-options)
@@ -345,6 +413,9 @@ Remove orphaned databases from .dolt-data/."
    ("d" "Down (stop all)" gastown-down)
    ("s" "Start service" gastown-start)
    ("S" "Shutdown (with cleanup)" gastown-shutdown)]
+  ["Emergency"
+   ("E" "E-stop (freeze all)" gastown-estop)
+   ("T" "Thaw (resume frozen)" gastown-thaw)]
   ["Management"
    ("D" "Daemon..." gastown-daemon-menu)
    ("o" "Dolt server..." gastown-dolt-menu)

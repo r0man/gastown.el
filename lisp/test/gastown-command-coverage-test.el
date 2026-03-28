@@ -253,6 +253,64 @@
   "gastown-down transient should exist."
   (should (fboundp 'gastown-down)))
 
+(ert-deftest gastown-coverage-estop-class-exists ()
+  "gastown-command-estop class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-estop)))
+
+(ert-deftest gastown-coverage-estop-transient-exists ()
+  "gastown-estop transient should exist."
+  (require 'gastown-command-services)
+  (should (fboundp 'gastown-estop)))
+
+(ert-deftest gastown-coverage-thaw-class-exists ()
+  "gastown-command-thaw class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-thaw)))
+
+(ert-deftest gastown-coverage-thaw-transient-exists ()
+  "gastown-thaw transient should exist."
+  (require 'gastown-command-services)
+  (should (fboundp 'gastown-thaw)))
+
+(ert-deftest gastown-coverage-estop-cli-command ()
+  "gastown-command-estop should include 'estop' in command line."
+  (require 'gastown-command-services)
+  (let ((cmd (make-instance 'gastown-command-estop)))
+    (should (member "estop" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-thaw-cli-command ()
+  "gastown-command-thaw should include 'thaw' in command line."
+  (require 'gastown-command-services)
+  (let ((cmd (make-instance 'gastown-command-thaw)))
+    (should (member "thaw" (gastown-command-line cmd)))))
+
+;;; Assign, changelog, mountain coverage
+
+(ert-deftest gastown-coverage-assign-class-exists ()
+  "gastown-command-assign class should exist."
+  (should (find-class 'gastown-command-assign)))
+
+(ert-deftest gastown-coverage-assign-transient-exists ()
+  "gastown-assign transient should exist."
+  (should (fboundp 'gastown-assign)))
+
+(ert-deftest gastown-coverage-changelog-class-exists ()
+  "gastown-command-changelog class should exist."
+  (should (find-class 'gastown-command-changelog)))
+
+(ert-deftest gastown-coverage-changelog-transient-exists ()
+  "gastown-changelog transient should exist."
+  (should (fboundp 'gastown-changelog)))
+
+(ert-deftest gastown-coverage-mountain-class-exists ()
+  "gastown-command-mountain class should exist."
+  (should (find-class 'gastown-command-mountain)))
+
+(ert-deftest gastown-coverage-mountain-transient-exists ()
+  "gastown-mountain transient should exist."
+  (should (fboundp 'gastown-mountain)))
+
 ;;; Diagnostics coverage
 
 (ert-deftest gastown-coverage-vitals-exists ()

@@ -883,6 +883,18 @@ Show work list.")
 
 ;;; Transients for Simple Work Commands
 
+;;;###autoload (autoload 'gastown-assign "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-assign "gastown-assign"
+  "Create a bead and hook it to a crew member.")
+
+;;;###autoload (autoload 'gastown-changelog "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-changelog "gastown-changelog"
+  "Show completed work across rigs.")
+
+;;;###autoload (autoload 'gastown-mountain "gastown-command-work" nil t)
+(beads-meta-define-transient gastown-command-mountain "gastown-mountain"
+  "Activate Mountain-Eater on an epic.")
+
 ;;;###autoload (autoload 'gastown-bead "gastown-command-work" nil t)
 (beads-meta-define-transient gastown-command-bead "gastown-bead"
   "Show bead information.")
@@ -1002,7 +1014,11 @@ Show work list.")
    ("b" "Bead" gastown-bead)
    ("s" "Show bead" gastown-show)
    ("c" "Cat (bead content)" gastown-cat)
-   ("C" "Close bead" gastown-close)]
+   ("C" "Close bead" gastown-close)
+   ("a" "Assign to crew" gastown-assign)
+   ("x" "Changelog" gastown-changelog)]
+  ["Epic Management"
+   ("E" "Mountain-Eater (epic)" gastown-mountain)]
   ["Molecules & Formulas"
    ("m" "Molecule" gastown-mol)
    ("f" "Formula..." gastown-formula-menu)
