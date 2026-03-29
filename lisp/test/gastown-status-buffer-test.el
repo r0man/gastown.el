@@ -1109,6 +1109,76 @@ received it as a single argument."
       (should (member "stop" captured-cmd))
       (should (member "beads_el/fred" captured-cmd)))))
 
+;;; Rendering Tests — Crew Transitional State
+
+(ert-deftest gastown-status-buffer-test-crew-start-pending-shows-starting ()
+  "When beads_el/roman is in pending-crew-ops as 'starting', renders 'starting...' text."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (setq gastown-status--pending-crew-ops (make-hash-table :test 'equal))
+    (puthash "beads_el/roman" "starting" gastown-status--pending-crew-ops)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "starting..." nil t))))
+
+(ert-deftest gastown-status-buffer-test-crew-stop-pending-shows-stopping ()
+  "When beads_el/fred is in pending-crew-ops as 'stopping', renders 'stopping...' text."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (setq gastown-status--pending-crew-ops (make-hash-table :test 'equal))
+    (puthash "beads_el/fred" "stopping" gastown-status--pending-crew-ops)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    (should (search-forward "stopping..." nil t))))
+
+(ert-deftest gastown-status-buffer-test-crew-pending-no-start-button ()
+  "When beads_el/roman is pending 'starting', the [start] button is absent."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (setq gastown-status--pending-crew-ops (make-hash-table :test 'equal))
+    (puthash "beads_el/roman" "starting" gastown-status--pending-crew-ops)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should-not (gastown-status-buffer-test--find-button-echo "Start crew member: roman"))))
+
+(ert-deftest gastown-status-buffer-test-crew-pending-no-stop-button ()
+  "When beads_el/fred is pending 'stopping', the [stop] button is absent."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (setq gastown-status--pending-crew-ops (make-hash-table :test 'equal))
+    (puthash "beads_el/fred" "stopping" gastown-status--pending-crew-ops)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (should-not (gastown-status-buffer-test--find-button-echo "Stop crew member: fred"))))
+
+(ert-deftest gastown-status-buffer-test-crew-action-sets-pending-state ()
+  "gastown-status--crew-action sets pending state in the status buffer before process starts."
+  (with-temp-buffer
+    (rename-buffer gastown-status-buffer-name)
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (cl-letf (((symbol-function 'make-process)
+               (lambda (&rest _) nil))
+              ((symbol-function 'vui-flush-sync)
+               (lambda () nil)))
+      (gastown-status--crew-action "start" "beads_el" "roman")
+      (should gastown-status--pending-crew-ops)
+      (should (equal "starting"
+                     (gethash "beads_el/roman" gastown-status--pending-crew-ops))))))
+
+(ert-deftest gastown-status-buffer-test-crew-action-stop-sets-pending-state ()
+  "gastown-status--crew-action 'stop' sets 'stopping' pending state."
+  (with-temp-buffer
+    (rename-buffer gastown-status-buffer-name)
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (cl-letf (((symbol-function 'make-process)
+               (lambda (&rest _) nil))
+              ((symbol-function 'vui-flush-sync)
+               (lambda () nil)))
+      (gastown-status--crew-action "stop" "beads_el" "fred")
+      (should gastown-status--pending-crew-ops)
+      (should (equal "stopping"
+                     (gethash "beads_el/fred" gastown-status--pending-crew-ops))))))
+
 ;;; Rendering Tests — Timestamp
 
 ;; Helper component: wraps gastown-status--full-content-vnode with an explicit

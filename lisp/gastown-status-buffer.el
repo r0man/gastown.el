@@ -283,6 +283,11 @@ Defaults to `gastown-status-refresh-interval' when nil.")
 Keys are strings: \"agent:NAME\" or \"polecat:RIG/NAME\".
 Created lazily on first expansion.")
 
+(defvar-local gastown-status--pending-crew-ops nil
+  "Hash table mapping \"RIG/CREW\" keys to pending operation strings.
+Values are \"starting\" or \"stopping\".  Set when a crew action is
+in flight; cleared when the process sentinel fires.")
+
 ;;; ============================================================
 ;;; Rendering Helpers (pure functions)
 ;;; ============================================================
@@ -579,13 +584,24 @@ TMUX-SOCKET is the tmux -L socket name used for the switch-to-session action."
 (defun gastown-status--crew-action (action rig-name crew-name)
   "Run `gt crew ACTION' for CREW-NAME in RIG-NAME asynchronously.
 ACTION is either \"start\" or \"stop\".
-Refreshes the status buffer after the command completes."
+Shows a transitional label and disables the button while the operation
+is in flight.  Refreshes the status buffer after the command completes."
   (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
          (buf (get-buffer gastown-status-buffer-name))
          (qualified (format "%s/%s" rig-name crew-name))
          (cmd (if (string= action "start")
                   (list exe "crew" action rig-name crew-name)
-                (list exe "crew" action qualified))))
+                (list exe "crew" action qualified)))
+         (key qualified)
+         (pending-label (if (string= action "start") "starting" "stopping")))
+    ;; Mark operation in-flight and re-render immediately so the button
+    ;; becomes a non-clickable transitional label right away.
+    (when buf
+      (with-current-buffer buf
+        (unless gastown-status--pending-crew-ops
+          (setq gastown-status--pending-crew-ops (make-hash-table :test 'equal)))
+        (puthash key pending-label gastown-status--pending-crew-ops)
+        (vui-flush-sync)))
     (message "gt crew %s %s..." action qualified)
     (make-process
      :name (format "gastown-crew-%s" action)
@@ -594,6 +610,10 @@ Refreshes the status buffer after the command completes."
      :sentinel (lambda (_proc event)
                  (when (string-prefix-p "finished" event)
                    (message "gt crew %s %s: done" action qualified)
+                   (when (buffer-live-p buf)
+                     (with-current-buffer buf
+                       (when gastown-status--pending-crew-ops
+                         (remhash key gastown-status--pending-crew-ops))))
                    (when buf
                      (gastown-status-do-refresh buf)))))))
 
@@ -636,22 +656,32 @@ TMUX-SOCKET is the tmux -L socket name for the switch-to-session action."
                                      (lambda ()
                                        (gastown-status--show-agent-tmux sess sock d))))
                      (vui-text label)))
+         (pending-op
+          (when (string= role "crew")
+            (and gastown-status--pending-crew-ops
+                 (gethash (format "%s/%s" rig-name name)
+                          gastown-status--pending-crew-ops))))
          (action-btn
           (when (string= role "crew")
-            (if running
-                (vui-button " [stop]"
-                  :no-decoration t
-                  :face 'gastown-status-stopped
-                  :help-echo (format "Stop crew member: %s" name)
-                  :on-click (let ((n name) (r rig-name))
-                              (lambda ()
-                                (gastown-status--crew-action "stop" r n))))
+            (cond
+             (pending-op
+              (vui-text (format " %s..." pending-op)
+                :face 'gastown-status-stopped))
+             (running
+              (vui-button " [stop]"
+                :no-decoration t
+                :face 'gastown-status-stopped
+                :help-echo (format "Stop crew member: %s" name)
+                :on-click (let ((n name) (r rig-name))
+                            (lambda ()
+                              (gastown-status--crew-action "stop" r n)))))
+             (t
               (vui-button " [start]"
                 :no-decoration t
                 :help-echo (format "Start crew member: %s" name)
                 :on-click (let ((n name) (r rig-name))
                             (lambda ()
-                              (gastown-status--crew-action "start" r n)))))))
+                              (gastown-status--crew-action "start" r n))))))))
          (row-line (if action-btn
                        (vui-hstack :spacing 0 row action-btn)
                      row)))
