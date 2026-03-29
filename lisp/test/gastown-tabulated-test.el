@@ -585,6 +585,30 @@
     (should (null (oref gastown-current-mail-spec unread-only)))
     (should (null (oref gastown-current-mail-spec all)))))
 
+;;; ============================================================
+;;; Convoy List RET — opens beads-show buffer
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-convoy-ret-binding ()
+  "The convoy list mode RET key is bound to gastown-convoy-list-show-bead."
+  (should (eq #'gastown-convoy-list-show-bead
+              (lookup-key gastown-convoy-list-mode-map (kbd "RET")))))
+
+(ert-deftest gastown-tabulated-test-convoy-ret-calls-beads-show ()
+  "Pressing RET on a convoy entry calls beads-show with the convoy ID."
+  (let ((beads-show-called nil))
+    (gastown-tabulated-test--with-id-at-point "ge-cv-abc123"
+      (cl-letf (((symbol-function 'beads-show)
+                 (lambda (id) (setq beads-show-called id))))
+        (gastown-convoy-list-show-bead)))
+    (should (equal "ge-cv-abc123" beads-show-called))))
+
+(ert-deftest gastown-tabulated-test-convoy-ret-no-id-signals-error ()
+  "Pressing RET with no convoy at point signals user-error."
+  (with-temp-buffer
+    (goto-char (point-min))
+    (should-error (gastown-convoy-list-show-bead) :type 'user-error)))
+
 ;;; Session List Jump — shell injection fix
 ;;; ============================================================
 

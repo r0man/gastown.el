@@ -30,6 +30,7 @@
 (require 'gastown-command-mail)
 (require 'gastown-spec)
 (require 'gastown-types)
+(require 'beads-command-show)
 
 ;;; ============================================================
 ;;; Pagination Mixin — Buffer-Local State
@@ -523,7 +524,7 @@ Key bindings:
     (set-keymap-parent map gastown-tabulated-base-map)
     (define-key map (kbd "g")   #'gastown-convoy-list-refresh)
     (define-key map (kbd "/")   #'gastown-convoy-list-filter)
-    (define-key map (kbd "RET") #'gastown-convoy-list-show-status)
+    (define-key map (kbd "RET") #'gastown-convoy-list-show-bead)
     map)
   "Keymap for `gastown-convoy-list-mode'.")
 
@@ -561,12 +562,12 @@ Key bindings:
     (gastown-convoy-list--populate data)
     (message "Convoy list refreshed")))
 
-(defun gastown-convoy-list-show-status ()
-  "Show convoy status details for the convoy at point."
+(defun gastown-convoy-list-show-bead ()
+  "Open the bead for the convoy at point in a beads-show buffer."
   (interactive)
   (let ((id (tabulated-list-get-id)))
     (if id
-        (gastown-command-convoy-status! :convoy-id id)
+        (beads-show id)
       (user-error "No convoy at point"))))
 
 ;;;###autoload
