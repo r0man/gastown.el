@@ -403,5 +403,83 @@ Assigns work to an agent — the unified work dispatch command.")
 (beads-meta-define-transient gastown-command-sling "gastown-sling"
   "Assign work to an agent (dispatch).")
 
+
+;;; ============================================================
+;;; Formula Dispatch (gastown-sling-formula)
+;;; ============================================================
+
+;; Forward declarations for formula command infrastructure
+(declare-function gastown-formula-var-transient "gastown-command-formula")
+(declare-function gastown-formula-output-buffer "gastown-command-formula")
+(declare-function gastown-formula--record-convoy "gastown-command-formula")
+(declare-function gastown-completion-read-formula "gastown-completion")
+(declare-function gastown-completion-read-rig "gastown-completion")
+
+(defun gastown-sling--run-formula-dispatch (formula-name rig var-alist &optional bead-id)
+  "Dispatch formula FORMULA-NAME to RIG with VAR-ALIST and optional BEAD-ID.
+Runs `gt sling <rig> --formula <name> --var k=v ...' and shows output.
+When BEAD-ID is non-nil, passes `--on BEAD-ID' to sling."
+  (require 'gastown-command-formula)
+  (let* ((buf (gastown-formula-output-buffer formula-name rig))
+         (exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (var-args (mapcan (lambda (kv)
+                             (list "--var"
+                                   (format "%s=%s" (car kv) (cdr kv))))
+                           var-alist))
+         (on-args (when bead-id (list "--on" bead-id)))
+         (cmd-args (append (list rig "--formula" formula-name)
+                           on-args
+                           var-args)))
+    (pop-to-buffer buf)
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (goto-char (point-max))
+        (when bead-id
+          (insert (format "Issue:   %s\n" bead-id)))
+        (insert (format "\n$ %s sling %s\n\n"
+                        exe (mapconcat #'identity cmd-args " ")))
+        ;; Run sling; capture output (convoy ID etc.)
+        (let ((output-start (point)))
+          (apply #'call-process exe nil buf t "sling" cmd-args)
+          ;; Try to extract convoy ID from output for gastown-formula-status
+          (let ((output (buffer-substring-no-properties output-start (point-max))))
+            (when (string-match "convoy[:\s]+\\([a-z0-9-]+\\)" output)
+              (gastown-formula--record-convoy (match-string 1 output)))))))))
+
+;;;###autoload
+(defun gastown-sling-formula ()
+  "Interactively pick a formula and rig, fill vars, and dispatch via `gt sling'.
+Flow: formula picker → rig picker → var transient → sling action.
+Shows sling output in a `gastown-formula-output-buffer'."
+  (interactive)
+  (require 'gastown-command-formula)
+  (require 'gastown-completion)
+  (let* ((formula-name (gastown-completion-read-formula "Formula: " nil t))
+         (rig (gastown-completion-read-rig "Rig: " nil t)))
+    (gastown-formula-var-transient
+     formula-name
+     (lambda (var-alist)
+       (gastown-sling--run-formula-dispatch formula-name rig var-alist)))))
+
+;;;###autoload
+(defun gastown-sling-formula-on-issue (bead-id)
+  "Dispatch a formula on BEAD-ID: pick formula, fill vars, sling with --on BEAD-ID.
+Like `gastown-sling-formula' but pre-fills `--on BEAD-ID' in the dispatch.
+Intended for beads.el integration (issue buffer, dispatch transient)."
+  (interactive
+   (list (read-string "Bead ID: "
+                      ;; Try to get current issue from beads context
+                      (or (and (boundp 'beads-show--issue-id) beads-show--issue-id)
+                          (and (fboundp 'beads-list--current-issue-id)
+                               (beads-list--current-issue-id))))))
+  (require 'gastown-command-formula)
+  (require 'gastown-completion)
+  (let* ((formula-name (gastown-completion-read-formula "Formula: " nil t))
+         (rig (gastown-completion-read-rig "Rig: " nil t)))
+    (gastown-formula-var-transient
+     formula-name
+     (lambda (var-alist)
+       (gastown-sling--run-formula-dispatch formula-name rig var-alist bead-id)))))
+
 (provide 'gastown-command-sling)
 ;;; gastown-command-sling.el ends here

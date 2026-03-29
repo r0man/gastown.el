@@ -103,6 +103,7 @@ access to all gt CLI commands organized by category."
    ("h" "Hook" gastown-hook)
    ("r" "Ready" gastown-ready)
    ("S" "Sling (dispatch)" gastown-sling)
+   ("f" "Formula..." gastown-formula-menu)
    ("W" "Work commands..." gastown-work-menu)]
   ["Agents & Communication"
    ("a" "Agent management..." gastown-agent-management)

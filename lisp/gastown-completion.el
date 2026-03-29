@@ -822,5 +822,72 @@ in Gas Town completion interfaces.  For example:
   (add-to-list 'marginalia-annotators-heavy
                '(gastown-crew . gastown-completion--crew-annotate)))
 
+;;; ============================================================
+;;; Formula Vars Cache
+;;; ============================================================
+
+(defvar gastown-completion--formula-vars-cache (make-hash-table :test 'equal)
+  "Cache for formula variable lists.
+Hash table: formula-name (string) -> (TIMESTAMP . VARS-LIST).
+VARS-LIST is a list of `gastown-formula-var' objects.")
+
+(defvar gastown-completion--formula-vars-cache-ttl 60
+  "TTL for formula vars cache in seconds.
+Formula vars change rarely, so we use a longer TTL than the formula list.")
+
+(defun gastown-completion--parse-formula-vars (vars-alist)
+  "Parse VARS-ALIST into a list of `gastown-formula-var' objects.
+VARS-ALIST is from `gt formula show --json': an alist where each entry
+is (VARNAME-SYMBOL . PROPERTY-ALIST) representing one formula variable."
+  (when vars-alist
+    (mapcar (lambda (entry)
+              (gastown-formula-var-from-json
+               (symbol-name (car entry))
+               (cdr entry)))
+            vars-alist)))
+
+(defun gastown-completion--fetch-formula-vars (formula-name)
+  "Fetch variables for FORMULA-NAME via `gt formula show --json'.
+Returns a list of `gastown-formula-var' objects, or nil on error."
+  (require 'gastown-types)
+  (let* ((exe (if (boundp 'gastown-executable) gastown-executable "gt"))
+         (output (with-output-to-string
+                   (call-process exe nil standard-output nil
+                                 "formula" "show" formula-name "--json")))
+         (json-array-type 'list)
+         (json-object-type 'alist)
+         (data (condition-case nil
+                   (json-read-from-string output)
+                 (error nil))))
+    (when data
+      (gastown-completion--parse-formula-vars (alist-get 'vars data)))))
+
+(defun gastown-completion--get-cached-formula-vars (formula-name)
+  "Get cached vars for FORMULA-NAME, refreshing if stale.
+Returns a list of `gastown-formula-var' objects."
+  (let* ((entry (gethash formula-name gastown-completion--formula-vars-cache))
+         (now (float-time))
+         (stale (or (null entry)
+                    (> (- now (car entry))
+                       gastown-completion--formula-vars-cache-ttl))))
+    (when stale
+      (condition-case err
+          (let ((vars (gastown-completion--fetch-formula-vars formula-name)))
+            (puthash formula-name (cons now vars)
+                     gastown-completion--formula-vars-cache))
+        (error
+         (when entry
+           (message "Warning: Failed to refresh formula vars for %s: %s (using cached)"
+                    formula-name (error-message-string err))))))
+    (cdr (gethash formula-name gastown-completion--formula-vars-cache))))
+
+(defun gastown-completion-invalidate-formula-vars-cache (&optional formula-name)
+  "Invalidate the formula vars cache.
+If FORMULA-NAME is given, only invalidate that formula's entry.
+Otherwise clears the entire cache."
+  (if formula-name
+      (remhash formula-name gastown-completion--formula-vars-cache)
+    (clrhash gastown-completion--formula-vars-cache)))
+
 (provide 'gastown-completion)
 ;;; gastown-completion.el ends here

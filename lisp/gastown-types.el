@@ -1174,5 +1174,42 @@ Default \\='name is omitted from CLI args."))
     :documentation "When non-nil, show all messages including read (--all flag)"))
   :documentation "Filter spec for the Gas Town mail inbox view.")
 
+;;; ============================================================
+;;; Formula Variable
+;;; ============================================================
+
+(defclass gastown-formula-var ()
+  ((name
+    :initarg :name
+    :type string
+    :documentation "Variable name (key for --var key=value).")
+   (description
+    :initarg :description
+    :type (or null string)
+    :initform nil
+    :documentation "Human-readable description of the variable.")
+   (default
+    :initarg :default
+    :type (or null string)
+    :initform nil
+    :documentation "Default value string, or nil if not specified.")
+   (required
+    :initarg :required
+    :type boolean
+    :initform nil
+    :documentation "Whether this variable must be supplied."))
+  "Represents a formula variable from `gt formula show --json'.
+The vars field in the JSON is a map: var-name -> {description, default, required}.")
+
+(defun gastown-formula-var-from-json (name alist)
+  "Create a `gastown-formula-var' from NAME (string) and ALIST.
+NAME is the var-name key; ALIST is the value object
+with description, default, and required fields."
+  (gastown-formula-var
+   :name name
+   :description (alist-get 'description alist)
+   :default (alist-get 'default alist)
+   :required (gastown-types--json-bool (alist-get 'required alist))))
+
 (provide 'gastown-types)
 ;;; gastown-types.el ends here

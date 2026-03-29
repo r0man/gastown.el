@@ -569,5 +569,144 @@
     (gastown-completion-invalidate-crew-cache)
     (should (null gastown-completion--crew-cache))))
 
+;;; ============================================================
+;;; gastown-formula-var Class Tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-formula-var-class-exists ()
+  "Test that gastown-formula-var class is defined."
+  (should (find-class 'gastown-formula-var)))
+
+(ert-deftest gastown-completion-test-formula-var-construction ()
+  "Test constructing a gastown-formula-var object."
+  (let ((var (gastown-formula-var
+              :name "problem"
+              :description "The problem statement"
+              :default "none"
+              :required t)))
+    (should (equal "problem" (oref var name)))
+    (should (equal "The problem statement" (oref var description)))
+    (should (equal "none" (oref var default)))
+    (should (eq t (oref var required)))))
+
+(ert-deftest gastown-completion-test-formula-var-defaults ()
+  "Test gastown-formula-var default slot values."
+  (let ((var (gastown-formula-var :name "context")))
+    (should (equal "context" (oref var name)))
+    (should (null (oref var description)))
+    (should (null (oref var default)))
+    (should (null (oref var required)))))
+
+(ert-deftest gastown-completion-test-formula-var-from-json-required ()
+  "Test parsing a required formula var from JSON alist."
+  (let* ((alist '((description . "The issue ID to work on")
+                  (required . t)))
+         (var (gastown-formula-var-from-json "issue" alist)))
+    (should (object-of-class-p var 'gastown-formula-var))
+    (should (equal "issue" (oref var name)))
+    (should (equal "The issue ID to work on" (oref var description)))
+    (should (null (oref var default)))
+    (should (eq t (oref var required)))))
+
+(ert-deftest gastown-completion-test-formula-var-from-json-optional ()
+  "Test parsing an optional formula var (with default) from JSON alist."
+  (let* ((alist '((description . "Base branch to rebase on")
+                  (default . "main")))
+         (var (gastown-formula-var-from-json "base_branch" alist)))
+    (should (object-of-class-p var 'gastown-formula-var))
+    (should (equal "base_branch" (oref var name)))
+    (should (equal "main" (oref var default)))
+    (should (null (oref var required)))))
+
+(ert-deftest gastown-completion-test-formula-var-from-json-json-false ()
+  "Test that :json-false in required field is treated as nil."
+  (let* ((alist '((description . "Some var")
+                  (required . :json-false)))
+         (var (gastown-formula-var-from-json "myvar" alist)))
+    (should (null (oref var required)))))
+
+;;; ============================================================
+;;; gastown-completion--parse-formula-vars Tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-parse-formula-vars-empty ()
+  "Test parsing nil vars returns nil."
+  (should (null (gastown-completion--parse-formula-vars nil))))
+
+(ert-deftest gastown-completion-test-parse-formula-vars-one-var ()
+  "Test parsing a single var alist."
+  (let* ((vars-alist '((issue (description . "The issue ID") (required . t))))
+         (result (gastown-completion--parse-formula-vars vars-alist)))
+    (should (= 1 (length result)))
+    (let ((var (car result)))
+      (should (object-of-class-p var 'gastown-formula-var))
+      (should (equal "issue" (oref var name)))
+      (should (eq t (oref var required))))))
+
+(ert-deftest gastown-completion-test-parse-formula-vars-multiple ()
+  "Test parsing multiple vars from a vars alist."
+  (let* ((vars-alist
+          '((issue (description . "Issue ID") (required . t))
+            (base_branch (description . "Base branch") (default . "main"))))
+         (result (gastown-completion--parse-formula-vars vars-alist)))
+    (should (= 2 (length result)))
+    (let ((names (mapcar (lambda (v) (oref v name)) result)))
+      (should (member "issue" names))
+      (should (member "base_branch" names)))))
+
+;;; ============================================================
+;;; Formula Vars Cache Tests
+;;; ============================================================
+
+(ert-deftest gastown-completion-test-formula-vars-cache-is-hash ()
+  "Test that formula vars cache is a hash table."
+  (should (hash-table-p gastown-completion--formula-vars-cache)))
+
+(ert-deftest gastown-completion-test-formula-vars-cache-ttl-positive ()
+  "Test that formula vars cache TTL is positive."
+  (should (> gastown-completion--formula-vars-cache-ttl 0)))
+
+(ert-deftest gastown-completion-test-invalidate-formula-vars-specific ()
+  "Test invalidating a specific formula vars cache entry."
+  (let ((gastown-completion--formula-vars-cache (make-hash-table :test 'equal)))
+    (puthash "test-formula" (cons (float-time) nil) gastown-completion--formula-vars-cache)
+    (gastown-completion-invalidate-formula-vars-cache "test-formula")
+    (should (null (gethash "test-formula" gastown-completion--formula-vars-cache)))))
+
+(ert-deftest gastown-completion-test-invalidate-formula-vars-all ()
+  "Test invalidating the entire formula vars cache."
+  (let ((gastown-completion--formula-vars-cache (make-hash-table :test 'equal)))
+    (puthash "formula-a" (cons (float-time) nil) gastown-completion--formula-vars-cache)
+    (puthash "formula-b" (cons (float-time) nil) gastown-completion--formula-vars-cache)
+    (gastown-completion-invalidate-formula-vars-cache)
+    (should (= 0 (hash-table-count gastown-completion--formula-vars-cache)))))
+
+(ert-deftest gastown-completion-test-get-cached-formula-vars-uses-cache ()
+  "Test that get-cached-formula-vars returns cached data when fresh."
+  (let* ((mock-var (gastown-formula-var :name "issue" :required t))
+         (cache (make-hash-table :test 'equal))
+         (gastown-completion--formula-vars-cache cache)
+         (gastown-completion--formula-vars-cache-ttl 60))
+    (puthash "test-formula" (cons (float-time) (list mock-var)) cache)
+    (let ((result (gastown-completion--get-cached-formula-vars "test-formula")))
+      (should (equal (list mock-var) result)))))
+
+(ert-deftest gastown-completion-test-get-cached-formula-vars-refreshes-stale ()
+  "Test that get-cached-formula-vars refreshes stale cache."
+  (let* ((mock-var (gastown-formula-var :name "fresh-var" :required t))
+         (cache (make-hash-table :test 'equal))
+         (gastown-completion--formula-vars-cache cache)
+         (gastown-completion--formula-vars-cache-ttl 5))
+    ;; Put stale data (100 seconds old)
+    (puthash "test-formula" (cons (- (float-time) 100) nil) cache)
+    (cl-letf (((symbol-function 'gastown-completion--fetch-formula-vars)
+               (lambda (_name) (list mock-var))))
+      (let ((result (gastown-completion--get-cached-formula-vars "test-formula")))
+        (should (equal (list mock-var) result))))))
+
+(ert-deftest gastown-completion-test-fetch-formula-vars-defined ()
+  "Test that gastown-completion--fetch-formula-vars is defined."
+  (should (fboundp 'gastown-completion--fetch-formula-vars)))
+
 (provide 'gastown-completion-test)
 ;;; gastown-completion-test.el ends here

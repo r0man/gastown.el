@@ -106,5 +106,49 @@
   (let ((result (gastown-beads--fetch-agents)))
     (should (or (null result) (listp result)))))
 
+;;; Formula injection tests
+
+(ert-deftest gastown-beads-test-inject-formula-issue-key-defined ()
+  "Test that gastown-beads--inject-formula-issue-key is defined."
+  (should (fboundp 'gastown-beads--inject-formula-issue-key)))
+
+(ert-deftest gastown-beads-test-inject-formula-section-defined ()
+  "Test that gastown-beads--inject-formula-section is defined."
+  (should (fboundp 'gastown-beads--inject-formula-section)))
+
+(ert-deftest gastown-beads-test-dispatch-formula-defined ()
+  "Test that gastown-beads--dispatch-formula-on-current-issue is defined."
+  (should (fboundp 'gastown-beads--dispatch-formula-on-current-issue)))
+
+(ert-deftest gastown-beads-test-insert-formula-section-defined ()
+  "Test that gastown-insert-formula-section is defined."
+  (should (fboundp 'gastown-insert-formula-section)))
+
+(ert-deftest gastown-beads-test-formula-issue-key-guard-var-exists ()
+  "Test that formula issue key injection guard variable exists."
+  (should (boundp 'gastown-beads--formula-issue-key-injected)))
+
+(ert-deftest gastown-beads-test-formula-section-guard-var-exists ()
+  "Test that formula section injection guard variable exists."
+  (should (boundp 'gastown-beads--formula-section-injected)))
+
+(ert-deftest gastown-beads-test-inject-formula-issue-key-safe-without-beads-show ()
+  "Test that inject-formula-issue-key returns nil when beads-show-mode-map not bound."
+  (when (not (boundp 'beads-show-mode-map))
+    ;; Reset guard to allow re-testing
+    (let ((gastown-beads--formula-issue-key-injected nil))
+      (should-not (gastown-beads--inject-formula-issue-key)))))
+
+(ert-deftest gastown-beads-test-inject-formula-section-safe-without-beads-status ()
+  "Test that inject-formula-section returns nil when section hook not bound."
+  (when (not (boundp 'beads-status-sections-hook))
+    (let ((gastown-beads--formula-section-injected nil))
+      (should-not (gastown-beads--inject-formula-section)))))
+
+(ert-deftest gastown-beads-test-insert-formula-section-safe-without-beads-section ()
+  "Test that gastown-insert-formula-section is safe when beads-section is not loaded."
+  (when (not (featurep 'beads-section))
+    (should-not (gastown-insert-formula-section))))
+
 (provide 'gastown-beads-test)
 ;;; gastown-beads-test.el ends here
