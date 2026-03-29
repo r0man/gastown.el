@@ -56,6 +56,8 @@
 (require 'gastown-command-ready)
 (require 'gastown-whats-new)
 (require 'gastown-command-workspace)
+(require 'gastown-command-mol)
+(require 'gastown-command-wl)
 (require 'gastown-tabulated)
 (require 'gastown-polecat-detail)
 

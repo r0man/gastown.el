@@ -129,6 +129,110 @@ Create a new formula template."
   :cli-command "formula create")
 
 
+;;; Formula Overlay Command
+
+(gastown-defcommand gastown-command-formula-overlay (gastown-command-global-options)
+  ((formula-name
+    :initarg :formula-name
+    :type (or null string)
+    :initform nil
+    :documentation "Formula name to overlay."
+    :positional 1
+    :option-type :string
+    :key "f"
+    :transient "Formula name (required)"
+    :class transient-option
+    :prompt "Formula name: "
+    :transient-reader gastown-reader-formula-name
+    :transient-group "Required"
+    :level 1
+    :order 1))
+  :documentation "Represents gt formula overlay command.
+Create a user overlay for an existing formula."
+  :cli-command "formula overlay")
+
+
+;;; Formula Overlay Subcommands
+
+(gastown-defcommand gastown-command-formula-overlay-show (gastown-command-global-options)
+  ((formula-name
+    :initarg :formula-name
+    :type (or null string)
+    :initform nil
+    :documentation "Formula name to show overlay for."
+    :positional 1
+    :option-type :string
+    :key "f"
+    :transient "Formula name (required)"
+    :class transient-option
+    :prompt "Formula name: "
+    :transient-reader gastown-reader-formula-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name (optional, shows rig-level overlay)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Options"
+    :level 2
+    :order 2))
+  :documentation "Represents gt formula overlay show command.
+Display the active overlay for a formula."
+  :cli-command "formula overlay show")
+
+
+(gastown-defcommand gastown-command-formula-overlay-edit (gastown-command-global-options)
+  ((formula-name
+    :initarg :formula-name
+    :type (or null string)
+    :initform nil
+    :documentation "Formula name to edit overlay for."
+    :positional 1
+    :option-type :string
+    :key "f"
+    :transient "Formula name (required)"
+    :class transient-option
+    :prompt "Formula name: "
+    :transient-reader gastown-reader-formula-name
+    :transient-group "Required"
+    :level 1
+    :order 1)
+   (rig
+    :initarg :rig
+    :type (or null string)
+    :initform nil
+    :documentation "Rig name (optional, creates rig-level overlay)."
+    :long-option "rig"
+    :option-type :string
+    :key "r"
+    :transient "Rig name"
+    :class transient-option
+    :argument "--rig="
+    :prompt "Rig: "
+    :transient-group "Options"
+    :level 2
+    :order 2))
+  :documentation "Represents gt formula overlay edit command.
+Open an overlay in $EDITOR (creates if needed)."
+  :cli-command "formula overlay edit")
+
+
+(gastown-defcommand gastown-command-formula-overlay-list (gastown-command-global-options)
+  ()
+  :documentation "Represents gt formula overlay list command.
+List all overlay files."
+  :cli-command "formula overlay list")
+
+
 ;;; ============================================================
 ;;; Transient Menus for EIEIO Commands
 ;;; ============================================================
@@ -148,6 +252,32 @@ Create a new formula template."
 ;;;###autoload (autoload 'gastown-formula-create "gastown-command-formula" nil t)
 (beads-meta-define-transient gastown-command-formula-create "gastown-formula-create"
   "Create a new formula template.")
+
+;;;###autoload (autoload 'gastown-formula-overlay "gastown-command-formula" nil t)
+(beads-meta-define-transient gastown-command-formula-overlay "gastown-formula-overlay"
+  "Create a formula overlay.")
+
+;;;###autoload (autoload 'gastown-formula-overlay-show "gastown-command-formula" nil t)
+(beads-meta-define-transient gastown-command-formula-overlay-show "gastown-formula-overlay-show"
+  "Show active formula overlay.")
+
+;;;###autoload (autoload 'gastown-formula-overlay-edit "gastown-command-formula" nil t)
+(beads-meta-define-transient gastown-command-formula-overlay-edit "gastown-formula-overlay-edit"
+  "Edit formula overlay.")
+
+;;;###autoload (autoload 'gastown-formula-overlay-list "gastown-command-formula" nil t)
+(beads-meta-define-transient gastown-command-formula-overlay-list "gastown-formula-overlay-list"
+  "List formula overlays.")
+
+;;; Formula Overlay Dispatch Transient
+
+;;;###autoload (autoload 'gastown-formula-overlay-menu "gastown-command-formula" nil t)
+(transient-define-prefix gastown-formula-overlay-menu ()
+  "Manage formula overlays."
+  ["Formula Overlays"
+   ("l" "List overlays" gastown-formula-overlay-list)
+   ("s" "Show overlay" gastown-formula-overlay-show)
+   ("e" "Edit overlay" gastown-formula-overlay-edit)])
 
 
 ;;; ============================================================
@@ -461,7 +591,8 @@ and displays the status in the formula output buffer."
    ("r" "Run formula locally" gastown-formula-run-interactive)
    ("d" "Dispatch formula to agent" gastown-sling-formula)
    ("S" "Status of dispatched run" gastown-formula-status)
-   ("c" "Create formula" gastown-formula-create)])
+   ("c" "Create formula" gastown-formula-create)
+   ("o" "Overlay..." gastown-formula-overlay-menu)])
 
 (provide 'gastown-command-formula)
 ;;; gastown-command-formula.el ends here

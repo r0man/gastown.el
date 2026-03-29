@@ -242,6 +242,29 @@ Audit Gas Town configuration and state.")
 Create a checkpoint snapshot.")
 
 
+;;; Checkpoint Subcommands
+
+(gastown-defcommand gastown-command-checkpoint-clear (gastown-command-global-options)
+  ()
+  :documentation "Represents gt checkpoint clear command.
+Clear the checkpoint file."
+  :cli-command "checkpoint clear")
+
+
+(gastown-defcommand gastown-command-checkpoint-read (gastown-command-global-options)
+  ()
+  :documentation "Represents gt checkpoint read command.
+Read and display the current checkpoint."
+  :cli-command "checkpoint read")
+
+
+(gastown-defcommand gastown-command-checkpoint-write (gastown-command-global-options)
+  ()
+  :documentation "Represents gt checkpoint write command.
+Write a checkpoint of current session state."
+  :cli-command "checkpoint write")
+
+
 (gastown-defcommand gastown-command-dashboard (gastown-command-global-options)
   ()
   :documentation "Represents gt dashboard command.
@@ -322,6 +345,22 @@ Upgrade Gas Town.")
 Cycle to a fresh session.")
 
 
+;;; Cycle Subcommands
+
+(gastown-defcommand gastown-command-cycle-next (gastown-command-global-options)
+  ()
+  :documentation "Represents gt cycle next command.
+Cycle to next account."
+  :cli-command "cycle next")
+
+
+(gastown-defcommand gastown-command-cycle-prev (gastown-command-global-options)
+  ()
+  :documentation "Represents gt cycle prev command.
+Cycle to previous account."
+  :cli-command "cycle prev")
+
+
 (gastown-defcommand gastown-command-krc (gastown-command-global-options)
   ()
   :documentation "Represents gt krc command.
@@ -355,6 +394,28 @@ Show or manage warrants.")
 ;;;###autoload (autoload 'gastown-checkpoint "gastown-command-diagnostics" nil t)
 (beads-meta-define-transient gastown-command-checkpoint "gastown-checkpoint"
   "Create a checkpoint snapshot.")
+
+;;;###autoload (autoload 'gastown-checkpoint-clear "gastown-command-diagnostics" nil t)
+(beads-meta-define-transient gastown-command-checkpoint-clear "gastown-checkpoint-clear"
+  "Clear checkpoint file.")
+
+;;;###autoload (autoload 'gastown-checkpoint-read "gastown-command-diagnostics" nil t)
+(beads-meta-define-transient gastown-command-checkpoint-read "gastown-checkpoint-read"
+  "Read current checkpoint.")
+
+;;;###autoload (autoload 'gastown-checkpoint-write "gastown-command-diagnostics" nil t)
+(beads-meta-define-transient gastown-command-checkpoint-write "gastown-checkpoint-write"
+  "Write current checkpoint.")
+
+;;; Checkpoint Dispatch Transient
+
+;;;###autoload (autoload 'gastown-checkpoint-menu "gastown-command-diagnostics" nil t)
+(transient-define-prefix gastown-checkpoint-menu ()
+  "Manage session checkpoints."
+  ["Checkpoint"
+   ("r" "Read checkpoint" gastown-checkpoint-read)
+   ("w" "Write checkpoint" gastown-checkpoint-write)
+   ("c" "Clear checkpoint" gastown-checkpoint-clear)])
 
 ;;;###autoload (autoload 'gastown-dashboard "gastown-command-diagnostics" nil t)
 (beads-meta-define-transient gastown-command-dashboard "gastown-dashboard"
@@ -403,6 +464,14 @@ Show or manage warrants.")
 ;;;###autoload (autoload 'gastown-cycle "gastown-command-diagnostics" nil t)
 (beads-meta-define-transient gastown-command-cycle "gastown-cycle"
   "Cycle to a fresh session.")
+
+;;;###autoload (autoload 'gastown-cycle-next "gastown-command-diagnostics" nil t)
+(beads-meta-define-transient gastown-command-cycle-next "gastown-cycle-next"
+  "Cycle to next account.")
+
+;;;###autoload (autoload 'gastown-cycle-prev "gastown-command-diagnostics" nil t)
+(beads-meta-define-transient gastown-command-cycle-prev "gastown-cycle-prev"
+  "Cycle to previous account.")
 
 ;;;###autoload (autoload 'gastown-krc "gastown-command-diagnostics" nil t)
 (beads-meta-define-transient gastown-command-krc "gastown-krc"

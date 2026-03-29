@@ -722,5 +722,733 @@
       (should (member "--rig" line))
       (should (member "sky" line)))))
 
+;;; Mol command coverage
+
+(ert-deftest gastown-coverage-mol-attach-class-exists ()
+  "gastown-command-mol-attach class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-attach)))
+
+(ert-deftest gastown-coverage-mol-attach-from-mail-class-exists ()
+  "gastown-command-mol-attach-from-mail class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-attach-from-mail)))
+
+(ert-deftest gastown-coverage-mol-attachment-class-exists ()
+  "gastown-command-mol-attachment class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-attachment)))
+
+(ert-deftest gastown-coverage-mol-await-signal-class-exists ()
+  "gastown-command-mol-await-signal class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-await-signal)))
+
+(ert-deftest gastown-coverage-mol-burn-class-exists ()
+  "gastown-command-mol-burn class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-burn)))
+
+(ert-deftest gastown-coverage-mol-current-class-exists ()
+  "gastown-command-mol-current class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-current)))
+
+(ert-deftest gastown-coverage-mol-dag-class-exists ()
+  "gastown-command-mol-dag class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-dag)))
+
+(ert-deftest gastown-coverage-mol-detach-class-exists ()
+  "gastown-command-mol-detach class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-detach)))
+
+(ert-deftest gastown-coverage-mol-progress-class-exists ()
+  "gastown-command-mol-progress class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-progress)))
+
+(ert-deftest gastown-coverage-mol-squash-class-exists ()
+  "gastown-command-mol-squash class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-squash)))
+
+(ert-deftest gastown-coverage-mol-status-class-exists ()
+  "gastown-command-mol-status class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-status)))
+
+(ert-deftest gastown-coverage-mol-step-done-class-exists ()
+  "gastown-command-mol-step-done class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-step-done)))
+
+(ert-deftest gastown-coverage-mol-step-await-signal-class-exists ()
+  "gastown-command-mol-step-await-signal class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-step-await-signal)))
+
+(ert-deftest gastown-coverage-mol-step-await-event-class-exists ()
+  "gastown-command-mol-step-await-event class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-step-await-event)))
+
+(ert-deftest gastown-coverage-mol-step-emit-event-class-exists ()
+  "gastown-command-mol-step-emit-event class should exist."
+  (require 'gastown-command-mol)
+  (should (find-class 'gastown-command-mol-step-emit-event)))
+
+(ert-deftest gastown-coverage-mol-transient-functions-exist ()
+  "Key mol transient functions should exist."
+  (require 'gastown-command-mol)
+  (should (fboundp 'gastown-mol-attach))
+  (should (fboundp 'gastown-mol-current))
+  (should (fboundp 'gastown-mol-status))
+  (should (fboundp 'gastown-mol-step-done)))
+
+(ert-deftest gastown-coverage-mol-menu-exists ()
+  "gastown-mol transient menu should exist."
+  (require 'gastown-command-mol)
+  (should (fboundp 'gastown-mol)))
+
+(ert-deftest gastown-coverage-mol-step-menu-exists ()
+  "gastown-mol-step transient menu should exist."
+  (require 'gastown-command-mol)
+  (should (fboundp 'gastown-mol-step)))
+
+(ert-deftest gastown-coverage-mol-attach-cli-command ()
+  "gastown-command-mol-attach should produce 'mol attach' command line."
+  (require 'gastown-command-mol)
+  (let ((cmd (make-instance 'gastown-command-mol-attach)))
+    (should (member "mol" (gastown-command-line cmd)))
+    (should (member "attach" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-mol-step-done-cli-command ()
+  "gastown-command-mol-step-done should produce 'mol step done' command line."
+  (require 'gastown-command-mol)
+  (let ((cmd (make-instance 'gastown-command-mol-step-done)))
+    (should (member "mol" (gastown-command-line cmd)))
+    (should (member "step" (gastown-command-line cmd)))
+    (should (member "done" (gastown-command-line cmd)))))
+
+;;; WL command coverage
+
+(ert-deftest gastown-coverage-wl-browse-class-exists ()
+  "gastown-command-wl-browse class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-browse)))
+
+(ert-deftest gastown-coverage-wl-charsheet-class-exists ()
+  "gastown-command-wl-charsheet class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-charsheet)))
+
+(ert-deftest gastown-coverage-wl-claim-class-exists ()
+  "gastown-command-wl-claim class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-claim)))
+
+(ert-deftest gastown-coverage-wl-done-class-exists ()
+  "gastown-command-wl-done class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-done)))
+
+(ert-deftest gastown-coverage-wl-join-class-exists ()
+  "gastown-command-wl-join class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-join)))
+
+(ert-deftest gastown-coverage-wl-post-class-exists ()
+  "gastown-command-wl-post class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-post)))
+
+(ert-deftest gastown-coverage-wl-scorekeeper-class-exists ()
+  "gastown-command-wl-scorekeeper class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-scorekeeper)))
+
+(ert-deftest gastown-coverage-wl-show-class-exists ()
+  "gastown-command-wl-show class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-show)))
+
+(ert-deftest gastown-coverage-wl-stamp-class-exists ()
+  "gastown-command-wl-stamp class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-stamp)))
+
+(ert-deftest gastown-coverage-wl-stamps-class-exists ()
+  "gastown-command-wl-stamps class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-stamps)))
+
+(ert-deftest gastown-coverage-wl-sync-class-exists ()
+  "gastown-command-wl-sync class should exist."
+  (require 'gastown-command-wl)
+  (should (find-class 'gastown-command-wl-sync)))
+
+(ert-deftest gastown-coverage-wl-transient-functions-exist ()
+  "Key wl transient functions should exist."
+  (require 'gastown-command-wl)
+  (should (fboundp 'gastown-wl-browse))
+  (should (fboundp 'gastown-wl-claim))
+  (should (fboundp 'gastown-wl-show))
+  (should (fboundp 'gastown-wl-sync)))
+
+(ert-deftest gastown-coverage-wl-menu-exists ()
+  "gastown-wl transient menu should exist."
+  (require 'gastown-command-wl)
+  (should (fboundp 'gastown-wl)))
+
+(ert-deftest gastown-coverage-wl-claim-cli-command ()
+  "gastown-command-wl-claim should produce 'wl claim' command line."
+  (require 'gastown-command-wl)
+  (let ((cmd (make-instance 'gastown-command-wl-claim)))
+    (should (member "wl" (gastown-command-line cmd)))
+    (should (member "claim" (gastown-command-line cmd)))))
+
+;;; Crew subcommand coverage
+
+(ert-deftest gastown-coverage-crew-add-class-exists ()
+  "gastown-command-crew-add class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-add)))
+
+(ert-deftest gastown-coverage-crew-at-class-exists ()
+  "gastown-command-crew-at class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-at)))
+
+(ert-deftest gastown-coverage-crew-list-class-exists ()
+  "gastown-command-crew-list class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-list)))
+
+(ert-deftest gastown-coverage-crew-pristine-class-exists ()
+  "gastown-command-crew-pristine class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-pristine)))
+
+(ert-deftest gastown-coverage-crew-refresh-class-exists ()
+  "gastown-command-crew-refresh class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-refresh)))
+
+(ert-deftest gastown-coverage-crew-remove-class-exists ()
+  "gastown-command-crew-remove class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-remove)))
+
+(ert-deftest gastown-coverage-crew-rename-class-exists ()
+  "gastown-command-crew-rename class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-rename)))
+
+(ert-deftest gastown-coverage-crew-restart-class-exists ()
+  "gastown-command-crew-restart class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-restart)))
+
+(ert-deftest gastown-coverage-crew-start-class-exists ()
+  "gastown-command-crew-start class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-start)))
+
+(ert-deftest gastown-coverage-crew-status-class-exists ()
+  "gastown-command-crew-status class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-status)))
+
+(ert-deftest gastown-coverage-crew-stop-class-exists ()
+  "gastown-command-crew-stop class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-crew-stop)))
+
+(ert-deftest gastown-coverage-crew-transient-functions-exist ()
+  "Key crew transient functions should exist."
+  (require 'gastown-command-workspace)
+  (should (fboundp 'gastown-crew-add))
+  (should (fboundp 'gastown-crew-list))
+  (should (fboundp 'gastown-crew-start))
+  (should (fboundp 'gastown-crew-stop)))
+
+(ert-deftest gastown-coverage-crew-menu-exists ()
+  "gastown-crew-menu transient should exist."
+  (require 'gastown-command-workspace)
+  (should (fboundp 'gastown-crew-menu)))
+
+(ert-deftest gastown-coverage-crew-start-cli-command ()
+  "gastown-command-crew-start should produce 'crew start' command line."
+  (require 'gastown-command-workspace)
+  (let ((cmd (make-instance 'gastown-command-crew-start)))
+    (should (member "crew" (gastown-command-line cmd)))
+    (should (member "start" (gastown-command-line cmd)))))
+
+;;; Namepool subcommand coverage
+
+(ert-deftest gastown-coverage-namepool-add-class-exists ()
+  "gastown-command-namepool-add class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-namepool-add)))
+
+(ert-deftest gastown-coverage-namepool-create-class-exists ()
+  "gastown-command-namepool-create class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-namepool-create)))
+
+(ert-deftest gastown-coverage-namepool-delete-class-exists ()
+  "gastown-command-namepool-delete class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-namepool-delete)))
+
+(ert-deftest gastown-coverage-namepool-reset-class-exists ()
+  "gastown-command-namepool-reset class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-namepool-reset)))
+
+(ert-deftest gastown-coverage-namepool-set-class-exists ()
+  "gastown-command-namepool-set class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-namepool-set)))
+
+(ert-deftest gastown-coverage-namepool-themes-class-exists ()
+  "gastown-command-namepool-themes class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-namepool-themes)))
+
+(ert-deftest gastown-coverage-namepool-menu-exists ()
+  "gastown-namepool-menu transient should exist."
+  (require 'gastown-command-workspace)
+  (should (fboundp 'gastown-namepool-menu)))
+
+;;; Worktree subcommand coverage
+
+(ert-deftest gastown-coverage-worktree-list-class-exists ()
+  "gastown-command-worktree-list class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-worktree-list)))
+
+(ert-deftest gastown-coverage-worktree-remove-class-exists ()
+  "gastown-command-worktree-remove class should exist."
+  (require 'gastown-command-workspace)
+  (should (find-class 'gastown-command-worktree-remove)))
+
+(ert-deftest gastown-coverage-worktree-menu-exists ()
+  "gastown-worktree-menu transient should exist."
+  (require 'gastown-command-workspace)
+  (should (fboundp 'gastown-worktree-menu)))
+
+;;; Account subcommand coverage
+
+(ert-deftest gastown-coverage-account-add-class-exists ()
+  "gastown-command-account-add class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-account-add)))
+
+(ert-deftest gastown-coverage-account-default-class-exists ()
+  "gastown-command-account-default class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-account-default)))
+
+(ert-deftest gastown-coverage-account-list-class-exists ()
+  "gastown-command-account-list class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-account-list)))
+
+(ert-deftest gastown-coverage-account-status-class-exists ()
+  "gastown-command-account-status class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-account-status)))
+
+(ert-deftest gastown-coverage-account-switch-class-exists ()
+  "gastown-command-account-switch class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-account-switch)))
+
+(ert-deftest gastown-coverage-account-menu-exists ()
+  "gastown-account-menu transient should exist."
+  (require 'gastown-command-config)
+  (should (fboundp 'gastown-account-menu)))
+
+(ert-deftest gastown-coverage-account-list-cli-command ()
+  "gastown-command-account-list should produce 'account list' command line."
+  (require 'gastown-command-config)
+  (let ((cmd (make-instance 'gastown-command-account-list)))
+    (should (member "account" (gastown-command-line cmd)))
+    (should (member "list" (gastown-command-line cmd)))))
+
+;;; Config subcommand coverage
+
+(ert-deftest gastown-coverage-config-agent-class-exists ()
+  "gastown-command-config-agent class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-config-agent)))
+
+(ert-deftest gastown-coverage-config-agent-email-domain-class-exists ()
+  "gastown-command-config-agent-email-domain class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-config-agent-email-domain)))
+
+(ert-deftest gastown-coverage-config-cost-tier-class-exists ()
+  "gastown-command-config-cost-tier class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-config-cost-tier)))
+
+(ert-deftest gastown-coverage-config-default-agent-class-exists ()
+  "gastown-command-config-default-agent class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-config-default-agent)))
+
+(ert-deftest gastown-coverage-config-get-class-exists ()
+  "gastown-command-config-get class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-config-get)))
+
+(ert-deftest gastown-coverage-config-set-class-exists ()
+  "gastown-command-config-set class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-config-set)))
+
+(ert-deftest gastown-coverage-config-values-menu-exists ()
+  "gastown-config-values-menu transient should exist."
+  (require 'gastown-command-config)
+  (should (fboundp 'gastown-config-values-menu)))
+
+(ert-deftest gastown-coverage-config-get-cli-command ()
+  "gastown-command-config-get should produce 'config get' command line."
+  (require 'gastown-command-config)
+  (let ((cmd (make-instance 'gastown-command-config-get)))
+    (should (member "config" (gastown-command-line cmd)))
+    (should (member "get" (gastown-command-line cmd)))))
+
+;;; Hooks subcommand coverage
+
+(ert-deftest gastown-coverage-hooks-base-class-exists ()
+  "gastown-command-hooks-base class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-base)))
+
+(ert-deftest gastown-coverage-hooks-diff-class-exists ()
+  "gastown-command-hooks-diff class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-diff)))
+
+(ert-deftest gastown-coverage-hooks-init-class-exists ()
+  "gastown-command-hooks-init class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-init)))
+
+(ert-deftest gastown-coverage-hooks-install-class-exists ()
+  "gastown-command-hooks-install class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-install)))
+
+(ert-deftest gastown-coverage-hooks-list-class-exists ()
+  "gastown-command-hooks-list class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-list)))
+
+(ert-deftest gastown-coverage-hooks-override-class-exists ()
+  "gastown-command-hooks-override class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-override)))
+
+(ert-deftest gastown-coverage-hooks-registry-class-exists ()
+  "gastown-command-hooks-registry class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-registry)))
+
+(ert-deftest gastown-coverage-hooks-scan-class-exists ()
+  "gastown-command-hooks-scan class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-scan)))
+
+(ert-deftest gastown-coverage-hooks-sync-class-exists ()
+  "gastown-command-hooks-sync class should exist."
+  (require 'gastown-command-config)
+  (should (find-class 'gastown-command-hooks-sync)))
+
+(ert-deftest gastown-coverage-hooks-menu-exists ()
+  "gastown-hooks-menu transient should exist."
+  (require 'gastown-command-config)
+  (should (fboundp 'gastown-hooks-menu)))
+
+(ert-deftest gastown-coverage-hooks-sync-cli-command ()
+  "gastown-command-hooks-sync should produce 'hooks sync' command line."
+  (require 'gastown-command-config)
+  (let ((cmd (make-instance 'gastown-command-hooks-sync)))
+    (should (member "hooks" (gastown-command-line cmd)))
+    (should (member "sync" (gastown-command-line cmd)))))
+
+;;; Dolt extended subcommand coverage
+
+(ert-deftest gastown-coverage-dolt-dump-class-exists ()
+  "gastown-command-dolt-dump class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-dump)))
+
+(ert-deftest gastown-coverage-dolt-fix-metadata-class-exists ()
+  "gastown-command-dolt-fix-metadata class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-fix-metadata)))
+
+(ert-deftest gastown-coverage-dolt-flatten-class-exists ()
+  "gastown-command-dolt-flatten class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-flatten)))
+
+(ert-deftest gastown-coverage-dolt-init-class-exists ()
+  "gastown-command-dolt-init class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-init)))
+
+(ert-deftest gastown-coverage-dolt-init-rig-class-exists ()
+  "gastown-command-dolt-init-rig class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-init-rig)))
+
+(ert-deftest gastown-coverage-dolt-kill-imposters-class-exists ()
+  "gastown-command-dolt-kill-imposters class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-kill-imposters)))
+
+(ert-deftest gastown-coverage-dolt-list-class-exists ()
+  "gastown-command-dolt-list class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-list)))
+
+(ert-deftest gastown-coverage-dolt-logs-class-exists ()
+  "gastown-command-dolt-logs class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-logs)))
+
+(ert-deftest gastown-coverage-dolt-migrate-class-exists ()
+  "gastown-command-dolt-migrate class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-migrate)))
+
+(ert-deftest gastown-coverage-dolt-migrate-wisps-class-exists ()
+  "gastown-command-dolt-migrate-wisps class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-migrate-wisps)))
+
+(ert-deftest gastown-coverage-dolt-rebase-class-exists ()
+  "gastown-command-dolt-rebase class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-rebase)))
+
+(ert-deftest gastown-coverage-dolt-recover-class-exists ()
+  "gastown-command-dolt-recover class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-recover)))
+
+(ert-deftest gastown-coverage-dolt-restart-class-exists ()
+  "gastown-command-dolt-restart class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-restart)))
+
+(ert-deftest gastown-coverage-dolt-rollback-class-exists ()
+  "gastown-command-dolt-rollback class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-rollback)))
+
+(ert-deftest gastown-coverage-dolt-sql-class-exists ()
+  "gastown-command-dolt-sql class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-sql)))
+
+(ert-deftest gastown-coverage-dolt-sync-class-exists ()
+  "gastown-command-dolt-sync class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-dolt-sync)))
+
+(ert-deftest gastown-coverage-dolt-extended-transients-exist ()
+  "Key extended dolt transient functions should exist."
+  (require 'gastown-command-services)
+  (should (fboundp 'gastown-dolt-dump))
+  (should (fboundp 'gastown-dolt-logs))
+  (should (fboundp 'gastown-dolt-restart))
+  (should (fboundp 'gastown-dolt-sql)))
+
+;;; Quota subcommand coverage
+
+(ert-deftest gastown-coverage-quota-clear-class-exists ()
+  "gastown-command-quota-clear class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-quota-clear)))
+
+(ert-deftest gastown-coverage-quota-rotate-class-exists ()
+  "gastown-command-quota-rotate class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-quota-rotate)))
+
+(ert-deftest gastown-coverage-quota-scan-class-exists ()
+  "gastown-command-quota-scan class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-quota-scan)))
+
+(ert-deftest gastown-coverage-quota-status-class-exists ()
+  "gastown-command-quota-status class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-quota-status)))
+
+(ert-deftest gastown-coverage-quota-watch-class-exists ()
+  "gastown-command-quota-watch class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-quota-watch)))
+
+(ert-deftest gastown-coverage-quota-menu-exists ()
+  "gastown-quota-menu transient should exist."
+  (require 'gastown-command-services)
+  (should (fboundp 'gastown-quota-menu)))
+
+(ert-deftest gastown-coverage-quota-status-cli-command ()
+  "gastown-command-quota-status should produce 'quota status' command line."
+  (require 'gastown-command-services)
+  (let ((cmd (make-instance 'gastown-command-quota-status)))
+    (should (member "quota" (gastown-command-line cmd)))
+    (should (member "status" (gastown-command-line cmd)))))
+
+;;; Scheduler subcommand coverage
+
+(ert-deftest gastown-coverage-scheduler-clear-class-exists ()
+  "gastown-command-scheduler-clear class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-scheduler-clear)))
+
+(ert-deftest gastown-coverage-scheduler-list-class-exists ()
+  "gastown-command-scheduler-list class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-scheduler-list)))
+
+(ert-deftest gastown-coverage-scheduler-pause-class-exists ()
+  "gastown-command-scheduler-pause class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-scheduler-pause)))
+
+(ert-deftest gastown-coverage-scheduler-resume-class-exists ()
+  "gastown-command-scheduler-resume class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-scheduler-resume)))
+
+(ert-deftest gastown-coverage-scheduler-run-class-exists ()
+  "gastown-command-scheduler-run class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-scheduler-run)))
+
+(ert-deftest gastown-coverage-scheduler-status-class-exists ()
+  "gastown-command-scheduler-status class should exist."
+  (require 'gastown-command-services)
+  (should (find-class 'gastown-command-scheduler-status)))
+
+(ert-deftest gastown-coverage-scheduler-menu-exists ()
+  "gastown-scheduler-menu transient should exist."
+  (require 'gastown-command-services)
+  (should (fboundp 'gastown-scheduler-menu)))
+
+(ert-deftest gastown-coverage-scheduler-status-cli-command ()
+  "gastown-command-scheduler-status should produce 'scheduler status' command line."
+  (require 'gastown-command-services)
+  (let ((cmd (make-instance 'gastown-command-scheduler-status)))
+    (should (member "scheduler" (gastown-command-line cmd)))
+    (should (member "status" (gastown-command-line cmd)))))
+
+;;; Checkpoint subcommand coverage
+
+(ert-deftest gastown-coverage-checkpoint-clear-class-exists ()
+  "gastown-command-checkpoint-clear class should exist."
+  (require 'gastown-command-diagnostics)
+  (should (find-class 'gastown-command-checkpoint-clear)))
+
+(ert-deftest gastown-coverage-checkpoint-read-class-exists ()
+  "gastown-command-checkpoint-read class should exist."
+  (require 'gastown-command-diagnostics)
+  (should (find-class 'gastown-command-checkpoint-read)))
+
+(ert-deftest gastown-coverage-checkpoint-write-class-exists ()
+  "gastown-command-checkpoint-write class should exist."
+  (require 'gastown-command-diagnostics)
+  (should (find-class 'gastown-command-checkpoint-write)))
+
+(ert-deftest gastown-coverage-checkpoint-menu-exists ()
+  "gastown-checkpoint-menu transient should exist."
+  (require 'gastown-command-diagnostics)
+  (should (fboundp 'gastown-checkpoint-menu)))
+
+(ert-deftest gastown-coverage-checkpoint-read-cli-command ()
+  "gastown-command-checkpoint-read should produce 'checkpoint read' command line."
+  (require 'gastown-command-diagnostics)
+  (let ((cmd (make-instance 'gastown-command-checkpoint-read)))
+    (should (member "checkpoint" (gastown-command-line cmd)))
+    (should (member "read" (gastown-command-line cmd)))))
+
+;;; Cycle subcommand coverage
+
+(ert-deftest gastown-coverage-cycle-next-class-exists ()
+  "gastown-command-cycle-next class should exist."
+  (require 'gastown-command-diagnostics)
+  (should (find-class 'gastown-command-cycle-next)))
+
+(ert-deftest gastown-coverage-cycle-prev-class-exists ()
+  "gastown-command-cycle-prev class should exist."
+  (require 'gastown-command-diagnostics)
+  (should (find-class 'gastown-command-cycle-prev)))
+
+(ert-deftest gastown-coverage-cycle-next-cli-command ()
+  "gastown-command-cycle-next should produce 'cycle next' command line."
+  (require 'gastown-command-diagnostics)
+  (let ((cmd (make-instance 'gastown-command-cycle-next)))
+    (should (member "cycle" (gastown-command-line cmd)))
+    (should (member "next" (gastown-command-line cmd)))))
+
+;;; Formula overlay coverage
+
+(ert-deftest gastown-coverage-formula-overlay-class-exists ()
+  "gastown-command-formula-overlay class should exist."
+  (require 'gastown-command-formula)
+  (should (find-class 'gastown-command-formula-overlay)))
+
+(ert-deftest gastown-coverage-formula-overlay-transient-exists ()
+  "gastown-formula-overlay transient should exist."
+  (require 'gastown-command-formula)
+  (should (fboundp 'gastown-formula-overlay)))
+
+(ert-deftest gastown-coverage-formula-overlay-cli-command ()
+  "gastown-command-formula-overlay should produce 'formula overlay' command line."
+  (require 'gastown-command-formula)
+  (let ((cmd (make-instance 'gastown-command-formula-overlay)))
+    (should (member "formula" (gastown-command-line cmd)))
+    (should (member "overlay" (gastown-command-line cmd)))))
+
+(ert-deftest gastown-coverage-formula-overlay-show-class-exists ()
+  "gastown-command-formula-overlay-show class should exist."
+  (require 'gastown-command-formula)
+  (should (find-class 'gastown-command-formula-overlay-show)))
+
+(ert-deftest gastown-coverage-formula-overlay-edit-class-exists ()
+  "gastown-command-formula-overlay-edit class should exist."
+  (require 'gastown-command-formula)
+  (should (find-class 'gastown-command-formula-overlay-edit)))
+
+(ert-deftest gastown-coverage-formula-overlay-list-class-exists ()
+  "gastown-command-formula-overlay-list class should exist."
+  (require 'gastown-command-formula)
+  (should (find-class 'gastown-command-formula-overlay-list)))
+
+(ert-deftest gastown-coverage-formula-overlay-menu-exists ()
+  "gastown-formula-overlay-menu transient should exist."
+  (require 'gastown-command-formula)
+  (should (fboundp 'gastown-formula-overlay-menu)))
+
+(ert-deftest gastown-coverage-formula-overlay-show-cli-command ()
+  "gastown-command-formula-overlay-show should produce 'formula overlay show' command line."
+  (require 'gastown-command-formula)
+  (let ((cmd (make-instance 'gastown-command-formula-overlay-show)))
+    (should (member "formula" (gastown-command-line cmd)))
+    (should (member "overlay" (gastown-command-line cmd)))
+    (should (member "show" (gastown-command-line cmd)))))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here
