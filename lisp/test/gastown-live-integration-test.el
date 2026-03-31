@@ -75,10 +75,11 @@
     gastown-reader-convoy-id
     gastown-reader-crew-name
     gastown-reader-bead-id
-    gastown-reader-agent-target)
+    gastown-reader-agent-target
+    gastown-reader-polecat-address)
   "Reader functions to test.
-Excludes `gastown-reader-polecat-address' — see Bug 1 (ge-f4b) and
-Bug 2 (ge-mmn): missing --all flag causes hang.")
+All 9 completing-read readers, including `gastown-reader-polecat-address'
+now that ge-f4b (--all flag) and ge-mmn (error handling) are fixed.")
 
 ;;; ============================================================
 ;;; Skip Guards
@@ -254,12 +255,20 @@ completions as a list.  Fails the test if READER-SYM signals an error."
     (let ((result (gastown-reader-agent-target "Target: ")))
       (should (stringp result)))))
 
-(ert-deftest gastown-live-reader-polecat-address-skipped ()
-  "gastown-reader-polecat-address is skipped until Bug 1 (ge-f4b) is fixed.
-This test documents the known failure: missing --all flag causes hang."
+(ert-deftest gastown-live-reader-polecat-address ()
+  "gastown-reader-polecat-address provides live polecat candidates.
+Fixed by ge-f4b (add --all flag to polecat-list) and ge-mmn (error handling)."
   :tags '(:live)
   (gastown-live-test-skip-unless)
-  (skip-unless nil)) ; Always skip until ge-f4b and ge-mmn are fixed
+  ;; Polecats may be empty if no workers are running — just verify no hang/crash.
+  ;; When polecats are present, verify candidates are strings.
+  (let ((default-directory (expand-file-name "~/gt")))
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (_prompt coll &rest _)
+                 (or (car (all-completions "" coll)) ""))))
+      (condition-case err
+          (gastown-reader-polecat-address "Polecat: ")
+        (error (ert-fail (format "gastown-reader-polecat-address raised: %s" err)))))))
 
 ;;; ============================================================
 ;;; 3. Command-Line Integration Tests

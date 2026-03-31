@@ -106,13 +106,15 @@ Returns list of `gastown-completion-rig' objects."
 
 (defun gastown-completion--fetch-polecats ()
   "Fetch polecat list via gt polecat list --all --json.
-Returns list of `gastown-completion-polecat' objects."
+Returns list of `gastown-completion-polecat' objects, or nil on error."
   (require 'gastown-command-polecat)
-  (let* ((cmd (gastown-command-polecat-list :json t))
-         (execution (gastown-command-execute cmd))
-         (data (oref execution result)))
-    (mapcar #'gastown-completion--parse-polecat
-            (if (vectorp data) (append data nil) data))))
+  (condition-case nil
+      (let* ((cmd (gastown-command-polecat-list :all t :json t))
+             (execution (gastown-command-execute cmd))
+             (data (oref execution result)))
+        (mapcar #'gastown-completion--parse-polecat
+                (if (vectorp data) (append data nil) data)))
+    (error nil)))
 
 (defun gastown-completion--fetch-convoys ()
   "Fetch convoy list via gt convoy list --json.

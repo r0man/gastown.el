@@ -37,7 +37,21 @@
     :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
-    :order 1))
+    :order 1)
+   (all
+    :initarg :all
+    :type boolean
+    :initform nil
+    :documentation "List polecats across all rigs."
+    :long-option "all"
+    :option-type :boolean
+    :key "a"
+    :transient "--all"
+    :class transient-switch
+    :argument "--all"
+    :transient-group "Filters"
+    :level 1
+    :order 2))
   :documentation "Represents gt polecat list command.
 Lists polecats with name, status, hooked work, and session info.")
 

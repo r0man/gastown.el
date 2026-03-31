@@ -99,6 +99,13 @@
   "gastown-command-polecat-list class should exist."
   (should (find-class 'gastown-command-polecat-list)))
 
+(ert-deftest gastown-coverage-polecat-list-all-slot-exists ()
+  "gastown-command-polecat-list should have an :all slot for gt polecat list --all."
+  (require 'gastown-command-polecat)
+  (let ((cmd (gastown-command-polecat-list :all t :json t)))
+    (should (oref cmd all))
+    (should (member "--all" (gastown-command-line cmd)))))
+
 (ert-deftest gastown-coverage-polecat-nuke-class-exists ()
   "gastown-command-polecat-nuke class should exist."
   (should (find-class 'gastown-command-polecat-nuke)))
