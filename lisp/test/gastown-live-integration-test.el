@@ -109,13 +109,16 @@ a `gt' executable on PATH, and ~/gt to be a working Gas Town installation."
   (gastown-live-test-skip-unless)
   (let ((default-directory (expand-file-name "~/gt")))
     (dolist (sym gastown-live-test-all-menus)
-      (condition-case err
-          (progn
-            (funcall sym)
-            (sit-for 0.05)
-            (transient-quit-all)
-            (sit-for 0.02))
-        (error (ert-fail (format "%s raised: %s" sym err)))))))
+      ;; unwind-protect ensures transient-quit-all runs even when funcall
+      ;; errors — otherwise a partially-rendered menu lingers and poisons
+      ;; the rest of the test run.
+      (unwind-protect
+          (condition-case err
+              (funcall sym)
+            (error (ert-fail (format "%s raised: %s" sym err))))
+        (sit-for 0.05)
+        (transient-quit-all)
+        (sit-for 0.02)))))
 
 (ert-deftest gastown-live-top-menus-render ()
   "All 13 top-level transient prefixes render without error."
@@ -123,13 +126,13 @@ a `gt' executable on PATH, and ~/gt to be a working Gas Town installation."
   (gastown-live-test-skip-unless)
   (let ((default-directory (expand-file-name "~/gt")))
     (dolist (sym gastown-live-test-top-menus)
-      (condition-case err
-          (progn
-            (funcall sym)
-            (sit-for 0.05)
-            (transient-quit-all)
-            (sit-for 0.02))
-        (error (ert-fail (format "%s raised: %s" sym err)))))))
+      (unwind-protect
+          (condition-case err
+              (funcall sym)
+            (error (ert-fail (format "%s raised: %s" sym err))))
+        (sit-for 0.05)
+        (transient-quit-all)
+        (sit-for 0.02)))))
 
 (ert-deftest gastown-live-sub-menus-render ()
   "All 12 sub-menus render without error."
@@ -137,13 +140,13 @@ a `gt' executable on PATH, and ~/gt to be a working Gas Town installation."
   (gastown-live-test-skip-unless)
   (let ((default-directory (expand-file-name "~/gt")))
     (dolist (sym gastown-live-test-sub-menus)
-      (condition-case err
-          (progn
-            (funcall sym)
-            (sit-for 0.05)
-            (transient-quit-all)
-            (sit-for 0.02))
-        (error (ert-fail (format "%s raised: %s" sym err)))))))
+      (unwind-protect
+          (condition-case err
+              (funcall sym)
+            (error (ert-fail (format "%s raised: %s" sym err))))
+        (sit-for 0.05)
+        (transient-quit-all)
+        (sit-for 0.02)))))
 
 ;;; ============================================================
 ;;; 2. Reader Completion Tests
@@ -221,7 +224,8 @@ completions as a list.  Fails the test if READER-SYM signals an error."
   (gastown-live-test-skip-unless)
   ;; With no buffer context, falls back to beads-completion-read-issue
   ;; (or read-string if beads-completion is not loaded).
-  (let ((result
+  (let ((default-directory (expand-file-name "~/gt"))
+        (result
          (cl-letf (((symbol-function 'read-string)
                     (lambda (_prompt &rest _) "ge-test"))
                    ((symbol-function 'beads-completion-read-issue)
@@ -233,11 +237,12 @@ completions as a list.  Fails the test if READER-SYM signals an error."
   "gastown-reader-agent-target prompts with read-string when no agent at point."
   :tags '(:live)
   (gastown-live-test-skip-unless)
-  ;; With no buffer context, falls back to read-string
-  (cl-letf (((symbol-function 'read-string)
-             (lambda (_prompt &rest _) "gastown_el/nux")))
-    (let ((result (gastown-reader-agent-target "Target: ")))
-      (should (stringp result)))))
+  ;; With no buffer context, falls back to read-string.
+  (let ((default-directory (expand-file-name "~/gt")))
+    (cl-letf (((symbol-function 'read-string)
+               (lambda (_prompt &rest _) "gastown_el/nux")))
+      (let ((result (gastown-reader-agent-target "Target: ")))
+        (should (stringp result))))))
 
 (ert-deftest gastown-live-reader-polecat-address ()
   "gastown-reader-polecat-address provides live polecat candidates.
@@ -362,6 +367,89 @@ Polecats may be empty if no workers are running — just verify no crash."
                   (completion-metadata "" table nil)
                   'annotation-function)))
     (should ann-fn)))
+
+;;; ============================================================
+;;; 5. Edge Case Tests
+;;; ============================================================
+
+(ert-deftest gastown-live-menus-count ()
+  "Menu constant lengths match the documented 13 + 12 = 25 total."
+  :tags '(:live)
+  (gastown-live-test-skip-unless)
+  ;; Catches accidental additions or removals without docstring update.
+  (should (= (length gastown-live-test-top-menus) 13))
+  (should (= (length gastown-live-test-sub-menus) 12))
+  (should (= (length gastown-live-test-all-menus) 25)))
+
+(ert-deftest gastown-live-reader-bead-id-fallback ()
+  "gastown-reader-bead-id falls back to read-string when beads-completion absent.
+The fallback path activates when `beads-completion-read-issue' is not fboundp."
+  :tags '(:live)
+  (gastown-live-test-skip-unless)
+  (let ((default-directory (expand-file-name "~/gt"))
+        (saved-fn (when (fboundp 'beads-completion-read-issue)
+                    (symbol-function 'beads-completion-read-issue))))
+    (unwind-protect
+        (progn
+          (when (fboundp 'beads-completion-read-issue)
+            (fmakunbound 'beads-completion-read-issue))
+          (cl-letf (((symbol-function 'read-string)
+                     (lambda (_prompt &rest _) "ge-fallback")))
+            (let ((result (gastown-reader-bead-id "Bead ID: ")))
+              (should (equal result "ge-fallback")))))
+      ;; Always restore the function binding on the way out.
+      (when saved-fn
+        (fset 'beads-completion-read-issue saved-fn)))))
+
+(ert-deftest gastown-live-empty-readers-return-strings ()
+  "Readers whose candidates may be empty still return a string (not nil or error).
+Convoy, crew, and polecat lists can all be empty in a fresh Gas Town
+installation; the reader must degrade gracefully."
+  :tags '(:live)
+  (gastown-live-test-skip-unless)
+  (let ((default-directory (expand-file-name "~/gt")))
+    (dolist (entry '((gastown-reader-convoy-id  . "Convoy: ")
+                     (gastown-reader-crew-name  . "Crew: ")
+                     (gastown-reader-polecat-address . "Polecat: ")))
+      (let* ((reader (car entry))
+             (prompt (cdr entry))
+             (result
+              (cl-letf (((symbol-function 'completing-read)
+                         (lambda (_prompt _coll &rest _) "")))
+                (condition-case err
+                    (funcall reader prompt)
+                  (error
+                   (ert-fail (format "%s raised on empty candidates: %s"
+                                     reader err)))))))
+        (should (stringp result))))))
+
+(ert-deftest gastown-live-rig-annotations-all-candidates ()
+  "Rig annotation function returns a string for every candidate, not just first."
+  :tags '(:live)
+  (gastown-live-test-skip-unless)
+  (let* ((default-directory (expand-file-name "~/gt"))
+         (table (gastown-completion-rig-table))
+         (ann-fn (completion-metadata-get
+                  (completion-metadata "" table nil)
+                  'annotation-function)))
+    (should ann-fn)
+    (dolist (candidate (all-completions "" table))
+      (let ((ann (funcall ann-fn candidate)))
+        (should (stringp ann))))))
+
+(ert-deftest gastown-live-formula-annotations-all-candidates ()
+  "Formula annotation function returns a string for every candidate, not just first."
+  :tags '(:live)
+  (gastown-live-test-skip-unless)
+  (let* ((default-directory (expand-file-name "~/gt"))
+         (table (gastown-completion-formula-table))
+         (ann-fn (completion-metadata-get
+                  (completion-metadata "" table nil)
+                  'annotation-function)))
+    (should ann-fn)
+    (dolist (candidate (all-completions "" table))
+      (let ((ann (funcall ann-fn candidate)))
+        (should (stringp ann))))))
 
 (provide 'gastown-live-integration-test)
 ;;; gastown-live-integration-test.el ends here
