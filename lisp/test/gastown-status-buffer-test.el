@@ -1298,18 +1298,22 @@ differs by identity from the previously cached one, advancing last-ts-ref."
 
 ;;; Cursor Preservation Tests (ge-ppx regression)
 
-(defun gastown-status-buffer-test--mount-and-resolve (buf data)
-  "Mount the async status app in BUF and synchronously resolve with DATA.
-Returns the resolve function so callers can trigger further refreshes."
-  (let ((full-resolve nil))
-    (with-current-buffer buf
-      (cl-letf (((symbol-function 'gastown-status--async-fetch)
-                 (lambda (resolve _reject &optional fast)
-                   (unless fast (setq full-resolve resolve))
-                   nil)))
-        (vui-mount (vui-component 'gastown-status-app) (buffer-name))
-        (funcall full-resolve data)))
-    full-resolve))
+(defmacro gastown-status-buffer-test--with-mock-fetch (buf data &rest body)
+  "Mount the status app in BUF with DATA and execute BODY with mock fetch active.
+`gastown-status--async-fetch' is mocked for the entire BODY scope so that
+any async fetches triggered inside BODY (e.g. via `gastown-status-do-refresh')
+are intercepted rather than attempting to run the real `gt' binary.
+`full-resolve' is bound in BODY to the latest pending resolve callback."
+  (declare (indent 2))
+  `(let ((full-resolve nil))
+     (cl-letf (((symbol-function 'gastown-status--async-fetch)
+                (lambda (resolve _reject &optional fast)
+                  (unless fast (setq full-resolve resolve))
+                  nil)))
+       (with-current-buffer ,buf
+         (vui-mount (vui-component 'gastown-status-app) (buffer-name)))
+       (funcall full-resolve ,data)
+       ,@body)))
 
 (ert-deftest gastown-status-buffer-test-cursor-preserved-on-section-line ()
   "Point on a section line is preserved across incremental re-renders.
@@ -1318,25 +1322,24 @@ that even if content shifts, the cursor stays on the same logical section."
   (with-temp-buffer
     (gastown-status-mode)
     (let* ((data gastown-status-buffer-test--sample-data)
-           (buf (current-buffer))
-           (full-resolve
-            (gastown-status-buffer-test--mount-and-resolve buf data)))
-      ;; Navigate to first section line (an agent/polecat row)
-      (goto-char (point-min))
-      (while (and (not (eobp))
-                  (null (gastown-status--find-section-on-line)))
-        (forward-line 1))
-      (let* ((section (gastown-status--find-section-on-line))
-             (section-id (and section (gastown-status--section-id section))))
-        (should section-id)
-        ;; Trigger a refresh (incremental re-render via vui--rerender-instance)
-        (gastown-status-do-refresh buf)
-        (funcall full-resolve data)
-        ;; Point must still be on the same section
-        (let ((current-section (gastown-status--find-section-on-line)))
-          (should current-section)
-          (should (equal (gastown-status--section-id current-section)
-                         section-id)))))))
+           (buf (current-buffer)))
+      (gastown-status-buffer-test--with-mock-fetch buf data
+        ;; Navigate to first section line (an agent/polecat row)
+        (goto-char (point-min))
+        (while (and (not (eobp))
+                    (null (gastown-status--find-section-on-line)))
+          (forward-line 1))
+        (let* ((section (gastown-status--find-section-on-line))
+               (section-id (and section (gastown-status--section-id section))))
+          (should section-id)
+          ;; Trigger a refresh (incremental re-render via vui--rerender-instance)
+          (gastown-status-do-refresh buf)
+          (funcall full-resolve data)
+          ;; Point must still be on the same section
+          (let ((current-section (gastown-status--find-section-on-line)))
+            (should current-section)
+            (should (equal (gastown-status--section-id current-section)
+                           section-id))))))))
 
 (ert-deftest gastown-status-buffer-test-window-point-preserved-in-non-selected-window ()
   "Window-point is synced after re-render when buffer is in a non-selected window.
@@ -1348,11 +1351,9 @@ gastown-status--around-rerender must call set-window-point to restore them."
            (other-buf (generate-new-buffer " *ge-ppx-other-test*")))
       (unwind-protect
           (progn
-            ;; Mount async component and resolve with initial data
             (with-current-buffer buf
               (gastown-status-mode))
-            (let ((full-resolve
-                   (gastown-status-buffer-test--mount-and-resolve buf data)))
+            (gastown-status-buffer-test--with-mock-fetch buf data
               ;; Find a section line in the status buffer
               (let* ((target-pos nil)
                      (target-section nil))
