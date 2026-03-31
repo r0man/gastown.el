@@ -265,6 +265,22 @@
     (goto-char (point-min))
     (should (search-forward "tmux" nil t))))
 
+(ert-deftest gastown-status-buffer-test-services-tmux-no-socket-path ()
+  "Services line does not include the redundant tmux socket path."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (gastown-status--render gastown-status-buffer-test--sample-data)
+    (goto-char (point-min))
+    ;; The socket path /tmp/tmux-gt should not appear in the buffer
+    (should-not (search-forward "/tmp/tmux-gt" nil t))))
+
+(ert-deftest gastown-status-buffer-test-header-fits-80-cols ()
+  "The status buffer header-line-format fits within 80 columns."
+  (with-temp-buffer
+    (gastown-status-mode)
+    (when (stringp header-line-format)
+      (should (<= (length header-line-format) 80)))))
+
 ;;; Rendering Tests — Global Agents
 
 (ert-deftest gastown-status-buffer-test-render-mayor-agent ()

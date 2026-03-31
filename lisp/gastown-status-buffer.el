@@ -255,7 +255,7 @@ Key bindings:
   :group 'gastown-status-buffer
   (setq truncate-lines t)
   (setq-local header-line-format
-              " Gas Town Status  (g=refresh  TAB=toggle  i=detail  d=dired  w=watch  ?=opts  q=quit)")
+              " Gas Town Status  (g=refresh  TAB=toggle  i=detail  d=dired  w=watch  q=quit)")
   (add-hook 'kill-buffer-hook #'gastown-status--cancel-watch nil t))
 
 ;; Activate semantic cursor preservation globally for status buffers.
@@ -525,12 +525,11 @@ REJECT is called with an error message string on failure."
                  (vui-text (or dolt-dir "")))
                (vui-text ")")))
             (when tmux
-              (list (vui-text (format "  tmux (-L %s, PID %d, %d session%s, %s)"
+              (list (vui-text (format "  tmux (-L %s, PID %d, %d session%s)"
                                       (or tmux-socket "")
                                       (or tmux-pid 0)
                                       (or tmux-count 0)
-                                      (if (eql tmux-count 1) "" "s")
-                                      (or tmux-path "")))))))))
+                                      (if (eql tmux-count 1) "" "s")))))))))
 
 (defun gastown-status--agent-line-vnode (agent &optional rig-section tmux-socket)
   "Build a single AGENT (`gastown-agent') row vnode.
