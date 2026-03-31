@@ -77,9 +77,7 @@
     gastown-reader-bead-id
     gastown-reader-agent-target
     gastown-reader-polecat-address)
-  "Reader functions to test.
-All 9 completing-read readers, including `gastown-reader-polecat-address'
-now that ge-f4b (--all flag) and ge-mmn (error handling) are fixed.")
+  "All 9 completing-read readers.")
 
 ;;; ============================================================
 ;;; Skip Guards
@@ -206,30 +204,16 @@ completions as a list.  Fails the test if READER-SYM signals an error."
     (should (member "local" candidates))))
 
 (ert-deftest gastown-live-reader-convoy-id ()
-  "gastown-reader-convoy-id returns without error."
+  "gastown-reader-convoy-id returns without error (convoys may be empty)."
   :tags '(:live)
   (gastown-live-test-skip-unless)
-  ;; Convoys may be empty — just verify the reader doesn't crash
-  (let ((default-directory (expand-file-name "~/gt")))
-    (cl-letf (((symbol-function 'completing-read)
-               (lambda (_prompt coll &rest _)
-                 (or (car (all-completions "" coll)) ""))))
-      (condition-case err
-          (gastown-reader-convoy-id "Convoy: ")
-        (error (ert-fail (format "gastown-reader-convoy-id raised: %s" err)))))))
+  (gastown-live-test-reader-has-candidates gastown-reader-convoy-id "Convoy: "))
 
 (ert-deftest gastown-live-reader-crew-name ()
-  "gastown-reader-crew-name returns without error."
+  "gastown-reader-crew-name returns without error (crew may be empty)."
   :tags '(:live)
   (gastown-live-test-skip-unless)
-  ;; Crew may be empty — just verify the reader doesn't crash
-  (let ((default-directory (expand-file-name "~/gt")))
-    (cl-letf (((symbol-function 'completing-read)
-               (lambda (_prompt coll &rest _)
-                 (or (car (all-completions "" coll)) ""))))
-      (condition-case err
-          (gastown-reader-crew-name "Crew: ")
-        (error (ert-fail (format "gastown-reader-crew-name raised: %s" err)))))))
+  (gastown-live-test-reader-has-candidates gastown-reader-crew-name "Crew: "))
 
 (ert-deftest gastown-live-reader-bead-id ()
   "gastown-reader-bead-id prompts for input when no bead at point."
@@ -257,18 +241,10 @@ completions as a list.  Fails the test if READER-SYM signals an error."
 
 (ert-deftest gastown-live-reader-polecat-address ()
   "gastown-reader-polecat-address provides live polecat candidates.
-Fixed by ge-f4b (add --all flag to polecat-list) and ge-mmn (error handling)."
+Polecats may be empty if no workers are running — just verify no crash."
   :tags '(:live)
   (gastown-live-test-skip-unless)
-  ;; Polecats may be empty if no workers are running — just verify no hang/crash.
-  ;; When polecats are present, verify candidates are strings.
-  (let ((default-directory (expand-file-name "~/gt")))
-    (cl-letf (((symbol-function 'completing-read)
-               (lambda (_prompt coll &rest _)
-                 (or (car (all-completions "" coll)) ""))))
-      (condition-case err
-          (gastown-reader-polecat-address "Polecat: ")
-        (error (ert-fail (format "gastown-reader-polecat-address raised: %s" err)))))))
+  (gastown-live-test-reader-has-candidates gastown-reader-polecat-address "Polecat: "))
 
 ;;; ============================================================
 ;;; 3. Command-Line Integration Tests
