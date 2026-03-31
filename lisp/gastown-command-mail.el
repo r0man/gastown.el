@@ -13,8 +13,8 @@
 
 (require 'gastown-command)
 (require 'beads-meta)
-
 (require 'gastown-reader)
+
 (require 'transient)
 
 (defvar gastown-executable)
