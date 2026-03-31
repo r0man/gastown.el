@@ -124,6 +124,7 @@
     :class transient-option
     :argument "--crew="
     :prompt "Crew member: "
+    :transient-reader gastown-reader-crew-name
     :transient-group "Spawning"
     :level 1
     :order 14)
@@ -140,6 +141,7 @@
     :class transient-option
     :argument "--formula="
     :prompt "Formula: "
+    :transient-reader gastown-reader-formula-name
     :transient-group "Work"
     :level 1
     :order 20)

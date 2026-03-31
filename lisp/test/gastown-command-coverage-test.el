@@ -1450,5 +1450,179 @@
     (should (member "overlay" (gastown-command-line cmd)))
     (should (member "show" (gastown-command-line cmd)))))
 
+;;; Agents reader wiring tests
+
+(ert-deftest gastown-coverage-agents-rig-reader-wired ()
+  "gastown-command-agents rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-agents 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-witness-status-rig-reader-wired ()
+  "gastown-command-witness-status rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-witness-status 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-refinery-status-rig-reader-wired ()
+  "gastown-command-refinery-status rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-refinery-status 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-session-list-rig-reader-wired ()
+  "gastown-command-session-list rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-list 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-witness-attach-rig-reader-wired ()
+  "gastown-command-witness-attach rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-witness-attach 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-witness-start-rig-reader-wired ()
+  "gastown-command-witness-start rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-witness-start 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-witness-stop-rig-reader-wired ()
+  "gastown-command-witness-stop rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-witness-stop 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-refinery-attach-rig-reader-wired ()
+  "gastown-command-refinery-attach rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-refinery-attach 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-refinery-start-rig-reader-wired ()
+  "gastown-command-refinery-start rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-refinery-start 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-refinery-stop-rig-reader-wired ()
+  "gastown-command-refinery-stop rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-refinery-stop 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-refinery-unclaimed-rig-reader-wired ()
+  "gastown-command-refinery-unclaimed rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-refinery-unclaimed 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-session-check-rig-reader-wired ()
+  "gastown-command-session-check rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-check 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-session-at-polecat-reader-wired ()
+  "gastown-command-session-at polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-at 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+(ert-deftest gastown-coverage-session-capture-polecat-reader-wired ()
+  "gastown-command-session-capture polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-capture 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+(ert-deftest gastown-coverage-session-inject-polecat-reader-wired ()
+  "gastown-command-session-inject polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-inject 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+(ert-deftest gastown-coverage-session-restart-polecat-reader-wired ()
+  "gastown-command-session-restart polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-restart 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+(ert-deftest gastown-coverage-session-start-polecat-reader-wired ()
+  "gastown-command-session-start polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-start 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+(ert-deftest gastown-coverage-session-status-polecat-reader-wired ()
+  "gastown-command-session-status polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-status 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+(ert-deftest gastown-coverage-session-stop-polecat-reader-wired ()
+  "gastown-command-session-stop polecat-address slot should use gastown-reader-polecat-address."
+  (require 'gastown-command-agents)
+  (should (eq (beads-meta-slot-property 'gastown-command-session-stop 'polecat-address
+                                        :transient-reader)
+              'gastown-reader-polecat-address)))
+
+;;; Mail reader wiring tests
+
+(ert-deftest gastown-coverage-mail-send-recipient-reader-wired ()
+  "gastown-command-mail-send recipient slot should use gastown-reader-mail-address."
+  (require 'gastown-command-mail)
+  (should (eq (beads-meta-slot-property 'gastown-command-mail-send 'recipient
+                                        :transient-reader)
+              'gastown-reader-mail-address)))
+
+(ert-deftest gastown-coverage-mail-clear-target-reader-wired ()
+  "gastown-command-mail-clear target slot should use gastown-reader-mail-address."
+  (require 'gastown-command-mail)
+  (should (eq (beads-meta-slot-property 'gastown-command-mail-clear 'target
+                                        :transient-reader)
+              'gastown-reader-mail-address)))
+
+(ert-deftest gastown-coverage-mail-search-from-reader-wired ()
+  "gastown-command-mail-search from slot should use gastown-reader-mail-address."
+  (require 'gastown-command-mail)
+  (should (eq (beads-meta-slot-property 'gastown-command-mail-search 'from
+                                        :transient-reader)
+              'gastown-reader-mail-address)))
+
+;;; Sling formula/crew reader wiring tests
+
+(ert-deftest gastown-coverage-sling-formula-reader-wired ()
+  "gastown-command-sling formula slot should use gastown-reader-formula-name."
+  (require 'gastown-command-sling)
+  (should (eq (beads-meta-slot-property 'gastown-command-sling 'formula
+                                        :transient-reader)
+              'gastown-reader-formula-name)))
+
+(ert-deftest gastown-coverage-sling-crew-reader-wired ()
+  "gastown-command-sling crew slot should use gastown-reader-crew-name."
+  (require 'gastown-command-sling)
+  (should (eq (beads-meta-slot-property 'gastown-command-sling 'crew
+                                        :transient-reader)
+              'gastown-reader-crew-name)))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here

@@ -14,6 +14,7 @@
 (require 'gastown-command)
 (require 'beads-meta)
 
+(require 'gastown-reader)
 (require 'transient)
 
 (defvar gastown-executable)
@@ -33,6 +34,7 @@
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1))
@@ -55,6 +57,7 @@ Lists all Gas Town agent sessions.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -77,6 +80,7 @@ Shows witness health and monitoring status.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -99,6 +103,7 @@ Shows merge queue processor status.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1)
@@ -166,6 +171,7 @@ Lists polecat sessions.")
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -186,6 +192,7 @@ Attach to witness tmux session for a rig."
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1)
@@ -235,6 +242,7 @@ Start the witness for a rig."
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1))
@@ -255,6 +263,7 @@ Stop a running witness."
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Required"
     :level 1
     :order 1)
@@ -292,6 +301,7 @@ Restart the witness for a rig."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -312,6 +322,7 @@ Attach to a running refinery's Claude session."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1)
@@ -361,6 +372,7 @@ Start the refinery for a rig."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -381,6 +393,7 @@ Stop a running refinery."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1)
@@ -416,6 +429,7 @@ Restart the refinery for a rig."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -456,6 +470,7 @@ Claim a merge request for processing."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -476,6 +491,7 @@ Show the merge queue for a rig."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1)
@@ -530,6 +546,7 @@ Release a claimed MR back to the queue."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -552,6 +569,7 @@ List unclaimed MRs available for claiming."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1))
@@ -572,6 +590,7 @@ Attach to a running polecat session."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1)
@@ -607,6 +626,7 @@ Capture recent output from a polecat session."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -627,6 +647,7 @@ Check if polecat tmux sessions are alive and healthy."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1)
@@ -662,6 +683,7 @@ Send a message to a polecat session (prefer gt nudge)."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1)
@@ -696,6 +718,7 @@ Restart a polecat session (stop + start)."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1)
@@ -731,6 +754,7 @@ Start a new tmux session for a polecat."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1))
@@ -751,6 +775,7 @@ Show detailed status for a polecat session."
     :transient "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
+    :transient-reader gastown-reader-polecat-address
     :transient-group "Required"
     :level 1
     :order 1)

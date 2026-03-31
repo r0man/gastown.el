@@ -14,6 +14,7 @@
 (require 'gastown-command)
 (require 'beads-meta)
 
+(require 'gastown-reader)
 (require 'transient)
 
 (defvar gastown-executable)
@@ -89,6 +90,7 @@ Reads a specific mail message.")
     :transient "Recipient (required)"
     :class transient-option
     :prompt "Recipient (rig/role): "
+    :transient-reader gastown-reader-mail-address
     :transient-group "Required"
     :level 1
     :order 1)
@@ -259,6 +261,7 @@ Claim the oldest unclaimed message from a work queue."
     :transient "Target (optional)"
     :class transient-option
     :prompt "Target: "
+    :transient-reader gastown-reader-mail-address
     :transient-group "Options"
     :level 1
     :order 1))
@@ -477,6 +480,7 @@ Reply to a specific message."
     :class transient-option
     :argument "--from="
     :prompt "From: "
+    :transient-reader gastown-reader-mail-address
     :transient-group "Filters"
     :level 1
     :order 2))
