@@ -304,11 +304,12 @@ Key bindings:
     (message "Rig list refreshed")))
 
 (defun gastown-rig-list-show-rig ()
-  "Show details for the rig at point."
+  "Show status for the rig at point in a terminal buffer."
   (interactive)
   (let ((name (tabulated-list-get-id)))
     (if name
-        (message "Rig: %s" name)
+        (gastown-command-execute-interactive
+         (gastown-command-rig-status :rig-name name))
       (user-error "No rig at point"))))
 
 ;;;###autoload
@@ -709,11 +710,20 @@ Key bindings:
     (message "Mail inbox refreshed")))
 
 (defun gastown-mail-inbox-read ()
-  "Read the mail message at point."
+  "Read the mail message at point and display its content."
   (interactive)
   (let ((id (tabulated-list-get-id)))
     (if id
-        (gastown-command-mail-read! :mail-id id)
+        (let* ((content (gastown-command-mail-read! :mail-id id))
+               (buf-name (format "*gastown-mail: %s*" id))
+               (buf (get-buffer-create buf-name)))
+          (with-current-buffer buf
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (insert (or content ""))
+              (goto-char (point-min))
+              (view-mode 1)))
+          (pop-to-buffer buf))
       (user-error "No message at point"))))
 
 ;;;###autoload

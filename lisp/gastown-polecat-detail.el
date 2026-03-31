@@ -247,8 +247,26 @@ not via the shell, to prevent injection."
 ;;; Major Mode
 ;;; ============================================================
 
+(defvar-local gastown-polecat-detail--polecat nil
+  "The polecat (`gastown-agent') shown in this buffer.")
+(defvar-local gastown-polecat-detail--rig-name nil
+  "The rig name for the polecat shown in this buffer.")
+(defvar-local gastown-polecat-detail--tmux-socket nil
+  "The tmux socket for the polecat shown in this buffer.")
+
+(defun gastown-polecat-detail-refresh ()
+  "Refresh the current polecat detail buffer."
+  (interactive)
+  (unless gastown-polecat-detail--polecat
+    (user-error "No polecat in this buffer"))
+  (gastown-polecat-detail-show
+   gastown-polecat-detail--polecat
+   gastown-polecat-detail--rig-name
+   gastown-polecat-detail--tmux-socket))
+
 (defvar-keymap gastown-polecat-detail-mode-map
   :parent vui-mode-map
+  "g" #'gastown-polecat-detail-refresh
   "n" #'next-line
   "p" #'previous-line
   "N" #'scroll-up-command
@@ -287,14 +305,12 @@ session, mail, and recent work history."
     (with-current-buffer buf-name
       (unless (derived-mode-p 'gastown-polecat-detail-mode)
         (gastown-polecat-detail-mode))
+      (setq-local gastown-polecat-detail--polecat polecat)
+      (setq-local gastown-polecat-detail--rig-name rig-name)
+      (setq-local gastown-polecat-detail--tmux-socket tmux-socket)
       (setq-local header-line-format
                   (format " Gas Town — %s/%s  (g=refresh  n/p=nav  q=quit)"
-                          rig-name polecat-name))
-      (local-set-key
-       (kbd "g")
-       (lambda ()
-         (interactive)
-         (gastown-polecat-detail-show polecat rig-name tmux-socket))))))
+                          rig-name polecat-name)))))
 
 (provide 'gastown-polecat-detail)
 ;;; gastown-polecat-detail.el ends here

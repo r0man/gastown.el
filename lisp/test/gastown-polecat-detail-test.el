@@ -254,12 +254,19 @@ enabling shell injection via a crafted session name."
     (should (derived-mode-p 'vui-mode))))
 
 (ert-deftest gastown-polecat-detail-test-navigation-keys-bound ()
-  "gastown-polecat-detail-mode-map has n/p/N/P/q navigation bindings."
+  "gastown-polecat-detail-mode-map has g/n/p/N/P/q bindings."
+  (should (eq #'gastown-polecat-detail-refresh (lookup-key gastown-polecat-detail-mode-map (kbd "g"))))
   (should (eq #'next-line            (lookup-key gastown-polecat-detail-mode-map (kbd "n"))))
   (should (eq #'previous-line       (lookup-key gastown-polecat-detail-mode-map (kbd "p"))))
   (should (eq #'scroll-up-command   (lookup-key gastown-polecat-detail-mode-map (kbd "N"))))
   (should (eq #'scroll-down-command (lookup-key gastown-polecat-detail-mode-map (kbd "P"))))
   (should (eq #'quit-window         (lookup-key gastown-polecat-detail-mode-map (kbd "q")))))
+
+(ert-deftest gastown-polecat-detail-test-refresh-errors-without-polecat ()
+  "gastown-polecat-detail-refresh signals error when buffer has no polecat."
+  (with-temp-buffer
+    (gastown-polecat-detail-mode)
+    (should-error (gastown-polecat-detail-refresh) :type 'user-error)))
 
 (provide 'gastown-polecat-detail-test)
 ;;; gastown-polecat-detail-test.el ends here

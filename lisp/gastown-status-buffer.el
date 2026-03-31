@@ -261,8 +261,10 @@ Key bindings:
 ;; Activate semantic cursor preservation globally for status buffers.
 ;; The advice gates itself on `gastown-status-mode', so it is a no-op
 ;; for all other buffers and safe to install once at load time.
-(advice-add 'vui--rerender-instance :around
-            #'gastown-status--around-rerender)
+;; Guard against duplicate advice when the module is reloaded.
+(unless (advice-member-p #'gastown-status--around-rerender 'vui--rerender-instance)
+  (advice-add 'vui--rerender-instance :around
+              #'gastown-status--around-rerender))
 
 ;;; ============================================================
 ;;; Buffer-Local State

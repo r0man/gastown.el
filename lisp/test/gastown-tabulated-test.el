@@ -679,5 +679,48 @@ A session name like 'foo;rm -rf /' must not execute arbitrary commands."
                (lambda (&rest _) (signal 'file-error '("No such file or directory")))))
       (should-error (gastown-session-list-jump) :type 'user-error))))
 
+;;; ============================================================
+;;; Rig list — show rig
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-rig-list-show-rig-no-id-errors ()
+  "gastown-rig-list-show-rig signals user-error when no rig at point."
+  (with-temp-buffer
+    (should-error (gastown-rig-list-show-rig) :type 'user-error)))
+
+(ert-deftest gastown-tabulated-test-rig-list-show-rig-calls-execute-interactive ()
+  "gastown-rig-list-show-rig calls gastown-command-execute-interactive with rig-status."
+  (let ((executed nil))
+    (gastown-tabulated-test--with-id-at-point "gastown_el"
+      (cl-letf (((symbol-function 'gastown-command-execute-interactive)
+                 (lambda (cmd)
+                   (setq executed cmd))))
+        (gastown-rig-list-show-rig)))
+    (should (cl-typep executed 'gastown-command-rig-status))
+    (should (equal "gastown_el" (oref executed rig-name)))))
+
+;;; ============================================================
+;;; Mail inbox — read
+;;; ============================================================
+
+(ert-deftest gastown-tabulated-test-mail-inbox-read-no-id-errors ()
+  "gastown-mail-inbox-read signals user-error when no message at point."
+  (with-temp-buffer
+    (should-error (gastown-mail-inbox-read) :type 'user-error)))
+
+(ert-deftest gastown-tabulated-test-mail-inbox-read-displays-content ()
+  "gastown-mail-inbox-read opens a buffer with the mail content."
+  (gastown-tabulated-test--with-id-at-point "ge-mail-abc"
+    (cl-letf (((symbol-function 'gastown-command-mail-read!)
+               (lambda (&rest _) "Hello from mail")))
+      (gastown-mail-inbox-read)))
+  (let ((buf (get-buffer "*gastown-mail: ge-mail-abc*")))
+    (unwind-protect
+        (progn
+          (should buf)
+          (with-current-buffer buf
+            (should (string-match-p "Hello from mail" (buffer-string)))))
+      (when buf (kill-buffer buf)))))
+
 (provide 'gastown-tabulated-test)
 ;;; gastown-tabulated-test.el ends here
