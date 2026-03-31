@@ -550,6 +550,7 @@ Display detailed information about a merge request."
     :class transient-option
     :argument "--epic="
     :prompt "Epic ID: "
+    :transient-reader gastown-reader-bead-id
     :transient-group "Options"
     :level 2
     :order 2)
@@ -586,6 +587,7 @@ Submit current branch to the merge queue."
     :transient "Convoy ID (required)"
     :class transient-option
     :prompt "Convoy ID: "
+    :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
     :level 1
     :order 1)
@@ -650,6 +652,7 @@ Start the synthesis step for a convoy."
     :transient "Convoy ID (required)"
     :class transient-option
     :prompt "Convoy ID: "
+    :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
     :level 1
     :order 1))
@@ -670,6 +673,7 @@ Show whether a convoy is ready for synthesis."
     :transient "Convoy ID (required)"
     :class transient-option
     :prompt "Convoy ID: "
+    :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
     :level 1
     :order 1))

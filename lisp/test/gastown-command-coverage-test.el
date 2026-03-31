@@ -1817,5 +1817,102 @@
                                         :transient-reader)
               'gastown-reader-rig-name)))
 
+;;; Sling 'on' slot reader wiring test
+
+(ert-deftest gastown-coverage-sling-on-reader-wired ()
+  "gastown-command-sling on slot should use gastown-reader-bead-id."
+  (require 'gastown-command-sling)
+  (should (eq (beads-meta-slot-property 'gastown-command-sling 'on
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+;;; MQ next/reject/retry/status/submit reader wiring tests
+
+(ert-deftest gastown-coverage-mq-next-rig-reader-wired ()
+  "gastown-command-mq-next rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-next 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-mq-reject-rig-reader-wired ()
+  "gastown-command-mq-reject rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-reject 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-mq-reject-mr-id-reader-wired ()
+  "gastown-command-mq-reject mr-id slot should use gastown-reader-bead-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-reject 'mr-id
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-mq-retry-rig-reader-wired ()
+  "gastown-command-mq-retry rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-retry 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-mq-retry-mr-id-reader-wired ()
+  "gastown-command-mq-retry mr-id slot should use gastown-reader-bead-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-retry 'mr-id
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-mq-status-mr-id-reader-wired ()
+  "gastown-command-mq-status mr-id slot should use gastown-reader-bead-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-status 'mr-id
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-mq-submit-issue-reader-wired ()
+  "gastown-command-mq-submit issue slot should use gastown-reader-bead-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-submit 'issue
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+(ert-deftest gastown-coverage-mq-submit-epic-reader-wired ()
+  "gastown-command-mq-submit epic slot should use gastown-reader-bead-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-mq-submit 'epic
+                                        :transient-reader)
+              'gastown-reader-bead-id)))
+
+;;; Synthesis command reader wiring tests
+
+(ert-deftest gastown-coverage-synthesis-start-convoy-id-reader-wired ()
+  "gastown-command-synthesis-start convoy-id slot should use gastown-reader-convoy-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-synthesis-start 'convoy-id
+                                        :transient-reader)
+              'gastown-reader-convoy-id)))
+
+(ert-deftest gastown-coverage-synthesis-start-rig-reader-wired ()
+  "gastown-command-synthesis-start rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-synthesis-start 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-synthesis-status-convoy-id-reader-wired ()
+  "gastown-command-synthesis-status convoy-id slot should use gastown-reader-convoy-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-synthesis-status 'convoy-id
+                                        :transient-reader)
+              'gastown-reader-convoy-id)))
+
+(ert-deftest gastown-coverage-synthesis-close-convoy-id-reader-wired ()
+  "gastown-command-synthesis-close convoy-id slot should use gastown-reader-convoy-id."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-synthesis-close 'convoy-id
+                                        :transient-reader)
+              'gastown-reader-convoy-id)))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here
