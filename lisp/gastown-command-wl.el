@@ -13,6 +13,7 @@
 
 (require 'gastown-command)
 (require 'beads-meta)
+(require 'gastown-reader)
 
 (require 'transient)
 
@@ -55,6 +56,7 @@ Browse the wasteland wanted board."
     :transient "Rig (optional)"
     :class transient-option
     :prompt "Rig (optional): "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
     :level 2
     :order 1))
@@ -121,6 +123,7 @@ Mark a claimed wanted item as completed."
     :transient "Rig (optional)"
     :class transient-option
     :prompt "Rig (optional): "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
     :level 2
     :order 1))

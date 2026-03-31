@@ -34,6 +34,7 @@
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1))
@@ -71,6 +72,7 @@ Lists polecats with name, status, hooked work, and session info.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 2))
@@ -108,6 +110,7 @@ Terminates a polecat's session and cleans up its worktree.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 2))

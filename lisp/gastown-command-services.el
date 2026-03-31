@@ -14,6 +14,7 @@
 
 (require 'gastown-command)
 (require 'beads-meta)
+(require 'gastown-reader)
 
 (require 'transient)
 
@@ -237,6 +238,7 @@ Configure launchd/systemd for daemon auto-restart."
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Scope"
     :level 1
     :order 1)
@@ -272,6 +274,7 @@ Emergency stop — freeze all agent sessions.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Scope"
     :level 1
     :order 1))
@@ -446,6 +449,7 @@ Initialize and repair Dolt workspace configuration."
     :transient "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
     :level 1
     :order 1))

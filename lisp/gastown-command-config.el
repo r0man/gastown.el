@@ -14,6 +14,7 @@
 
 (require 'gastown-command)
 (require 'beads-meta)
+(require 'gastown-reader)
 
 (require 'transient)
 
@@ -285,6 +286,7 @@ Set a town configuration value."
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 2
     :order 2))
@@ -320,6 +322,7 @@ Display the resolved directive content for a role with source annotation."
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 2
     :order 2)

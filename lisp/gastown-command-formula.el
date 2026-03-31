@@ -182,6 +182,7 @@ Create a user overlay for an existing formula."
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 2
     :order 2))
@@ -218,6 +219,7 @@ Display the active overlay for a formula."
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 2
     :order 2))

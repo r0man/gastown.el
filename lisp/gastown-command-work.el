@@ -260,6 +260,7 @@ Hand off to a fresh session, work continues from hook.")
     :transient "Target"
     :class transient-option
     :prompt "Target (rig/agent): "
+    :transient-reader gastown-reader-agent-target
     :transient-group "Required"
     :level 1
     :order 1))

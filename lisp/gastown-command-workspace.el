@@ -13,6 +13,7 @@
 
 (require 'gastown-command)
 (require 'beads-meta)
+(require 'gastown-reader)
 
 (require 'transient)
 
@@ -54,6 +55,7 @@ Manage the Gas Town crew.")
     :transient "Rig (optional)"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
     :level 2
     :order 2))
@@ -95,6 +97,7 @@ Attach to an existing crew session."
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 2
     :order 1))
@@ -448,6 +451,7 @@ List all cross-rig worktrees owned by current crew member."
     :transient "Rig (required)"
     :class transient-option
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
     :level 1
     :order 1))

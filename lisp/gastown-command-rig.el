@@ -160,6 +160,7 @@ Unparks a rig (resumes workers).")
     :transient "Rig name"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -182,6 +183,7 @@ Start witness and refinery on patrol for one or more rigs."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -204,6 +206,7 @@ Stop one or more rigs (shutdown semantics)."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -226,6 +229,7 @@ Restart one or more rigs (stop then start)."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))
@@ -248,6 +252,7 @@ Restart witness and refinery for a rig."
     :transient "Rig name"
     :class transient-option
     :prompt "Rig name: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Options"
     :level 1
     :order 1))

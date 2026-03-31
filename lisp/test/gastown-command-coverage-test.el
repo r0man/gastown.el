@@ -1624,5 +1624,198 @@
                                         :transient-reader)
               'gastown-reader-crew-name)))
 
+;;; Rig lifecycle reader wiring tests (edge cases — start/stop/restart/reboot/status)
+
+(ert-deftest gastown-coverage-rig-start-rig-name-reader-wired ()
+  "gastown-command-rig-start rig-name slot should use gastown-reader-rig-name."
+  (require 'gastown-command-rig)
+  (should (eq (beads-meta-slot-property 'gastown-command-rig-start 'rig-name
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-rig-stop-rig-name-reader-wired ()
+  "gastown-command-rig-stop rig-name slot should use gastown-reader-rig-name."
+  (require 'gastown-command-rig)
+  (should (eq (beads-meta-slot-property 'gastown-command-rig-stop 'rig-name
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-rig-restart-rig-name-reader-wired ()
+  "gastown-command-rig-restart rig-name slot should use gastown-reader-rig-name."
+  (require 'gastown-command-rig)
+  (should (eq (beads-meta-slot-property 'gastown-command-rig-restart 'rig-name
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-rig-reboot-rig-name-reader-wired ()
+  "gastown-command-rig-reboot rig-name slot should use gastown-reader-rig-name."
+  (require 'gastown-command-rig)
+  (should (eq (beads-meta-slot-property 'gastown-command-rig-reboot 'rig-name
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-rig-status-rig-name-reader-wired ()
+  "gastown-command-rig-status rig-name slot should use gastown-reader-rig-name."
+  (require 'gastown-command-rig)
+  (should (eq (beads-meta-slot-property 'gastown-command-rig-status 'rig-name
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Diagnostics reader wiring tests
+
+(ert-deftest gastown-coverage-log-rig-reader-wired ()
+  "gastown-command-log rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-diagnostics)
+  (should (eq (beads-meta-slot-property 'gastown-command-log 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-activity-rig-reader-wired ()
+  "gastown-command-activity rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-diagnostics)
+  (should (eq (beads-meta-slot-property 'gastown-command-activity 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-costs-rig-reader-wired ()
+  "gastown-command-costs rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-diagnostics)
+  (should (eq (beads-meta-slot-property 'gastown-command-costs 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-trail-rig-reader-wired ()
+  "gastown-command-trail rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-diagnostics)
+  (should (eq (beads-meta-slot-property 'gastown-command-trail 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Services reader wiring tests
+
+(ert-deftest gastown-coverage-estop-rig-reader-wired ()
+  "gastown-command-estop rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-services)
+  (should (eq (beads-meta-slot-property 'gastown-command-estop 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-thaw-rig-reader-wired ()
+  "gastown-command-thaw rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-services)
+  (should (eq (beads-meta-slot-property 'gastown-command-thaw 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-dolt-init-rig-rig-reader-wired ()
+  "gastown-command-dolt-init-rig rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-services)
+  (should (eq (beads-meta-slot-property 'gastown-command-dolt-init-rig 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Workspace reader wiring tests
+
+(ert-deftest gastown-coverage-crew-add-rig-reader-wired ()
+  "gastown-command-crew-add rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-workspace)
+  (should (eq (beads-meta-slot-property 'gastown-command-crew-add 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-crew-list-rig-reader-wired ()
+  "gastown-command-crew-list rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-workspace)
+  (should (eq (beads-meta-slot-property 'gastown-command-crew-list 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-worktree-remove-rig-reader-wired ()
+  "gastown-command-worktree-remove rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-workspace)
+  (should (eq (beads-meta-slot-property 'gastown-command-worktree-remove 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Polecat rig slot reader wiring tests
+
+(ert-deftest gastown-coverage-polecat-list-rig-reader-wired ()
+  "gastown-command-polecat-list rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-polecat)
+  (should (eq (beads-meta-slot-property 'gastown-command-polecat-list 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-polecat-nuke-rig-reader-wired ()
+  "gastown-command-polecat-nuke rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-polecat)
+  (should (eq (beads-meta-slot-property 'gastown-command-polecat-nuke 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-polecat-status-rig-reader-wired ()
+  "gastown-command-polecat-status rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-polecat)
+  (should (eq (beads-meta-slot-property 'gastown-command-polecat-status 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Formula overlay rig reader wiring tests
+
+(ert-deftest gastown-coverage-formula-overlay-show-rig-reader-wired ()
+  "gastown-command-formula-overlay-show rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-formula)
+  (should (eq (beads-meta-slot-property 'gastown-command-formula-overlay-show 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-formula-overlay-edit-rig-reader-wired ()
+  "gastown-command-formula-overlay-edit rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-formula)
+  (should (eq (beads-meta-slot-property 'gastown-command-formula-overlay-edit 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Config directive rig reader wiring tests
+
+(ert-deftest gastown-coverage-directive-show-rig-reader-wired ()
+  "gastown-command-directive-show rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-config)
+  (should (eq (beads-meta-slot-property 'gastown-command-directive-show 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-directive-edit-rig-reader-wired ()
+  "gastown-command-directive-edit rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-config)
+  (should (eq (beads-meta-slot-property 'gastown-command-directive-edit 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+;;; Unsling agent-target reader wiring test
+
+(ert-deftest gastown-coverage-unsling-target-reader-wired ()
+  "gastown-command-unsling target slot should use gastown-reader-agent-target."
+  (require 'gastown-command-work)
+  (should (eq (beads-meta-slot-property 'gastown-command-unsling 'target
+                                        :transient-reader)
+              'gastown-reader-agent-target)))
+
+;;; WL rig reader wiring tests
+
+(ert-deftest gastown-coverage-wl-charsheet-rig-reader-wired ()
+  "gastown-command-wl-charsheet rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-wl)
+  (should (eq (beads-meta-slot-property 'gastown-command-wl-charsheet 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
+(ert-deftest gastown-coverage-wl-join-rig-reader-wired ()
+  "gastown-command-wl-join rig slot should use gastown-reader-rig-name."
+  (require 'gastown-command-wl)
+  (should (eq (beads-meta-slot-property 'gastown-command-wl-join 'rig
+                                        :transient-reader)
+              'gastown-reader-rig-name)))
+
 (provide 'gastown-command-coverage-test)
 ;;; gastown-command-coverage-test.el ends here

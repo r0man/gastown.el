@@ -13,6 +13,7 @@
 
 (require 'gastown-command)
 (require 'beads-meta)
+(require 'gastown-reader)
 
 (require 'transient)
 
@@ -62,6 +63,7 @@ Diagnose and optionally fix Gas Town issues.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1)
@@ -115,6 +117,7 @@ Show Gas Town logs.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1))
@@ -153,6 +156,7 @@ Show current identity for mail commands.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1))
@@ -175,6 +179,7 @@ Show cost metrics.")
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
+    :transient-reader gastown-reader-rig-name
     :transient-group "Filters"
     :level 1
     :order 1))
