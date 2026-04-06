@@ -30,7 +30,7 @@
     :positional 1
     :option-type :string
     :key "t"
-    :transient "Target (required)"
+    :transient-description "Target (required)"
     :class transient-option
     :prompt "Target (rig/agent): "
     :transient-reader gastown-reader-agent-target
@@ -45,7 +45,7 @@
     :positional 2
     :option-type :string
     :key "m"
-    :transient "Message (required)"
+    :transient-description "Message (required)"
     :class transient-option
     :prompt "Message: "
     :transient-group "Required"

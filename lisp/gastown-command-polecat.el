@@ -30,7 +30,7 @@
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -46,7 +46,7 @@
     :long-option "all"
     :option-type :boolean
     :key "a"
-    :transient "--all"
+    :transient-description "--all"
     :class transient-switch
     :argument "--all"
     :transient-group "Filters"
@@ -67,7 +67,7 @@ Lists polecats with name, status, hooked work, and session info.")
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat name (required)"
+    :transient-description "Polecat name (required)"
     :class transient-option
     :prompt "Polecat name: "
     :transient-reader gastown-reader-polecat-address
@@ -82,7 +82,7 @@ Lists polecats with name, status, hooked work, and session info.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig containing the polecat"
+    :transient-description "Rig containing the polecat"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -105,7 +105,7 @@ Terminates a polecat's session and cleans up its worktree.")
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat name"
+    :transient-description "Polecat name"
     :class transient-option
     :prompt "Polecat name: "
     :transient-reader gastown-reader-polecat-address
@@ -120,7 +120,7 @@ Terminates a polecat's session and cleans up its worktree.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig containing the polecat"
+    :transient-description "Rig containing the polecat"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -144,7 +144,7 @@ Show detailed status for a polecat."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -167,7 +167,7 @@ Check if polecat needs recovery vs safe to nuke."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -182,7 +182,7 @@ Check if polecat needs recovery vs safe to nuke."
     :long-option "dry-run"
     :option-type :boolean
     :key "d"
-    :transient "--dry-run"
+    :transient-description "--dry-run"
     :class transient-switch
     :argument "--dry-run"
     :transient-group "Options"
@@ -204,7 +204,7 @@ Garbage collect stale polecat branches."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -236,7 +236,7 @@ Manage polecat identity beads in rigs."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -251,7 +251,7 @@ Manage polecat identity beads in rigs."
     :long-option "size"
     :option-type :string
     :key "s"
-    :transient "Pool size"
+    :transient-description "Pool size"
     :class transient-option
     :argument "--size="
     :prompt "Size: "
@@ -266,7 +266,7 @@ Manage polecat identity beads in rigs."
     :long-option "dry-run"
     :option-type :boolean
     :key "d"
-    :transient "--dry-run"
+    :transient-description "--dry-run"
     :class transient-switch
     :argument "--dry-run"
     :transient-group "Options"
@@ -288,7 +288,7 @@ Initialize a persistent polecat pool for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -303,7 +303,7 @@ Initialize a persistent polecat pool for a rig."
     :long-option "dry-run"
     :option-type :boolean
     :key "d"
-    :transient "--dry-run"
+    :transient-description "--dry-run"
     :class transient-switch
     :argument "--dry-run"
     :transient-group "Options"
@@ -317,7 +317,7 @@ Initialize a persistent polecat pool for a rig."
     :long-option "remote"
     :option-type :boolean
     :key "R"
-    :transient "--remote"
+    :transient-description "--remote"
     :class transient-switch
     :argument "--remote"
     :transient-group "Options"
@@ -339,7 +339,7 @@ Prune stale polecat branches in a rig."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -354,7 +354,7 @@ Prune stale polecat branches in a rig."
     :long-option "all"
     :option-type :boolean
     :key "a"
-    :transient "--all"
+    :transient-description "--all"
     :class transient-switch
     :argument "--all"
     :transient-group "Options"
@@ -368,7 +368,7 @@ Prune stale polecat branches in a rig."
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient-description "--force"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"
@@ -390,7 +390,7 @@ Remove one or more polecats from a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -405,7 +405,7 @@ Remove one or more polecats from a rig."
     :long-option "cleanup"
     :option-type :boolean
     :key "c"
-    :transient "--cleanup"
+    :transient-description "--cleanup"
     :class transient-switch
     :argument "--cleanup"
     :transient-group "Options"
@@ -419,7 +419,7 @@ Remove one or more polecats from a rig."
     :long-option "dry-run"
     :option-type :boolean
     :key "d"
-    :transient "--dry-run"
+    :transient-description "--dry-run"
     :class transient-switch
     :argument "--dry-run"
     :transient-group "Options"
@@ -433,7 +433,7 @@ Remove one or more polecats from a rig."
     :long-option "threshold"
     :option-type :string
     :key "t"
-    :transient "Threshold"
+    :transient-description "Threshold"
     :class transient-option
     :argument "--threshold="
     :prompt "Threshold: "

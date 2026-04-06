@@ -29,7 +29,7 @@
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Pinned bead ID"
+    :transient-description "Pinned bead ID"
     :class transient-option
     :prompt "Pinned bead ID (optional): "
     :transient-group "Arguments"
@@ -43,7 +43,7 @@
     :positional 2
     :option-type :string
     :key "m"
-    :transient "Molecule ID (required)"
+    :transient-description "Molecule ID (required)"
     :class transient-option
     :prompt "Molecule ID: "
     :transient-group "Arguments"
@@ -65,7 +65,7 @@ Attach a molecule to a pinned bead."
     :positional 1
     :option-type :string
     :key "m"
-    :transient "Mail ID (required)"
+    :transient-description "Mail ID (required)"
     :class transient-option
     :prompt "Mail ID: "
     :transient-group "Arguments"
@@ -87,7 +87,7 @@ Attach a molecule from a mail message."
     :positional 1
     :option-type :string
     :key "b"
-    :transient "Bead ID (optional)"
+    :transient-description "Bead ID (optional)"
     :class transient-option
     :prompt "Bead ID (optional): "
     :transient-group "Arguments"
@@ -109,7 +109,7 @@ Show attachment status of a pinned bead."
     :positional 1
     :option-type :string
     :key "s"
-    :transient "Signal name (required)"
+    :transient-description "Signal name (required)"
     :class transient-option
     :prompt "Signal name: "
     :transient-group "Arguments"
@@ -123,7 +123,7 @@ Show attachment status of a pinned bead."
     :long-option "timeout"
     :option-type :string
     :key "t"
-    :transient "Timeout"
+    :transient-description "Timeout"
     :class transient-option
     :argument "--timeout="
     :prompt "Timeout (e.g. 5m): "
@@ -164,7 +164,7 @@ Show what agent should be working on."
     :positional 1
     :option-type :string
     :key "m"
-    :transient "Molecule ID (optional)"
+    :transient-description "Molecule ID (optional)"
     :class transient-option
     :prompt "Molecule ID (optional): "
     :transient-group "Arguments"
@@ -186,7 +186,7 @@ Visualize molecule dependency DAG."
     :positional 1
     :option-type :string
     :key "b"
-    :transient "Bead ID (optional)"
+    :transient-description "Bead ID (optional)"
     :class transient-option
     :prompt "Bead ID (optional): "
     :transient-group "Arguments"
@@ -226,7 +226,7 @@ Compress molecule into a digest."
     :positional 1
     :option-type :string
     :key "a"
-    :transient "Agent (optional)"
+    :transient-description "Agent (optional)"
     :class transient-option
     :prompt "Agent (optional): "
     :transient-group "Arguments"
@@ -248,7 +248,7 @@ Show what's on an agent's hook."
     :positional 1
     :option-type :string
     :key "s"
-    :transient "Step ID (required)"
+    :transient-description "Step ID (required)"
     :class transient-option
     :prompt "Step ID: "
     :transient-group "Arguments"
@@ -270,7 +270,7 @@ Complete current step and auto-continue to next."
     :positional 1
     :option-type :string
     :key "s"
-    :transient "Signal name (required)"
+    :transient-description "Signal name (required)"
     :class transient-option
     :prompt "Signal name: "
     :transient-group "Arguments"
@@ -284,7 +284,7 @@ Complete current step and auto-continue to next."
     :long-option "timeout"
     :option-type :string
     :key "t"
-    :transient "Timeout"
+    :transient-description "Timeout"
     :class transient-option
     :argument "--timeout="
     :prompt "Timeout (e.g. 5m): "
@@ -307,7 +307,7 @@ Wait for activity feed signal with timeout."
     :positional 1
     :option-type :string
     :key "c"
-    :transient "Channel (required)"
+    :transient-description "Channel (required)"
     :class transient-option
     :prompt "Channel: "
     :transient-group "Arguments"
@@ -321,7 +321,7 @@ Wait for activity feed signal with timeout."
     :long-option "timeout"
     :option-type :string
     :key "t"
-    :transient "Timeout"
+    :transient-description "Timeout"
     :class transient-option
     :argument "--timeout="
     :prompt "Timeout (e.g. 5m): "
@@ -344,7 +344,7 @@ Wait for a file-based event on a named channel."
     :positional 1
     :option-type :string
     :key "c"
-    :transient "Channel (required)"
+    :transient-description "Channel (required)"
     :class transient-option
     :prompt "Channel: "
     :transient-group "Arguments"
@@ -358,7 +358,7 @@ Wait for a file-based event on a named channel."
     :positional 2
     :option-type :string
     :key "p"
-    :transient "Payload (optional)"
+    :transient-description "Payload (optional)"
     :class transient-option
     :prompt "Payload: "
     :transient-group "Arguments"

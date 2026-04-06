@@ -47,7 +47,7 @@ Stops all Gas Town services.")
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "Force shutdown without cleanup"
+    :transient-description "Force shutdown without cleanup"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"
@@ -108,7 +108,7 @@ Stop the running Gas Town daemon."
     :long-option "lines"
     :option-type :string
     :key "n"
-    :transient "Lines to show"
+    :transient-description "Lines to show"
     :class transient-option
     :argument "--lines="
     :prompt "Lines: "
@@ -123,7 +123,7 @@ Stop the running Gas Town daemon."
     :long-option "follow"
     :option-type :boolean
     :key "f"
-    :transient "--follow"
+    :transient-description "--follow"
     :class transient-switch
     :argument "--follow"
     :transient-group "Options"
@@ -143,7 +143,7 @@ View the daemon log file."
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient-description "--force"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"
@@ -163,7 +163,7 @@ Rotate all daemon-managed log files."
     :positional 1
     :option-type :string
     :key "a"
-    :transient "Agent name (required)"
+    :transient-description "Agent name (required)"
     :class transient-option
     :prompt "Agent: "
     :transient-group "Required"
@@ -234,7 +234,7 @@ Configure launchd/systemd for daemon auto-restart."
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -250,7 +250,7 @@ Configure launchd/systemd for daemon auto-restart."
     :long-option "reason"
     :option-type :string
     :key "m"
-    :transient "Reason"
+    :transient-description "Reason"
     :class transient-option
     :argument "--reason="
     :prompt "Reason: "
@@ -270,7 +270,7 @@ Emergency stop — freeze all agent sessions.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -419,7 +419,7 @@ Update metadata.json in all rig .beads directories."
     :positional 1
     :option-type :string
     :key "d"
-    :transient "Database (optional)"
+    :transient-description "Database (optional)"
     :class transient-option
     :prompt "Database (optional): "
     :transient-group "Arguments"
@@ -446,7 +446,7 @@ Initialize and repair Dolt workspace configuration."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -481,7 +481,7 @@ List available rig databases."
     :long-option "follow"
     :option-type :boolean
     :key "f"
-    :transient "--follow"
+    :transient-description "--follow"
     :class transient-switch
     :argument "--follow"
     :transient-group "Options"
@@ -515,7 +515,7 @@ Migrate agent beads from issues to wisps table."
     :positional 1
     :option-type :string
     :key "d"
-    :transient "Database (optional)"
+    :transient-description "Database (optional)"
     :class transient-option
     :prompt "Database (optional): "
     :transient-group "Arguments"
@@ -556,7 +556,7 @@ Restore .beads directories from a migration backup."
     :long-option "db"
     :option-type :string
     :key "d"
-    :transient "Database"
+    :transient-description "Database"
     :class transient-option
     :argument "--db="
     :prompt "Database: "
@@ -685,7 +685,7 @@ Push Dolt databases to DoltHub remotes."
     :positional 1
     :option-type :string
     :key "h"
-    :transient "Handle (optional)"
+    :transient-description "Handle (optional)"
     :class transient-option
     :prompt "Handle (optional): "
     :transient-group "Arguments"
@@ -771,7 +771,7 @@ Monitor sessions and rotate proactively before hard 429."
     :positional 1
     :option-type :string
     :key "b"
-    :transient "Bead ID (optional)"
+    :transient-description "Bead ID (optional)"
     :class transient-option
     :prompt "Bead ID (optional): "
     :transient-group "Arguments"

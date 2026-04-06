@@ -30,7 +30,7 @@
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -53,7 +53,7 @@ Lists all Gas Town agent sessions.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig to check witness status for"
+    :transient-description "Rig to check witness status for"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -76,7 +76,7 @@ Shows witness health and monitoring status.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig to check refinery status for"
+    :transient-description "Rig to check refinery status for"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -99,7 +99,7 @@ Shows merge queue processor status.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -115,7 +115,7 @@ Shows merge queue processor status.")
     :long-option "role"
     :option-type :string
     :key "R"
-    :transient "Filter by role"
+    :transient-description "Filter by role"
     :class transient-option
     :argument "--role="
     :prompt "Role: "
@@ -131,7 +131,7 @@ Shows merge queue processor status.")
     :long-option "running"
     :option-type :boolean
     :key "u"
-    :transient "Show only running sessions"
+    :transient-description "Show only running sessions"
     :class transient-switch
     :argument "--running"
     :transient-group "Filters"
@@ -145,7 +145,7 @@ Shows merge queue processor status.")
     :long-option "order"
     :option-type :string
     :key "o"
-    :transient "Sort order"
+    :transient-description "Sort order"
     :class transient-option
     :argument "--order="
     :prompt "Order: "
@@ -168,7 +168,7 @@ Lists polecat sessions.")
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -189,7 +189,7 @@ Attach to witness tmux session for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -204,7 +204,7 @@ Attach to witness tmux session for a rig."
     :long-option "agent"
     :option-type :string
     :key "a"
-    :transient "Agent alias"
+    :transient-description "Agent alias"
     :class transient-option
     :argument "--agent="
     :prompt "Agent: "
@@ -219,7 +219,7 @@ Attach to witness tmux session for a rig."
     :long-option "foreground"
     :option-type :boolean
     :key "f"
-    :transient "--foreground"
+    :transient-description "--foreground"
     :class transient-switch
     :argument "--foreground"
     :transient-group "Options"
@@ -239,7 +239,7 @@ Start the witness for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -260,7 +260,7 @@ Stop a running witness."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -275,7 +275,7 @@ Stop a running witness."
     :long-option "agent"
     :option-type :string
     :key "a"
-    :transient "Agent alias"
+    :transient-description "Agent alias"
     :class transient-option
     :argument "--agent="
     :prompt "Agent: "
@@ -298,7 +298,7 @@ Restart the witness for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -319,7 +319,7 @@ Attach to a running refinery's Claude session."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -334,7 +334,7 @@ Attach to a running refinery's Claude session."
     :long-option "agent"
     :option-type :string
     :key "a"
-    :transient "Agent alias"
+    :transient-description "Agent alias"
     :class transient-option
     :argument "--agent="
     :prompt "Agent: "
@@ -349,7 +349,7 @@ Attach to a running refinery's Claude session."
     :long-option "foreground"
     :option-type :boolean
     :key "f"
-    :transient "--foreground"
+    :transient-description "--foreground"
     :class transient-switch
     :argument "--foreground"
     :transient-group "Options"
@@ -369,7 +369,7 @@ Start the refinery for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -390,7 +390,7 @@ Stop a running refinery."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -405,7 +405,7 @@ Stop a running refinery."
     :long-option "agent"
     :option-type :string
     :key "a"
-    :transient "Agent alias"
+    :transient-description "Agent alias"
     :class transient-option
     :argument "--agent="
     :prompt "Agent: "
@@ -426,7 +426,7 @@ Restart the refinery for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -447,7 +447,7 @@ List MRs blocked by open tasks."
     :positional 1
     :option-type :string
     :key "m"
-    :transient "MR ID (required)"
+    :transient-description "MR ID (required)"
     :class transient-option
     :prompt "MR ID: "
     :transient-group "Required"
@@ -467,7 +467,7 @@ Claim a merge request for processing."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -488,7 +488,7 @@ Show the merge queue for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -503,7 +503,7 @@ Show the merge queue for a rig."
     :long-option "all"
     :option-type :boolean
     :key "a"
-    :transient "--all"
+    :transient-description "--all"
     :class transient-switch
     :argument "--all"
     :transient-group "Options"
@@ -523,7 +523,7 @@ List merge requests ready for processing."
     :positional 1
     :option-type :string
     :key "m"
-    :transient "MR ID (required)"
+    :transient-description "MR ID (required)"
     :class transient-option
     :prompt "MR ID: "
     :transient-group "Required"
@@ -543,7 +543,7 @@ Release a claimed MR back to the queue."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -566,7 +566,7 @@ List unclaimed MRs available for claiming."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -587,7 +587,7 @@ Attach to a running polecat session."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -602,7 +602,7 @@ Attach to a running polecat session."
     :long-option "lines"
     :option-type :string
     :key "n"
-    :transient "Lines to capture"
+    :transient-description "Lines to capture"
     :class transient-option
     :argument "--lines="
     :prompt "Lines: "
@@ -623,7 +623,7 @@ Capture recent output from a polecat session."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -644,7 +644,7 @@ Check if polecat tmux sessions are alive and healthy."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -659,7 +659,7 @@ Check if polecat tmux sessions are alive and healthy."
     :long-option "message"
     :option-type :string
     :key "m"
-    :transient "Message"
+    :transient-description "Message"
     :class transient-option
     :argument "--message="
     :prompt "Message: "
@@ -680,7 +680,7 @@ Send a message to a polecat session (prefer gt nudge)."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -695,7 +695,7 @@ Send a message to a polecat session (prefer gt nudge)."
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient-description "--force"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"
@@ -715,7 +715,7 @@ Restart a polecat session (stop + start)."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -730,7 +730,7 @@ Restart a polecat session (stop + start)."
     :long-option "issue"
     :option-type :string
     :key "i"
-    :transient "Issue ID"
+    :transient-description "Issue ID"
     :class transient-option
     :argument "--issue="
     :prompt "Issue ID: "
@@ -751,7 +751,7 @@ Start a new tmux session for a polecat."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -772,7 +772,7 @@ Show detailed status for a polecat session."
     :positional 1
     :option-type :string
     :key "p"
-    :transient "Polecat address (rig/name)"
+    :transient-description "Polecat address (rig/name)"
     :class transient-option
     :prompt "Polecat (rig/name): "
     :transient-reader gastown-reader-polecat-address
@@ -787,7 +787,7 @@ Show detailed status for a polecat session."
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient-description "--force"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"

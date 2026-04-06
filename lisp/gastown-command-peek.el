@@ -30,7 +30,7 @@
     :positional 1
     :option-type :string
     :key "t"
-    :transient "Target (required)"
+    :transient-description "Target (required)"
     :class transient-option
     :prompt "Target (rig/polecat): "
     :transient-reader gastown-reader-agent-target
@@ -46,7 +46,7 @@
     :short-option "n"
     :option-type :integer
     :key "n"
-    :transient "Number of lines to show"
+    :transient-description "Number of lines to show"
     :class transient-option
     :argument "--lines="
     :prompt "Lines: "

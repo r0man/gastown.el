@@ -38,7 +38,7 @@ Shows unified health dashboard.")
     :long-option "fix"
     :option-type :boolean
     :key "f"
-    :transient "Attempt to fix issues"
+    :transient-description "Attempt to fix issues"
     :class transient-switch
     :argument "--fix"
     :transient-group "Options"
@@ -59,7 +59,7 @@ Diagnose and optionally fix Gas Town issues.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -76,7 +76,7 @@ Diagnose and optionally fix Gas Town issues.")
     :short-option "n"
     :option-type :integer
     :key "n"
-    :transient "Number of log lines"
+    :transient-description "Number of log lines"
     :class transient-option
     :argument "--lines="
     :prompt "Lines: "
@@ -92,7 +92,7 @@ Diagnose and optionally fix Gas Town issues.")
     :short-option "f"
     :option-type :boolean
     :key "f"
-    :transient "Follow log output"
+    :transient-description "Follow log output"
     :class transient-switch
     :argument "--follow"
     :transient-group "Options"
@@ -113,7 +113,7 @@ Show Gas Town logs.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -152,7 +152,7 @@ Show current identity for mail commands.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -175,7 +175,7 @@ Show cost metrics.")
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Filter by rig name"
+    :transient-description "Filter by rig name"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "

@@ -30,7 +30,7 @@
     :long-option "status"
     :option-type :string
     :key "s"
-    :transient "Filter by rig status"
+    :transient-description "Filter by rig status"
     :class transient-option
     :argument "--status="
     :prompt "Status: "
@@ -46,7 +46,7 @@
     :long-option "order"
     :option-type :string
     :key "o"
-    :transient "Sort order"
+    :transient-description "Sort order"
     :class transient-option
     :argument "--order="
     :prompt "Order: "
@@ -69,7 +69,7 @@ Lists all rigs in the workspace with status, polecat count, and crew count.")
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -91,7 +91,7 @@ Docks a rig (makes it active).")
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -113,7 +113,7 @@ Undocks a rig (makes it inactive).")
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -135,7 +135,7 @@ Parks a rig (pauses all workers).")
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -157,7 +157,7 @@ Unparks a rig (resumes workers).")
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -180,7 +180,7 @@ Start witness and refinery on patrol for one or more rigs."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -203,7 +203,7 @@ Stop one or more rigs (shutdown semantics)."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -226,7 +226,7 @@ Restart one or more rigs (stop then start)."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -249,7 +249,7 @@ Restart witness and refinery for a rig."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name"
+    :transient-description "Rig name"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -272,7 +272,7 @@ Show detailed status for a specific rig."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-group "Required"
@@ -286,7 +286,7 @@ Show detailed status for a specific rig."
     :positional 2
     :option-type :string
     :key "u"
-    :transient "Git URL"
+    :transient-description "Git URL"
     :class transient-option
     :prompt "Git URL: "
     :transient-group "Required"
@@ -300,7 +300,7 @@ Show detailed status for a specific rig."
     :long-option "prefix"
     :option-type :string
     :key "p"
-    :transient "Beads issue prefix"
+    :transient-description "Beads issue prefix"
     :class transient-option
     :argument "--prefix="
     :prompt "Prefix: "
@@ -315,7 +315,7 @@ Show detailed status for a specific rig."
     :long-option "adopt"
     :option-type :boolean
     :key "a"
-    :transient "--adopt"
+    :transient-description "--adopt"
     :class transient-switch
     :argument "--adopt"
     :transient-group "Options"
@@ -337,7 +337,7 @@ Add a new rig by cloning a repository."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -369,7 +369,7 @@ View and manage rig configuration across property layers."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -384,7 +384,7 @@ View and manage rig configuration across property layers."
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force (kill sessions)"
+    :transient-description "--force (kill sessions)"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"
@@ -406,7 +406,7 @@ Remove a rig from the registry (does not delete files)."
     :long-option "handoff"
     :option-type :boolean
     :key "H"
-    :transient "--handoff"
+    :transient-description "--handoff"
     :class transient-switch
     :argument "--handoff"
     :transient-group "Reset Targets"
@@ -420,7 +420,7 @@ Remove a rig from the registry (does not delete files)."
     :long-option "mail"
     :option-type :boolean
     :key "m"
-    :transient "--mail"
+    :transient-description "--mail"
     :class transient-switch
     :argument "--mail"
     :transient-group "Reset Targets"
@@ -434,7 +434,7 @@ Remove a rig from the registry (does not delete files)."
     :long-option "stale"
     :option-type :boolean
     :key "s"
-    :transient "--stale"
+    :transient-description "--stale"
     :class transient-switch
     :argument "--stale"
     :transient-group "Reset Targets"
@@ -448,7 +448,7 @@ Remove a rig from the registry (does not delete files)."
     :long-option "dry-run"
     :option-type :boolean
     :key "d"
-    :transient "--dry-run"
+    :transient-description "--dry-run"
     :class transient-switch
     :argument "--dry-run"
     :transient-group "Options"
@@ -479,7 +479,7 @@ View and manage rig settings (settings/config.json)."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig name (required)"
+    :transient-description "Rig name (required)"
     :class transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
@@ -494,7 +494,7 @@ View and manage rig settings (settings/config.json)."
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient-description "--force"
     :class transient-switch
     :argument "--force"
     :transient-group "Options"
@@ -508,7 +508,7 @@ View and manage rig settings (settings/config.json)."
     :long-option "nuclear"
     :option-type :boolean
     :key "N"
-    :transient "--nuclear (DANGER)"
+    :transient-description "--nuclear (DANGER)"
     :class transient-switch
     :argument "--nuclear"
     :transient-group "Options"

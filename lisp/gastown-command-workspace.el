@@ -38,7 +38,7 @@ Manage the Gas Town crew.")
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -52,7 +52,7 @@ Manage the Gas Town crew.")
     :positional 2
     :option-type :string
     :key "r"
-    :transient "Rig (optional)"
+    :transient-description "Rig (optional)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -73,7 +73,7 @@ Create a crew workspace without starting a session."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -93,7 +93,7 @@ Attach to an existing crew session."
     :long-option "rig"
     :option-type :string
     :key "r"
-    :transient "Rig filter"
+    :transient-description "Rig filter"
     :class transient-option
     :argument "--rig="
     :prompt "Rig: "
@@ -115,7 +115,7 @@ List crew workspaces with status."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -135,7 +135,7 @@ Reset crew workspace to a clean state."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -155,7 +155,7 @@ Context cycle with handoff mail."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -175,7 +175,7 @@ Remove a crew workspace."
     :positional 1
     :option-type :string
     :key "o"
-    :transient "Old name (required)"
+    :transient-description "Old name (required)"
     :class transient-option
     :prompt "Old name: "
     :transient-group "Arguments"
@@ -189,7 +189,7 @@ Remove a crew workspace."
     :positional 2
     :option-type :string
     :key "n"
-    :transient "New name (required)"
+    :transient-description "New name (required)"
     :class transient-option
     :prompt "New name: "
     :transient-group "Arguments"
@@ -209,7 +209,7 @@ Rename a crew workspace."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -229,7 +229,7 @@ Kill and restart a crew session fresh."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (optional)"
+    :transient-description "Name (optional)"
     :class transient-option
     :prompt "Name (optional): "
     :transient-group "Arguments"
@@ -243,7 +243,7 @@ Kill and restart a crew session fresh."
     :long-option "resume"
     :option-type :boolean
     :key "r"
-    :transient "--resume"
+    :transient-description "--resume"
     :class transient-switch
     :argument "--resume"
     :transient-group "Options"
@@ -263,7 +263,7 @@ Start crew workers in a rig."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (optional)"
+    :transient-description "Name (optional)"
     :class transient-option
     :prompt "Name (optional): "
     :transient-group "Arguments"
@@ -283,7 +283,7 @@ Show crew workspace status."
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -337,7 +337,7 @@ Manage agent name pools.")
     :positional 1
     :option-type :string
     :key "n"
-    :transient "Name (required)"
+    :transient-description "Name (required)"
     :class transient-option
     :prompt "Name: "
     :transient-group "Arguments"
@@ -357,7 +357,7 @@ Add a custom name to the pool."
     :positional 1
     :option-type :string
     :key "t"
-    :transient "Theme name (required)"
+    :transient-description "Theme name (required)"
     :class transient-option
     :prompt "Theme name: "
     :transient-group "Arguments"
@@ -377,7 +377,7 @@ Create a custom name theme."
     :positional 1
     :option-type :string
     :key "t"
-    :transient "Theme name (required)"
+    :transient-description "Theme name (required)"
     :class transient-option
     :prompt "Theme name: "
     :transient-group "Arguments"
@@ -404,7 +404,7 @@ Reset the pool state (release all names)."
     :positional 1
     :option-type :string
     :key "t"
-    :transient "Theme name (required)"
+    :transient-description "Theme name (required)"
     :class transient-option
     :prompt "Theme name: "
     :transient-group "Arguments"
@@ -448,7 +448,7 @@ List all cross-rig worktrees owned by current crew member."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig (required)"
+    :transient-description "Rig (required)"
     :class transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name

@@ -30,7 +30,7 @@
     :long-option "filter"
     :option-type :string
     :key "f"
-    :transient "Filter"
+    :transient-description "Filter"
     :class transient-option
     :argument "--filter="
     :prompt "Filter: "
@@ -53,7 +53,7 @@ Browse the wasteland wanted board."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig (optional)"
+    :transient-description "Rig (optional)"
     :class transient-option
     :prompt "Rig (optional): "
     :transient-reader gastown-reader-rig-name
@@ -76,7 +76,7 @@ Show wasteland character sheet for a rig."
     :positional 1
     :option-type :string
     :key "w"
-    :transient "Wanted ID (required)"
+    :transient-description "Wanted ID (required)"
     :class transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
@@ -98,7 +98,7 @@ Claim a wanted item on the shared wanted board."
     :positional 1
     :option-type :string
     :key "w"
-    :transient "Wanted ID (required)"
+    :transient-description "Wanted ID (required)"
     :class transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
@@ -120,7 +120,7 @@ Mark a claimed wanted item as completed."
     :positional 1
     :option-type :string
     :key "r"
-    :transient "Rig (optional)"
+    :transient-description "Rig (optional)"
     :class transient-option
     :prompt "Rig (optional): "
     :transient-reader gastown-reader-rig-name
@@ -143,7 +143,7 @@ Join the wasteland federation."
     :long-option "title"
     :option-type :string
     :key "t"
-    :transient "Title (required)"
+    :transient-description "Title (required)"
     :class transient-option
     :argument "--title="
     :prompt "Title: "
@@ -158,7 +158,7 @@ Join the wasteland federation."
     :long-option "reward"
     :option-type :string
     :key "r"
-    :transient "Reward"
+    :transient-description "Reward"
     :class transient-option
     :argument "--reward="
     :prompt "Reward: "
@@ -190,7 +190,7 @@ Show wasteland federation scorekeeper rankings."
     :positional 1
     :option-type :string
     :key "w"
-    :transient "Wanted ID (required)"
+    :transient-description "Wanted ID (required)"
     :class transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
@@ -212,7 +212,7 @@ Show details of a wanted item."
     :positional 1
     :option-type :string
     :key "w"
-    :transient "Wanted ID (required)"
+    :transient-description "Wanted ID (required)"
     :class transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
@@ -226,7 +226,7 @@ Show details of a wanted item."
     :positional 2
     :option-type :string
     :key "s"
-    :transient "Stamp name (required)"
+    :transient-description "Stamp name (required)"
     :class transient-option
     :prompt "Stamp: "
     :transient-group "Arguments"

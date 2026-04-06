@@ -31,7 +31,7 @@
     :positional 1
     :option-type :string
     :key "b"
-    :transient "Bead ID (required)"
+    :transient-description "Bead ID (required)"
     :class transient-option
     :prompt "Bead ID: "
     :transient-reader gastown-reader-bead-id
@@ -46,7 +46,7 @@
     :positional 2
     :option-type :string
     :key "t"
-    :transient "Target agent/rig"
+    :transient-description "Target agent/rig"
     :class transient-option
     :prompt "Target (rig or agent): "
     :transient-reader gastown-reader-agent-target
@@ -62,7 +62,7 @@
     :long-option "force"
     :option-type :boolean
     :key "f"
-    :transient "--force"
+    :transient-description "--force"
     :class transient-switch
     :argument "--force"
     :transient-group "Spawning"
@@ -76,7 +76,7 @@
     :long-option "create"
     :option-type :boolean
     :key "c"
-    :transient "--create"
+    :transient-description "--create"
     :class transient-switch
     :argument "--create"
     :transient-group "Spawning"
@@ -90,7 +90,7 @@
     :long-option "account"
     :option-type :string
     :key "A"
-    :transient "--account"
+    :transient-description "--account"
     :class transient-option
     :argument "--account="
     :prompt "Account handle: "
@@ -105,7 +105,7 @@
     :long-option "agent"
     :option-type :string
     :key "G"
-    :transient "--agent"
+    :transient-description "--agent"
     :class transient-option
     :argument "--agent="
     :prompt "Agent runtime: "
@@ -120,7 +120,7 @@
     :long-option "crew"
     :option-type :string
     :key "C"
-    :transient "--crew"
+    :transient-description "--crew"
     :class transient-option
     :argument "--crew="
     :prompt "Crew member: "
@@ -137,7 +137,7 @@
     :long-option "formula"
     :option-type :string
     :key "F"
-    :transient "--formula"
+    :transient-description "--formula"
     :class transient-option
     :argument "--formula="
     :prompt "Formula: "
@@ -153,7 +153,7 @@
     :long-option "on"
     :option-type :string
     :key "o"
-    :transient "--on"
+    :transient-description "--on"
     :class transient-option
     :argument "--on="
     :prompt "Apply formula to bead: "
@@ -169,7 +169,7 @@
     :long-option "args"
     :option-type :string
     :key "a"
-    :transient "--args"
+    :transient-description "--args"
     :class transient-option
     :argument "--args="
     :prompt "Args (natural language instructions): "
@@ -184,7 +184,7 @@
     :long-option "message"
     :option-type :string
     :key "m"
-    :transient "--message"
+    :transient-description "--message"
     :class transient-option
     :argument "--message="
     :prompt "Message: "
@@ -199,7 +199,7 @@
     :long-option "subject"
     :option-type :string
     :key "s"
-    :transient "--subject"
+    :transient-description "--subject"
     :class transient-option
     :argument "--subject="
     :prompt "Subject: "
@@ -214,7 +214,7 @@
     :long-option "var"
     :option-type :list
     :key "v"
-    :transient "--var"
+    :transient-description "--var"
     :class transient-option
     :argument "--var="
     :prompt "Variable (key=value): "
@@ -229,7 +229,7 @@
     :long-option "stdin"
     :option-type :boolean
     :key "S"
-    :transient "--stdin"
+    :transient-description "--stdin"
     :class transient-switch
     :argument "--stdin"
     :transient-group "Work"
@@ -244,7 +244,7 @@
     :long-option "merge"
     :option-type :string
     :key "M"
-    :transient "--merge"
+    :transient-description "--merge"
     :class transient-option
     :argument "--merge="
     :prompt "Merge strategy: "
@@ -260,7 +260,7 @@
     :long-option "no-merge"
     :option-type :boolean
     :key "N"
-    :transient "--no-merge"
+    :transient-description "--no-merge"
     :class transient-switch
     :argument "--no-merge"
     :transient-group "Merge"
@@ -274,7 +274,7 @@
     :long-option "no-convoy"
     :option-type :boolean
     :key "n"
-    :transient "--no-convoy"
+    :transient-description "--no-convoy"
     :class transient-switch
     :argument "--no-convoy"
     :transient-group "Merge"
@@ -288,7 +288,7 @@
     :long-option "base-branch"
     :option-type :string
     :key "B"
-    :transient "--base-branch"
+    :transient-description "--base-branch"
     :class transient-option
     :argument "--base-branch="
     :prompt "Base branch: "
@@ -304,7 +304,7 @@
     :long-option "ralph"
     :option-type :boolean
     :key "r"
-    :transient "--ralph"
+    :transient-description "--ralph"
     :class transient-switch
     :argument "--ralph"
     :transient-group "Advanced"
@@ -318,7 +318,7 @@
     :long-option "hook-raw-bead"
     :option-type :boolean
     :key "R"
-    :transient "--hook-raw-bead"
+    :transient-description "--hook-raw-bead"
     :class transient-switch
     :argument "--hook-raw-bead"
     :transient-group "Advanced"
@@ -332,7 +332,7 @@
     :long-option "owned"
     :option-type :boolean
     :key "O"
-    :transient "--owned"
+    :transient-description "--owned"
     :class transient-switch
     :argument "--owned"
     :transient-group "Advanced"
@@ -346,7 +346,7 @@
     :long-option "no-boot"
     :option-type :boolean
     :key "x"
-    :transient "--no-boot"
+    :transient-description "--no-boot"
     :class transient-switch
     :argument "--no-boot"
     :transient-group "Advanced"
@@ -360,7 +360,7 @@
     :long-option "dry-run"
     :option-type :boolean
     :key "d"
-    :transient "--dry-run"
+    :transient-description "--dry-run"
     :class transient-switch
     :argument "--dry-run"
     :transient-group "Advanced"
@@ -374,7 +374,7 @@
     :long-option "max-concurrent"
     :option-type :integer
     :key "X"
-    :transient "--max-concurrent"
+    :transient-description "--max-concurrent"
     :class transient-option
     :argument "--max-concurrent="
     :prompt "Max concurrent spawns: "
@@ -389,7 +389,7 @@
     :long-option "review-only"
     :option-type :boolean
     :key "e"
-    :transient "--review-only"
+    :transient-description "--review-only"
     :class transient-switch
     :argument "--review-only"
     :transient-group "Advanced"

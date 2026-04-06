@@ -30,7 +30,7 @@
     :long-option "fast"
     :option-type :boolean
     :key "f"
-    :transient "Skip mail lookups for faster execution"
+    :transient-description "Skip mail lookups for faster execution"
     :class transient-switch
     :argument "--fast"
     :transient-group "Options"
@@ -45,7 +45,7 @@
     :short-option "w"
     :option-type :boolean
     :key "w"
-    :transient "Watch mode: refresh status continuously"
+    :transient-description "Watch mode: refresh status continuously"
     :class transient-switch
     :argument "--watch"
     :transient-group "Options"
@@ -60,7 +60,7 @@
     :short-option "n"
     :option-type :integer
     :key "n"
-    :transient "Refresh interval in seconds"
+    :transient-description "Refresh interval in seconds"
     :class transient-option
     :argument "--interval="
     :prompt "Interval (seconds): "
