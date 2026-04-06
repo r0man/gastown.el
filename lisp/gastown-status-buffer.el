@@ -504,8 +504,7 @@ REJECT is called with an error message string on failure."
          (dolt-dir-abs (and dolt (oref dolt data-dir)))
          (tmux-socket  (and tmux (oref tmux socket)))
          (tmux-pid     (and tmux (oref tmux pid)))
-         (tmux-count   (and tmux (oref tmux session-count)))
-         (tmux-path    (and tmux (oref tmux socket-path))))
+         (tmux-count   (and tmux (oref tmux session-count))))
     (apply #'vui-hstack :spacing 0
            (append
             (list (vui-text "Services:"))

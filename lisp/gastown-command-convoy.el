@@ -29,9 +29,8 @@
     :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Filter by rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -45,9 +44,8 @@
     :documentation "Filter by status"
     :long-option "status"
     :option-type :string
-    :key "s"
-    :transient "Filter by status"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "--status="
     :prompt "Status: "
     :transient-choices ("open" "closed")
@@ -68,9 +66,8 @@ Lists convoys with progress bars and status.")
     :documentation "Convoy ID to show status for."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -90,9 +87,8 @@ Shows detailed status for a specific convoy.")
     :documentation "Convoy title"
     :long-option "title"
     :option-type :string
-    :key "t"
-    :transient "Convoy title"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--title="
     :prompt "Title: "
     :transient-group "Options"
@@ -105,9 +101,8 @@ Shows detailed status for a specific convoy.")
     :documentation "Comma-separated issue IDs to track."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Issues"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Issue IDs (comma-separated): "
     :transient-group "Options"
     :level 1
@@ -127,9 +122,8 @@ Create a new convoy tracking specified issues."
     :documentation "Convoy ID to add issues to."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -142,9 +136,8 @@ Create a new convoy tracking specified issues."
     :documentation "Issue IDs to add."
     :positional 2
     :option-type :string
-    :key "i"
-    :transient "Issue IDs (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Issue IDs: "
     :transient-group "Required"
     :level 1
@@ -164,9 +157,8 @@ Add issues to an existing convoy."
     :documentation "Convoy ID to check (optional — checks all if omitted)."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Options"
@@ -179,9 +171,8 @@ Add issues to an existing convoy."
     :documentation "Preview what would close without acting."
     :long-option "dry-run"
     :option-type :boolean
-    :key "d"
-    :transient "--dry-run"
-    :class transient-switch
+    :transient-key "d"
+    :transient transient-switch
     :argument "--dry-run"
     :transient-group "Options"
     :level 1
@@ -201,9 +192,8 @@ Check and auto-close completed convoys."
     :documentation "Convoy ID to close."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -216,9 +206,8 @@ Check and auto-close completed convoys."
     :documentation "Close even if tracked issues are still open."
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "--force"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 2
@@ -230,9 +219,8 @@ Check and auto-close completed convoys."
     :documentation "Reason for closing the convoy."
     :long-option "reason"
     :option-type :string
-    :key "r"
-    :transient "Reason"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--reason="
     :prompt "Reason: "
     :transient-group "Options"
@@ -253,9 +241,8 @@ Close a convoy."
     :documentation "Convoy ID to land."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -268,9 +255,8 @@ Close a convoy."
     :documentation "Land even if tracked issues are not all closed."
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "--force"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 2
@@ -282,9 +268,8 @@ Close a convoy."
     :documentation "Show what would happen without acting."
     :long-option "dry-run"
     :option-type :boolean
-    :key "d"
-    :transient "--dry-run"
-    :class transient-switch
+    :transient-key "d"
+    :transient transient-switch
     :argument "--dry-run"
     :transient-group "Options"
     :level 1
@@ -304,9 +289,8 @@ Land an owned convoy (cleanup worktrees, close convoy)."
     :documentation "Convoy ID (or epic/task ID) to launch."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy/epic/task ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -319,9 +303,8 @@ Land an owned convoy (cleanup worktrees, close convoy)."
     :documentation "Launch even with warnings."
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "--force"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 2
@@ -341,9 +324,8 @@ Launch a staged convoy: transition to open and dispatch Wave 1."
     :documentation "Epic ID, task IDs, or convoy ID to stage."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Epic/task/convoy ID (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "ID: "
     :transient-group "Required"
     :level 1
@@ -355,9 +337,8 @@ Launch a staged convoy: transition to open and dispatch Wave 1."
     :documentation "Human-readable title for the convoy."
     :long-option "title"
     :option-type :string
-    :key "t"
-    :transient "Title"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--title="
     :prompt "Title: "
     :transient-group "Options"
@@ -370,9 +351,8 @@ Launch a staged convoy: transition to open and dispatch Wave 1."
     :documentation "Launch the convoy immediately after staging."
     :long-option "launch"
     :option-type :boolean
-    :key "l"
-    :transient "--launch"
-    :class transient-switch
+    :transient-key "l"
+    :transient transient-switch
     :argument "--launch"
     :transient-group "Options"
     :level 2

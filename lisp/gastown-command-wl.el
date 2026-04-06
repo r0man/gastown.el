@@ -29,9 +29,8 @@
     :documentation "Filter expression for browsing."
     :long-option "filter"
     :option-type :string
-    :key "f"
-    :transient "Filter"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :argument "--filter="
     :prompt "Filter: "
     :transient-group "Options"
@@ -52,9 +51,8 @@ Browse the wasteland wanted board."
     :documentation "Rig to show charsheet for (optional, defaults to current)."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig (optional)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig (optional): "
     :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
@@ -75,9 +73,8 @@ Show wasteland character sheet for a rig."
     :documentation "Wanted item ID to claim."
     :positional 1
     :option-type :string
-    :key "w"
-    :transient "Wanted ID (required)"
-    :class transient-option
+    :transient-key "w"
+    :transient transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
     :level 1
@@ -97,9 +94,8 @@ Claim a wanted item on the shared wanted board."
     :documentation "Wanted item ID to mark as done."
     :positional 1
     :option-type :string
-    :key "w"
-    :transient "Wanted ID (required)"
-    :class transient-option
+    :transient-key "w"
+    :transient transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
     :level 1
@@ -119,9 +115,8 @@ Mark a claimed wanted item as completed."
     :documentation "Rig to join the wasteland federation."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig (optional)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig (optional): "
     :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
@@ -142,9 +137,8 @@ Join the wasteland federation."
     :documentation "Title of the wanted item."
     :long-option "title"
     :option-type :string
-    :key "t"
-    :transient "Title (required)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--title="
     :prompt "Title: "
     :transient-group "Options"
@@ -157,9 +151,8 @@ Join the wasteland federation."
     :documentation "Reward offered for completing the item."
     :long-option "reward"
     :option-type :string
-    :key "r"
-    :transient "Reward"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--reward="
     :prompt "Reward: "
     :transient-group "Options"
@@ -189,9 +182,8 @@ Show wasteland federation scorekeeper rankings."
     :documentation "Wanted item ID to show."
     :positional 1
     :option-type :string
-    :key "w"
-    :transient "Wanted ID (required)"
-    :class transient-option
+    :transient-key "w"
+    :transient transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
     :level 1
@@ -211,9 +203,8 @@ Show details of a wanted item."
     :documentation "Wanted item ID to stamp."
     :positional 1
     :option-type :string
-    :key "w"
-    :transient "Wanted ID (required)"
-    :class transient-option
+    :transient-key "w"
+    :transient transient-option
     :prompt "Wanted ID: "
     :transient-group "Arguments"
     :level 1
@@ -225,9 +216,8 @@ Show details of a wanted item."
     :documentation "Stamp to apply."
     :positional 2
     :option-type :string
-    :key "s"
-    :transient "Stamp name (required)"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :prompt "Stamp: "
     :transient-group "Arguments"
     :level 1

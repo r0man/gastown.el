@@ -31,9 +31,8 @@
     :documentation "Override cleanup status"
     :long-option "cleanup-status"
     :option-type :string
-    :key "c"
-    :transient "Override cleanup status"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :argument "--cleanup-status="
     :prompt "Cleanup status: "
     :transient-choices ("clean" "dirty")
@@ -47,9 +46,8 @@
     :documentation "Override completion status"
     :long-option "status"
     :option-type :string
-    :key "s"
-    :transient "Override completion status"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "--status="
     :prompt "Status: "
     :transient-choices ("COMPLETED" "DEFERRED" "ESCALATED")
@@ -63,9 +61,8 @@
     :documentation "Source issue ID"
     :long-option "issue"
     :option-type :string
-    :key "i"
-    :transient "Source issue ID"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :argument "--issue="
     :prompt "Issue ID: "
     :transient-reader gastown-reader-bead-id
@@ -79,9 +76,8 @@
     :documentation "Mark MR as pre-verified (polecat ran gates after rebasing onto target)"
     :long-option "pre-verified"
     :option-type :boolean
-    :key "p"
-    :transient "Mark as pre-verified"
-    :class transient-switch
+    :transient-key "p"
+    :transient transient-switch
     :argument "--pre-verified"
     :transient-group "Options"
     :level 2
@@ -93,9 +89,8 @@
     :documentation "Target branch for the merge request"
     :long-option "target"
     :option-type :string
-    :key "t"
-    :transient "Target branch"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--target="
     :prompt "Target branch: "
     :transient-group "Options"
@@ -115,9 +110,8 @@ Signal work ready for merge queue.")
     :documentation "Bead ID to attach to hook."
     :positional 1
     :option-type :string
-    :key "b"
-    :transient "Bead ID"
-    :class transient-option
+    :transient-key "b"
+    :transient transient-option
     :prompt "Bead ID: "
     :transient-reader gastown-reader-bead-id
     :transient-group "Arguments"
@@ -145,9 +139,8 @@ Show work ready across town.")
     :documentation "Brief description of the issue."
     :positional 1
     :option-type :string
-    :key "d"
-    :transient "Description (required)"
-    :class transient-option
+    :transient-key "d"
+    :transient transient-option
     :prompt "Description: "
     :transient-group "Required"
     :level 1
@@ -160,9 +153,8 @@ Show work ready across town.")
     :long-option "severity"
     :short-option "s"
     :option-type :string
-    :key "s"
-    :transient "Severity level"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "--severity="
     :prompt "Severity: "
     :transient-choices ("LOW" "MEDIUM" "HIGH" "CRITICAL")
@@ -176,9 +168,8 @@ Show work ready across town.")
     :documentation "Detailed message"
     :long-option "m"
     :option-type :string
-    :key "m"
-    :transient "Message"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :argument "-m="
     :prompt "Details: "
     :transient-group "Options"
@@ -198,9 +189,8 @@ Escalation system for critical issues.")
     :documentation "Broadcast message text."
     :positional 1
     :option-type :string
-    :key "m"
-    :transient "Message (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "Message: "
     :transient-group "Required"
     :level 1
@@ -219,9 +209,8 @@ Send a nudge message to all workers.")
     :documentation "Handoff subject"
     :long-option "s"
     :option-type :string
-    :key "s"
-    :transient "Subject"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "-s="
     :prompt "Subject: "
     :transient-group "Required"
@@ -234,9 +223,8 @@ Send a nudge message to all workers.")
     :documentation "Handoff message"
     :long-option "m"
     :option-type :string
-    :key "m"
-    :transient "Message"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :argument "-m="
     :prompt "Message: "
     :transient-group "Required"
@@ -256,9 +244,8 @@ Hand off to a fresh session, work continues from hook.")
     :documentation "Target agent to unsling work from."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Target"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Target (rig/agent): "
     :transient-reader gastown-reader-agent-target
     :transient-group "Required"
@@ -278,9 +265,8 @@ Remove work from an agent's hook.")
     :documentation "Rig name."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
     :transient-group "Required"
@@ -293,9 +279,8 @@ Remove work from an agent's hook.")
     :documentation "Merge request bead ID."
     :positional 2
     :option-type :string
-    :key "m"
-    :transient "MR bead ID (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "MR ID: "
     :transient-reader gastown-reader-bead-id
     :transient-group "Required"
@@ -308,9 +293,8 @@ Remove work from an agent's hook.")
     :documentation "Skip remote branch deletion."
     :long-option "skip-branch-delete"
     :option-type :boolean
-    :key "s"
-    :transient "--skip-branch-delete"
-    :class transient-switch
+    :transient-key "s"
+    :transient transient-switch
     :argument "--skip-branch-delete"
     :transient-group "Options"
     :level 2
@@ -330,9 +314,8 @@ Run post-merge cleanup: close MR bead, close source issue, delete remote branch.
     :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Filter by rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -362,9 +345,8 @@ Manage integration branches for batch work on epics."
     :documentation "Rig name."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
     :transient-group "Required"
@@ -377,9 +359,8 @@ Manage integration branches for batch work on epics."
     :documentation "Ordering strategy (priority or fifo)."
     :long-option "strategy"
     :option-type :string
-    :key "s"
-    :transient "Strategy"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "--strategy="
     :prompt "Strategy: "
     :transient-choices ("priority" "fifo")
@@ -401,9 +382,8 @@ Show the next merge request to process based on priority score."
     :documentation "Rig name."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
     :transient-group "Required"
@@ -416,9 +396,8 @@ Show the next merge request to process based on priority score."
     :documentation "MR ID or branch to reject."
     :positional 2
     :option-type :string
-    :key "m"
-    :transient "MR ID or branch (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "MR ID: "
     :transient-reader gastown-reader-bead-id
     :transient-group "Required"
@@ -431,9 +410,8 @@ Show the next merge request to process based on priority score."
     :documentation "Reason for rejection."
     :long-option "reason"
     :option-type :string
-    :key "R"
-    :transient "Reason (required)"
-    :class transient-option
+    :transient-key "R"
+    :transient transient-option
     :argument "--reason="
     :prompt "Reason: "
     :transient-group "Options"
@@ -454,9 +432,8 @@ Manually reject a merge request."
     :documentation "Rig name."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
     :transient-group "Required"
@@ -469,9 +446,8 @@ Manually reject a merge request."
     :documentation "MR ID to retry."
     :positional 2
     :option-type :string
-    :key "m"
-    :transient "MR ID (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "MR ID: "
     :transient-reader gastown-reader-bead-id
     :transient-group "Required"
@@ -484,9 +460,8 @@ Manually reject a merge request."
     :documentation "Immediately process instead of waiting for refinery loop."
     :long-option "now"
     :option-type :boolean
-    :key "n"
-    :transient "--now"
-    :class transient-switch
+    :transient-key "n"
+    :transient transient-switch
     :argument "--now"
     :transient-group "Options"
     :level 2
@@ -506,9 +481,8 @@ Retry a failed merge request."
     :documentation "MR ID to show status for."
     :positional 1
     :option-type :string
-    :key "m"
-    :transient "MR ID (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "MR ID: "
     :transient-reader gastown-reader-bead-id
     :transient-group "Required"
@@ -529,9 +503,8 @@ Display detailed information about a merge request."
     :documentation "Source issue ID (default: parse from branch name)."
     :long-option "issue"
     :option-type :string
-    :key "i"
-    :transient "Source issue ID"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :argument "--issue="
     :prompt "Issue ID: "
     :transient-reader gastown-reader-bead-id
@@ -545,9 +518,8 @@ Display detailed information about a merge request."
     :documentation "Target epic's integration branch instead of main."
     :long-option "epic"
     :option-type :string
-    :key "e"
-    :transient "Epic ID (target integration branch)"
-    :class transient-option
+    :transient-key "e"
+    :transient transient-option
     :argument "--epic="
     :prompt "Epic ID: "
     :transient-reader gastown-reader-bead-id
@@ -561,9 +533,8 @@ Display detailed information about a merge request."
     :documentation "Don't auto-cleanup after submit."
     :long-option "no-cleanup"
     :option-type :boolean
-    :key "n"
-    :transient "--no-cleanup"
-    :class transient-switch
+    :transient-key "n"
+    :transient transient-switch
     :argument "--no-cleanup"
     :transient-group "Options"
     :level 2
@@ -583,9 +554,8 @@ Submit current branch to the merge queue."
     :documentation "Convoy ID to start synthesis for."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -598,9 +568,8 @@ Submit current branch to the merge queue."
     :documentation "Target rig for synthesis polecat."
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Target rig"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -614,9 +583,8 @@ Submit current branch to the merge queue."
     :documentation "Start even if some legs are incomplete."
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "--force"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 2
@@ -628,9 +596,8 @@ Submit current branch to the merge queue."
     :documentation "Preview execution without running."
     :long-option "dry-run"
     :option-type :boolean
-    :key "d"
-    :transient "--dry-run"
-    :class transient-switch
+    :transient-key "d"
+    :transient transient-switch
     :argument "--dry-run"
     :transient-group "Options"
     :level 1
@@ -648,9 +615,8 @@ Start the synthesis step for a convoy."
     :documentation "Convoy ID to check synthesis readiness for."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"
@@ -669,9 +635,8 @@ Show whether a convoy is ready for synthesis."
     :documentation "Convoy ID to close after synthesis."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Convoy ID (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Convoy ID: "
     :transient-reader gastown-reader-convoy-id
     :transient-group "Required"

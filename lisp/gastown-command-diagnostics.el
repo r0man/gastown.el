@@ -37,9 +37,8 @@ Shows unified health dashboard.")
     :documentation "Attempt to fix issues"
     :long-option "fix"
     :option-type :boolean
-    :key "f"
-    :transient "Attempt to fix issues"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--fix"
     :transient-group "Options"
     :level 1
@@ -58,9 +57,8 @@ Diagnose and optionally fix Gas Town issues.")
     :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Filter by rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -75,9 +73,8 @@ Diagnose and optionally fix Gas Town issues.")
     :long-option "lines"
     :short-option "n"
     :option-type :integer
-    :key "n"
-    :transient "Number of log lines"
-    :class transient-option
+    :transient-key "n"
+    :transient transient-option
     :argument "--lines="
     :prompt "Lines: "
     :transient-group "Options"
@@ -91,9 +88,8 @@ Diagnose and optionally fix Gas Town issues.")
     :long-option "follow"
     :short-option "f"
     :option-type :boolean
-    :key "f"
-    :transient "Follow log output"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--follow"
     :transient-group "Options"
     :level 1
@@ -112,9 +108,8 @@ Show Gas Town logs.")
     :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Filter by rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -151,9 +146,8 @@ Show current identity for mail commands.")
     :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Filter by rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -174,9 +168,8 @@ Show cost metrics.")
     :documentation "Filter by rig name"
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Filter by rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name

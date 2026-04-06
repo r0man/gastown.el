@@ -29,9 +29,8 @@
     :documentation "Target agent to peek at (rig/polecat format)."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Target (required)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Target (rig/polecat): "
     :transient-reader gastown-reader-agent-target
     :transient-group "Required"
@@ -45,9 +44,8 @@
     :long-option "lines"
     :short-option "n"
     :option-type :integer
-    :key "n"
-    :transient "Number of lines to show"
-    :class transient-option
+    :transient-key "n"
+    :transient transient-option
     :argument "--lines="
     :prompt "Lines: "
     :transient-group "Options"

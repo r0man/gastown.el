@@ -46,9 +46,8 @@ Stops all Gas Town services.")
     :documentation "Force shutdown without cleanup"
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "Force shutdown without cleanup"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 1
@@ -107,9 +106,8 @@ Stop the running Gas Town daemon."
     :documentation "Number of lines to show."
     :long-option "lines"
     :option-type :string
-    :key "n"
-    :transient "Lines to show"
-    :class transient-option
+    :transient-key "n"
+    :transient transient-option
     :argument "--lines="
     :prompt "Lines: "
     :transient-group "Options"
@@ -122,9 +120,8 @@ Stop the running Gas Town daemon."
     :documentation "Follow log output in real time."
     :long-option "follow"
     :option-type :boolean
-    :key "f"
-    :transient "--follow"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--follow"
     :transient-group "Options"
     :level 1
@@ -142,9 +139,8 @@ View the daemon log file."
     :documentation "Rotate all logs regardless of size."
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "--force"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 2
@@ -162,9 +158,8 @@ Rotate all daemon-managed log files."
     :documentation "Agent name to clear backoff for."
     :positional 1
     :option-type :string
-    :key "a"
-    :transient "Agent name (required)"
-    :class transient-option
+    :transient-key "a"
+    :transient transient-option
     :prompt "Agent: "
     :transient-group "Required"
     :level 1
@@ -233,9 +228,8 @@ Configure launchd/systemd for daemon auto-restart."
     :documentation "Freeze only this rig instead of the whole town."
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -249,9 +243,8 @@ Configure launchd/systemd for daemon auto-restart."
     :documentation "Reason for the emergency stop."
     :long-option "reason"
     :option-type :string
-    :key "m"
-    :transient "Reason"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :argument "--reason="
     :prompt "Reason: "
     :transient-group "Options"
@@ -269,9 +262,8 @@ Emergency stop — freeze all agent sessions.")
     :documentation "Thaw only this rig instead of the whole town."
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -418,9 +410,8 @@ Update metadata.json in all rig .beads directories."
     :documentation "Database name to flatten (optional, defaults to all)."
     :positional 1
     :option-type :string
-    :key "d"
-    :transient "Database (optional)"
-    :class transient-option
+    :transient-key "d"
+    :transient transient-option
     :prompt "Database (optional): "
     :transient-group "Arguments"
     :level 2
@@ -445,9 +436,8 @@ Initialize and repair Dolt workspace configuration."
     :documentation "Rig name to initialize."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Rig name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Rig name: "
     :transient-reader gastown-reader-rig-name
     :transient-group "Arguments"
@@ -480,9 +470,8 @@ List available rig databases."
     :documentation "Follow log output."
     :long-option "follow"
     :option-type :boolean
-    :key "f"
-    :transient "--follow"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--follow"
     :transient-group "Options"
     :level 2
@@ -514,9 +503,8 @@ Migrate agent beads from issues to wisps table."
     :documentation "Database name to rebase (optional, defaults to all)."
     :positional 1
     :option-type :string
-    :key "d"
-    :transient "Database (optional)"
-    :class transient-option
+    :transient-key "d"
+    :transient transient-option
     :prompt "Database (optional): "
     :transient-group "Arguments"
     :level 2
@@ -555,9 +543,8 @@ Restore .beads directories from a migration backup."
     :documentation "Database to connect to."
     :long-option "db"
     :option-type :string
-    :key "d"
-    :transient "Database"
-    :class transient-option
+    :transient-key "d"
+    :transient transient-option
     :argument "--db="
     :prompt "Database: "
     :transient-group "Options"
@@ -684,9 +671,8 @@ Push Dolt databases to DoltHub remotes."
     :documentation "Account handle to clear (optional, clears all if omitted)."
     :positional 1
     :option-type :string
-    :key "h"
-    :transient "Handle (optional)"
-    :class transient-option
+    :transient-key "h"
+    :transient transient-option
     :prompt "Handle (optional): "
     :transient-group "Arguments"
     :level 2
@@ -770,9 +756,8 @@ Monitor sessions and rotate proactively before hard 429."
     :documentation "Bead ID to remove from scheduler (optional, clears all if omitted)."
     :positional 1
     :option-type :string
-    :key "b"
-    :transient "Bead ID (optional)"
-    :class transient-option
+    :transient-key "b"
+    :transient transient-option
     :prompt "Bead ID (optional): "
     :transient-group "Arguments"
     :level 2

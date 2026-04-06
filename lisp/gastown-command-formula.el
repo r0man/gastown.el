@@ -56,9 +56,8 @@ List available formulas from all search paths."
     :documentation "Formula name to show."
     :positional 1
     :option-type :string
-    :key "f"
-    :transient "Formula name (required)"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :prompt "Formula name: "
     :transient-reader gastown-reader-formula-name
     :transient-group "Required"
@@ -79,9 +78,8 @@ Display formula details (steps, variables, composition)."
     :documentation "Formula name to run."
     :positional 1
     :option-type :string
-    :key "f"
-    :transient "Formula name (required)"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :prompt "Formula name: "
     :transient-reader gastown-reader-formula-name
     :transient-group "Required"
@@ -94,9 +92,8 @@ Display formula details (steps, variables, composition)."
     :documentation "Formula arguments"
     :long-option "args"
     :option-type :string
-    :key "a"
-    :transient "Formula arguments"
-    :class transient-option
+    :transient-key "a"
+    :transient transient-option
     :argument "--args="
     :prompt "Args (key=value,...): "
     :transient-group "Options"
@@ -117,9 +114,8 @@ Execute a formula (pour and dispatch)."
     :documentation "Formula name to create."
     :positional 1
     :option-type :string
-    :key "f"
-    :transient "Formula name (required)"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :prompt "Formula name: "
     :transient-group "Required"
     :level 1
@@ -139,9 +135,8 @@ Create a new formula template."
     :documentation "Formula name to overlay."
     :positional 1
     :option-type :string
-    :key "f"
-    :transient "Formula name (required)"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :prompt "Formula name: "
     :transient-reader gastown-reader-formula-name
     :transient-group "Required"
@@ -162,9 +157,8 @@ Create a user overlay for an existing formula."
     :documentation "Formula name to show overlay for."
     :positional 1
     :option-type :string
-    :key "f"
-    :transient "Formula name (required)"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :prompt "Formula name: "
     :transient-reader gastown-reader-formula-name
     :transient-group "Required"
@@ -177,9 +171,8 @@ Create a user overlay for an existing formula."
     :documentation "Rig name (optional, shows rig-level overlay)."
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -199,9 +192,8 @@ Display the active overlay for a formula."
     :documentation "Formula name to edit overlay for."
     :positional 1
     :option-type :string
-    :key "f"
-    :transient "Formula name (required)"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :prompt "Formula name: "
     :transient-reader gastown-reader-formula-name
     :transient-group "Required"
@@ -214,9 +206,8 @@ Display the active overlay for a formula."
     :documentation "Rig name (optional, creates rig-level overlay)."
     :long-option "rig"
     :option-type :string
-    :key "r"
-    :transient "Rig name"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name

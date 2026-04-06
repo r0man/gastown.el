@@ -29,9 +29,8 @@
     :documentation "Show all messages including read"
     :long-option "all"
     :option-type :boolean
-    :key "a"
-    :transient "Show all messages including read"
-    :class transient-switch
+    :transient-key "a"
+    :transient transient-switch
     :argument "--all"
     :transient-group "Options"
     :level 1
@@ -44,9 +43,8 @@
     :long-option "unread"
     :short-option "u"
     :option-type :boolean
-    :key "u"
-    :transient "Show only unread messages"
-    :class transient-switch
+    :transient-key "u"
+    :transient transient-switch
     :argument "--unread"
     :transient-group "Filters"
     :level 1
@@ -65,9 +63,8 @@ Lists messages with read/unread indicators.")
     :documentation "Mail message ID to read."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Mail ID (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Mail ID: "
     :transient-group "Required"
     :level 1
@@ -86,9 +83,8 @@ Reads a specific mail message.")
     :documentation "Recipient address (rig/role format)."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Recipient (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Recipient (rig/role): "
     :transient-reader gastown-reader-mail-address
     :transient-group "Required"
@@ -102,9 +98,8 @@ Reads a specific mail message.")
     :long-option "subject"
     :short-option "s"
     :option-type :string
-    :key "s"
-    :transient "Mail subject"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "--subject="
     :prompt "Subject: "
     :transient-group "Required"
@@ -119,9 +114,8 @@ Reads a specific mail message.")
     ;; for direct CLI invocation and :argument "-m=" overrides the transient prefix.
     :long-option "m"
     :option-type :string
-    :key "m"
-    :transient "Message body"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :argument "-m="
     :prompt "Message: "
     :transient-group "Content"
@@ -141,9 +135,8 @@ Sends a message to an agent.")
     :documentation "Mail message ID to mark as read."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Mail ID"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Mail ID (or 'all'): "
     :transient-group "Options"
     :level 1
@@ -163,9 +156,8 @@ Mark messages as read without archiving."
     :documentation "Message ID(s) to archive."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Message ID(s)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Message IDs: "
     :transient-group "Options"
     :level 1
@@ -177,9 +169,8 @@ Mark messages as read without archiving."
     :documentation "Archive messages sent before session start."
     :long-option "stale"
     :option-type :boolean
-    :key "s"
-    :transient "--stale"
-    :class transient-switch
+    :transient-key "s"
+    :transient transient-switch
     :argument "--stale"
     :transient-group "Options"
     :level 1
@@ -191,9 +182,8 @@ Mark messages as read without archiving."
     :documentation "Show what would be archived without archiving."
     :long-option "dry-run"
     :option-type :boolean
-    :key "d"
-    :transient "--dry-run"
-    :class transient-switch
+    :transient-key "d"
+    :transient transient-switch
     :argument "--dry-run"
     :transient-group "Options"
     :level 1
@@ -213,9 +203,8 @@ Archive one or more messages."
     :documentation "Output format for Claude Code hooks."
     :long-option "inject"
     :option-type :boolean
-    :key "i"
-    :transient "--inject"
-    :class transient-switch
+    :transient-key "i"
+    :transient transient-switch
     :argument "--inject"
     :transient-group "Options"
     :level 1
@@ -235,9 +224,8 @@ Check for new mail."
     :documentation "Queue name to claim from (optional)."
     :positional 1
     :option-type :string
-    :key "q"
-    :transient "Queue name"
-    :class transient-option
+    :transient-key "q"
+    :transient transient-option
     :prompt "Queue name: "
     :transient-group "Options"
     :level 1
@@ -257,9 +245,8 @@ Claim the oldest unclaimed message from a work queue."
     :documentation "Target inbox to clear (optional, defaults to self)."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Target (optional)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Target: "
     :transient-reader gastown-reader-mail-address
     :transient-group "Options"
@@ -280,9 +267,8 @@ Clear all messages from an inbox."
     :documentation "Message ID(s) to delete."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Message ID(s) (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Message IDs: "
     :transient-group "Required"
     :level 1
@@ -320,9 +306,8 @@ Bulk-archive stale protocol messages."
     :documentation "Mail message ID to attach to hook."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Mail ID (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Mail ID: "
     :transient-group "Required"
     :level 1
@@ -334,9 +319,8 @@ Bulk-archive stale protocol messages."
     :documentation "Replace existing incomplete hooked bead."
     :long-option "force"
     :option-type :boolean
-    :key "f"
-    :transient "--force"
-    :class transient-switch
+    :transient-key "f"
+    :transient transient-switch
     :argument "--force"
     :transient-group "Options"
     :level 2
@@ -356,9 +340,8 @@ Attach a mail message to your hook."
     :documentation "Message ID(s) to mark as unread."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Message ID(s) (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Message IDs: "
     :transient-group "Required"
     :level 1
@@ -387,9 +370,8 @@ Display a compact preview of the first unread message."
     :documentation "Message ID to release."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Message ID (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Message ID: "
     :transient-group "Required"
     :level 1
@@ -409,9 +391,8 @@ Release a previously claimed message back to its queue."
     :documentation "Message ID to reply to."
     :positional 1
     :option-type :string
-    :key "i"
-    :transient "Message ID (required)"
-    :class transient-option
+    :transient-key "i"
+    :transient transient-option
     :prompt "Message ID: "
     :transient-group "Required"
     :level 1
@@ -423,9 +404,8 @@ Release a previously claimed message back to its queue."
     :documentation "Reply message body."
     :long-option "message"
     :option-type :string
-    :key "m"
-    :transient "Message body"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :argument "--message="
     :prompt "Message: "
     :transient-group "Options"
@@ -438,9 +418,8 @@ Release a previously claimed message back to its queue."
     :documentation "Override reply subject."
     :long-option "subject"
     :option-type :string
-    :key "s"
-    :transient "Subject override"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :argument "--subject="
     :prompt "Subject: "
     :transient-group "Options"
@@ -461,9 +440,8 @@ Reply to a specific message."
     :documentation "Search query (regex pattern)."
     :positional 1
     :option-type :string
-    :key "q"
-    :transient "Query (required)"
-    :class transient-option
+    :transient-key "q"
+    :transient transient-option
     :prompt "Query: "
     :transient-group "Required"
     :level 1
@@ -475,9 +453,8 @@ Reply to a specific message."
     :documentation "Filter by sender address."
     :long-option "from"
     :option-type :string
-    :key "f"
-    :transient "From"
-    :class transient-option
+    :transient-key "f"
+    :transient transient-option
     :argument "--from="
     :prompt "From: "
     :transient-reader gastown-reader-mail-address
@@ -499,9 +476,8 @@ Search inbox for messages matching a pattern."
     :documentation "Thread ID to view."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Thread ID (required)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Thread ID: "
     :transient-group "Required"
     :level 1

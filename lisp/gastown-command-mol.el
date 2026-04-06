@@ -28,9 +28,8 @@
     :documentation "Pinned bead ID (optional, auto-detected from cwd)."
     :positional 1
     :option-type :string
-    :key "p"
-    :transient "Pinned bead ID"
-    :class transient-option
+    :transient-key "p"
+    :transient transient-option
     :prompt "Pinned bead ID (optional): "
     :transient-group "Arguments"
     :level 2
@@ -42,9 +41,8 @@
     :documentation "Molecule ID to attach."
     :positional 2
     :option-type :string
-    :key "m"
-    :transient "Molecule ID (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "Molecule ID: "
     :transient-group "Arguments"
     :level 1
@@ -64,9 +62,8 @@ Attach a molecule to a pinned bead."
     :documentation "Mail ID containing the molecule attachment."
     :positional 1
     :option-type :string
-    :key "m"
-    :transient "Mail ID (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "Mail ID: "
     :transient-group "Arguments"
     :level 1
@@ -86,9 +83,8 @@ Attach a molecule from a mail message."
     :documentation "Bead ID to check attachment status for."
     :positional 1
     :option-type :string
-    :key "b"
-    :transient "Bead ID (optional)"
-    :class transient-option
+    :transient-key "b"
+    :transient transient-option
     :prompt "Bead ID (optional): "
     :transient-group "Arguments"
     :level 2
@@ -108,9 +104,8 @@ Show attachment status of a pinned bead."
     :documentation "Signal name to wait for."
     :positional 1
     :option-type :string
-    :key "s"
-    :transient "Signal name (required)"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :prompt "Signal name: "
     :transient-group "Arguments"
     :level 1
@@ -122,9 +117,8 @@ Show attachment status of a pinned bead."
     :documentation "Timeout duration (e.g. 5m, 1h)."
     :long-option "timeout"
     :option-type :string
-    :key "t"
-    :transient "Timeout"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--timeout="
     :prompt "Timeout (e.g. 5m): "
     :transient-group "Options"
@@ -163,9 +157,8 @@ Show what agent should be working on."
     :documentation "Molecule ID to visualize."
     :positional 1
     :option-type :string
-    :key "m"
-    :transient "Molecule ID (optional)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "Molecule ID (optional): "
     :transient-group "Arguments"
     :level 2
@@ -185,9 +178,8 @@ Visualize molecule dependency DAG."
     :documentation "Bead ID to detach molecule from (optional)."
     :positional 1
     :option-type :string
-    :key "b"
-    :transient "Bead ID (optional)"
-    :class transient-option
+    :transient-key "b"
+    :transient transient-option
     :prompt "Bead ID (optional): "
     :transient-group "Arguments"
     :level 2
@@ -225,9 +217,8 @@ Compress molecule into a digest."
     :documentation "Agent to show hook status for (optional)."
     :positional 1
     :option-type :string
-    :key "a"
-    :transient "Agent (optional)"
-    :class transient-option
+    :transient-key "a"
+    :transient transient-option
     :prompt "Agent (optional): "
     :transient-group "Arguments"
     :level 2
@@ -247,9 +238,8 @@ Show what's on an agent's hook."
     :documentation "Step ID to complete."
     :positional 1
     :option-type :string
-    :key "s"
-    :transient "Step ID (required)"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :prompt "Step ID: "
     :transient-group "Arguments"
     :level 1
@@ -269,9 +259,8 @@ Complete current step and auto-continue to next."
     :documentation "Signal name to wait for."
     :positional 1
     :option-type :string
-    :key "s"
-    :transient "Signal name (required)"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :prompt "Signal name: "
     :transient-group "Arguments"
     :level 1
@@ -283,9 +272,8 @@ Complete current step and auto-continue to next."
     :documentation "Timeout duration (e.g. 5m, 1h)."
     :long-option "timeout"
     :option-type :string
-    :key "t"
-    :transient "Timeout"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--timeout="
     :prompt "Timeout (e.g. 5m): "
     :transient-group "Options"
@@ -306,9 +294,8 @@ Wait for activity feed signal with timeout."
     :documentation "Event channel name."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Channel (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Channel: "
     :transient-group "Arguments"
     :level 1
@@ -320,9 +307,8 @@ Wait for activity feed signal with timeout."
     :documentation "Timeout duration (e.g. 5m, 1h)."
     :long-option "timeout"
     :option-type :string
-    :key "t"
-    :transient "Timeout"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :argument "--timeout="
     :prompt "Timeout (e.g. 5m): "
     :transient-group "Options"
@@ -343,9 +329,8 @@ Wait for a file-based event on a named channel."
     :documentation "Event channel name."
     :positional 1
     :option-type :string
-    :key "c"
-    :transient "Channel (required)"
-    :class transient-option
+    :transient-key "c"
+    :transient transient-option
     :prompt "Channel: "
     :transient-group "Arguments"
     :level 1
@@ -357,9 +342,8 @@ Wait for a file-based event on a named channel."
     :documentation "Event payload data."
     :positional 2
     :option-type :string
-    :key "p"
-    :transient "Payload (optional)"
-    :class transient-option
+    :transient-key "p"
+    :transient transient-option
     :prompt "Payload: "
     :transient-group "Arguments"
     :level 2

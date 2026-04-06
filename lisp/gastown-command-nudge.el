@@ -29,9 +29,8 @@
     :documentation "Target agent to nudge."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Target (required)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Target (rig/agent): "
     :transient-reader gastown-reader-agent-target
     :transient-group "Required"
@@ -44,9 +43,8 @@
     :documentation "Nudge message text."
     :positional 2
     :option-type :string
-    :key "m"
-    :transient "Message (required)"
-    :class transient-option
+    :transient-key "m"
+    :transient transient-option
     :prompt "Message: "
     :transient-group "Required"
     :level 1

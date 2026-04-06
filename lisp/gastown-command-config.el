@@ -38,9 +38,8 @@ Manage Gas Town account settings.")
     :documentation "Account handle to add."
     :positional 1
     :option-type :string
-    :key "h"
-    :transient "Handle (required)"
-    :class transient-option
+    :transient-key "h"
+    :transient transient-option
     :prompt "Handle: "
     :transient-group "Arguments"
     :level 1
@@ -58,9 +57,8 @@ Add a new Claude Code account."
     :documentation "Account handle to set as default."
     :positional 1
     :option-type :string
-    :key "h"
-    :transient "Handle (required)"
-    :class transient-option
+    :transient-key "h"
+    :transient transient-option
     :prompt "Handle: "
     :transient-group "Arguments"
     :level 1
@@ -92,9 +90,8 @@ Show current account info."
     :documentation "Account handle to switch to."
     :positional 1
     :option-type :string
-    :key "h"
-    :transient "Handle (required)"
-    :class transient-option
+    :transient-key "h"
+    :transient transient-option
     :prompt "Handle: "
     :transient-group "Arguments"
     :level 1
@@ -130,9 +127,8 @@ Show or edit Gas Town configuration.")
     :documentation "Agent subcommand (list, get, set, remove)."
     :positional 1
     :option-type :string
-    :key "s"
-    :transient "Subcommand (optional)"
-    :class transient-option
+    :transient-key "s"
+    :transient transient-option
     :prompt "Subcommand: "
     :transient-choices ("list" "get" "set" "remove")
     :transient-group "Arguments"
@@ -151,9 +147,8 @@ Manage agent configuration."
     :documentation "Email domain to set (optional, omit to get current)."
     :positional 1
     :option-type :string
-    :key "d"
-    :transient "Domain (optional)"
-    :class transient-option
+    :transient-key "d"
+    :transient transient-option
     :prompt "Domain (optional): "
     :transient-group "Arguments"
     :level 2
@@ -171,9 +166,8 @@ Get or set agent email domain."
     :documentation "Cost tier to set (optional, omit to get current)."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Tier (optional)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Tier (optional): "
     :transient-group "Arguments"
     :level 2
@@ -191,9 +185,8 @@ Get or set cost optimization tier."
     :documentation "Agent name to set as default (optional, omit to get current)."
     :positional 1
     :option-type :string
-    :key "n"
-    :transient "Agent name (optional)"
-    :class transient-option
+    :transient-key "n"
+    :transient transient-option
     :prompt "Agent name (optional): "
     :transient-group "Arguments"
     :level 2
@@ -211,9 +204,8 @@ Get or set the default agent."
     :documentation "Configuration key to get (dot-notation)."
     :positional 1
     :option-type :string
-    :key "k"
-    :transient "Key (required)"
-    :class transient-option
+    :transient-key "k"
+    :transient transient-option
     :prompt "Key: "
     :transient-group "Arguments"
     :level 1
@@ -231,9 +223,8 @@ Get a town configuration value."
     :documentation "Configuration key to set (dot-notation)."
     :positional 1
     :option-type :string
-    :key "k"
-    :transient "Key (required)"
-    :class transient-option
+    :transient-key "k"
+    :transient transient-option
     :prompt "Key: "
     :transient-group "Arguments"
     :level 1
@@ -245,9 +236,8 @@ Get a town configuration value."
     :documentation "Value to set."
     :positional 2
     :option-type :string
-    :key "v"
-    :transient "Value (required)"
-    :class transient-option
+    :transient-key "v"
+    :transient transient-option
     :prompt "Value: "
     :transient-group "Arguments"
     :level 1
@@ -267,9 +257,8 @@ Set a town configuration value."
     :documentation "Role name to show directive for."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Role name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Role: "
     :transient-group "Required"
     :level 1
@@ -281,9 +270,8 @@ Set a town configuration value."
     :documentation "Rig name (default: auto-detect from cwd)."
     :long-option "rig"
     :option-type :string
-    :key "R"
-    :transient "Rig name"
-    :class transient-option
+    :transient-key "R"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -303,9 +291,8 @@ Display the resolved directive content for a role with source annotation."
     :documentation "Role name to edit directive for."
     :positional 1
     :option-type :string
-    :key "r"
-    :transient "Role name (required)"
-    :class transient-option
+    :transient-key "r"
+    :transient transient-option
     :prompt "Role: "
     :transient-group "Required"
     :level 1
@@ -317,9 +304,8 @@ Display the resolved directive content for a role with source annotation."
     :documentation "Rig name (default: auto-detect from cwd)."
     :long-option "rig"
     :option-type :string
-    :key "R"
-    :transient "Rig name"
-    :class transient-option
+    :transient-key "R"
+    :transient transient-option
     :argument "--rig="
     :prompt "Rig: "
     :transient-reader gastown-reader-rig-name
@@ -333,9 +319,8 @@ Display the resolved directive content for a role with source annotation."
     :documentation "Edit town-level directive instead of rig-level."
     :long-option "town"
     :option-type :boolean
-    :key "t"
-    :transient "Edit town-level directive"
-    :class transient-switch
+    :transient-key "t"
+    :transient transient-switch
     :argument "--town"
     :transient-group "Options"
     :level 2
@@ -407,9 +392,8 @@ Initialize hooks configuration."
     :documentation "Hook name to install from the registry."
     :positional 1
     :option-type :string
-    :key "h"
-    :transient "Hook name (required)"
-    :class transient-option
+    :transient-key "h"
+    :transient transient-option
     :prompt "Hook name: "
     :transient-group "Arguments"
     :level 1
@@ -434,9 +418,8 @@ Show all managed settings.json locations."
     :documentation "Role or rig to edit overrides for."
     :positional 1
     :option-type :string
-    :key "t"
-    :transient "Target (required)"
-    :class transient-option
+    :transient-key "t"
+    :transient transient-option
     :prompt "Target (role or rig): "
     :transient-group "Arguments"
     :level 1
